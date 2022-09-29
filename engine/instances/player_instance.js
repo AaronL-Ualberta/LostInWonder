@@ -51,14 +51,18 @@ class PlayerInstance extends EngineInstance {
 
 		this.levelHandler = TechDemoHandler.first;
 
+		this.animation_running = $engine.getAnimation("playerrunanimation");
+		this.animation_standing = [$engine.getTexture("baby2")];
+
 		// this.setSprite(new PIXI.Sprite($engine.getTexture("default")));
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(-this.spr_width / 2, -this.spr_height, this.spr_width / 2, 0)));
-		this.spr = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture("baby2")), false);
+		this.setHitbox(new Hitbox(this, new RectangleHitbox(-20, 34 * -2, 20, 0)));
+		this.animation = $engine.createRenderable(this, new PIXI.extras.AnimatedSprite(this.animation_standing), false);
 		// this.spr_scale = 1.2;
 		this.spr_scale = 2;
-		this.spr.scale.set(this.spr_scale, this.spr_scale);
+		this.animation.scale.set(this.spr_scale, this.spr_scale);
 		// this.getSprite().anchor.y = 1;
-		this.spr.anchor.y = 1;
+		this.animation.anchor.y = 1;
+		this.animation.animationSpeed = 0.1;
 
 		// Marcus cool code!!!!!!!!!!!!!!!!!!!!!!!!!
 		// this.filter = new PIXI.filters.BlurFilter();
@@ -74,6 +78,7 @@ class PlayerInstance extends EngineInstance {
 
 	step() {
 		//this.getSprite().skew.x = this.hsp / 15;
+		this.animation.update(1);
 		this.state_timer++;
 		this.getStateGroup().step();
 
@@ -89,14 +94,23 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		//  this.filter.blur = this.x / 120;
+		if (Math.abs(this.hsp) > 0.1) {
+			EngineUtils.setAnimation(this.animation, this.animation_running);
+			this.animation.animationSpeed = Math.abs(this.hsp) / 30;
+		} else {
+			EngineUtils.setAnimation(this.animation, this.animation_standing);
+		}
 	}
 
 	draw(gui, camera) {
 		// EngineDebugUtils.drawHitbox(camera, this);
-		this.spr.scale.x = this.spr_scale - Math.abs(this.vsp) / 50;
-		this.spr.scale.y = this.spr_scale + Math.abs(this.vsp) / 50;
-		this.spr.x = this.x;
-		this.spr.y = this.y;
+		this.animation.scale.x = this.spr_scale - Math.abs(this.vsp) / 50;
+		this.animation.scale.y = this.spr_scale + Math.abs(this.vsp) / 50;
+		if (Math.abs(this.hsp) > 0.1) {
+			this.animation.scale.x = Math.abs(this.animation.scale.x) * Math.sign(this.hsp);
+		}
+		this.animation.x = this.x;
+		this.animation.y = this.y;
 	}
 
 	// My Functions -------------------------------------------------------
@@ -121,10 +135,16 @@ class PlayerInstance extends EngineInstance {
 			return;
 		}
 
-		if (IN.keyCheck("ArrowRight")) {
-			this.hsp = Math.min(this.hsp + this.ground_accel, this.max_run_speed);
-		} else if (IN.keyCheck("ArrowLeft")) {
-			this.hsp = Math.max(this.hsp - this.ground_accel, -this.max_run_speed);
+		const inp = IN.keyCheck("ArrowRight") - IN.keyCheck("ArrowLeft");
+
+		const part_from_center = 18;
+		const part_from_ground = 5;
+		if (inp !== 0) {
+			this.hsp = EngineUtils.clamp(this.hsp + inp * this.ground_accel, -this.max_run_speed, this.max_run_speed);
+			// Running clouds
+			if (Math.abs(this.hsp) > this.max_run_speed / 5 && this.state_timer % 15 === 0) {
+				new DustParticle(this.x - part_from_center * Math.sign(this.hsp), this.y - part_from_ground, 0.8);
+			}
 		} else {
 			// Decel
 			this.hsp *= this.decel_coeff;
@@ -133,8 +153,6 @@ class PlayerInstance extends EngineInstance {
 		if (IN.keyCheckPressed("ArrowUp")) {
 			// Jump
 			this.vsp -= this.jump_height;
-			const part_from_center = 18;
-			const part_from_ground = 5;
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
 			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
 		}
@@ -150,25 +168,20 @@ class PlayerInstance extends EngineInstance {
 
 		this.vsp += this.gravity;
 		if (Math.abs(this.vsp) < 1) this.vsp -= this.gravity / 1.5;
-		if (IN.keyCheck("ArrowRight")) {
-			this.hsp = Math.min(this.hsp + this.ground_accel, this.max_run_speed);
-		}
-		if (IN.keyCheck("ArrowLeft")) {
-			this.hsp = Math.max(this.hsp - this.ground_accel, -this.max_run_speed);
+
+		// INP
+		const inp = IN.keyCheck("ArrowRight") - IN.keyCheck("ArrowLeft");
+		if (inp !== 0) {
+			this.hsp = EngineUtils.clamp(this.hsp + inp * this.ground_accel, -this.max_run_speed, this.max_run_speed);
+
+			// Check wall cling
+			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
+				this.switchState(PLAYERSTATES.WALLCLING);
+				this.facing = inp;
+				return;
+			}
 		}
 		this.moveCollide();
-
-		// Check wall cling
-		if (this.collisionCheck(this.x + 1, this.y) && IN.keyCheck("ArrowRight")) {
-			this.switchState(PLAYERSTATES.WALLCLING);
-			this.facing = 1;
-			return;
-		}
-		if (this.collisionCheck(this.x - 1, this.y) && IN.keyCheck("ArrowLeft")) {
-			this.switchState(PLAYERSTATES.WALLCLING);
-			this.facing = -1;
-			return;
-		}
 
 		// Check Double Jump
 		if (IN.keyCheckPressed("ArrowUp") && this.has_doubleJump) {
@@ -195,17 +208,22 @@ class PlayerInstance extends EngineInstance {
 		if (IN.keyCheck("ArrowLeft")) {
 			inp = -1;
 		}
-		if (this.facing == -inp) {
+		if (this.facing === -inp) {
 			this.switchState(PLAYERSTATES.AIRBORNE);
 			return;
 		}
 
-		if ($engine.getGameTimer() % 7 == 0) {
+		if ($engine.getGameTimer() % 7 === 0) {
 			new DustParticle(this.x + this.facing * 10, this.y - 50);
 		}
 
 		if (this.collisionCheck(this.x, this.y + 1)) {
 			this.switchState(PLAYERSTATES.GROUNDED);
+			return;
+		}
+
+		if (!this.collisionCheck(this.x + this.facing, this.y)) {
+			this.switchState(PLAYERSTATES.AIRBORNE);
 			return;
 		}
 

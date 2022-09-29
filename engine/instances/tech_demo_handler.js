@@ -27,6 +27,7 @@ class TechDemoHandler extends EngineInstance {
 		this.rayFilter.gain = 0.4;
 		this.rayFilter.lucanarity = 2;
 		this.rayFilter.alpha = 0.5;
+		this.rayFilter_offset = EngineUtils.random(1000);
 		this.camera.addFilter(this.rayFilter);
 
 		const leafFilter = new PIXI.filters.AdvancedBloomFilter();
@@ -68,7 +69,7 @@ class TechDemoHandler extends EngineInstance {
 		this.fgSprite.skew.x = Math.sin($engine.getGameTimer() / 60) / 20;
 		this.fgSprite.tilePosition.x = -this.camera.getX() / 1.75;
 
-		this.rayFilter.time = this.camera.getX() / 300 + $engine.getGameTimer() / 200;
+		this.rayFilter.time = this.camera.getX() / 300 + $engine.getGameTimer() / 200 + this.rayFilter_offset;
 		// this.rayFilter.time = $engine.getGameTimer() / 200;
 
 		// Spell wheel rotation

@@ -1,6 +1,6 @@
 class DustParticle extends EngineInstance {
-	onCreate(x, y) {
-		this.sprite_scale = 0.5;
+	onCreate(x, y, size = 1) {
+		this.sprite_scale = 0.5 * size;
 		this.time = 0;
 		this.lifetime = 15;
 
