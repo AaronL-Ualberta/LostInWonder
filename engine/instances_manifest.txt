@@ -1,0 +1,15 @@
+EngineRoomEditor engine/instances/tools/engine_room_editor.js
+LightingLayer AnimatedParticle EmptyInstance ExplosionParticle BufferedKeyInput BufferedMouseInput EngineButton engine/instances/shared/general_utils.js
+EnginePhysicsInstance engine/instances/shared/physics_instance.js
+InstanceMover engine/instances/shared/instance_mover.js
+
+PlayerInstance engine/instances/player_instance.js
+SolidObject engine/instances/solid_object.js
+InvisibleWall engine/instances/invisible_wall.js
+TechDemoHandler engine/instances/tech_demo_handler.js
+SemiSolid engine/instances/SemiSolid.js
+
+DustParticle engine/instances/particles/DustParticle.js
+
+TestInstance engine/instances/test_instance.js
+TestInstance2 engine/instances/test_instance2.js

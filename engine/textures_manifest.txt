@@ -1,0 +1,8 @@
+require default engine/textures/default.png 0.5 0.5
+baby engine/textures/baby.png 0.5 0
+baby2 engine/textures/baby2.png 0.5 0
+bgfar engine/textures/bg/bg_far.png 0 0
+bgleaves engine/textures/bg/bg_leaves.png 0 0
+spellwheel engine/textures/spell_wheel.png 0.5 0.5
+
+spritesheet dimensions 150 50 3 1 dustparticle engine/textures/particles/dust_particle.png 0.5 0.5
