@@ -18,6 +18,11 @@ class Fireball extends EngineInstance {
         
         if(IM.instanceCollision(this, this.x, this.y, SolidObject)) {
             this.destroy()
+
+            var iceBlock = IM.instancePlace(this, this.x, this.y, IceBlock);
+            if (iceBlock !== undefined) {
+                iceBlock.destroy();
+            }
         }
     }
 }

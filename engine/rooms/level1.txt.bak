@@ -16,6 +16,5 @@ block instances
 	TechDemoHandler 0 0 0 0 1 1
 	PlayerInstance 192 912 0 0 1 1
 	IceBlock 648 888 0 0 1 1
-	IceBlock 648 936 0 0 1 1
 endblock
 
