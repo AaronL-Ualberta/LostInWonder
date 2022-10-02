@@ -1,0 +1,17 @@
+block room_data
+	cameraX 0
+	cameraY 0
+	cameraWidth 816
+	cameraHeight 624
+	cameraRotation 0
+	backgroundColour 0
+	rpgRoom 6
+	rpgCollider InvisibleWall
+	rpgColliderOriginX 0
+	rpgColliderOriginY 0
+endblock
+
+block instances
+	TechDemoHandler 0 0 0 0 1 1
+	PlayerInstance 192 912 0 0 1 1
+endblock

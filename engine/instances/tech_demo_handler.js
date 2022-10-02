@@ -1,7 +1,7 @@
 class TechDemoHandler extends EngineInstance {
 	onEngineCreate() {
-		this.room_width = 50;
-		this.room_height = 17;
+		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
+		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
 		this.camera_dimensions = [1008, 816];
 
 		this.camera = $engine.getCamera();

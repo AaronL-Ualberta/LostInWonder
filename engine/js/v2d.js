@@ -1,13 +1,14 @@
 class V2D extends PIXI.Point {
 	constructor(x, y) {
+		super(x, y);
 		this.setVector(x, y);
 	}
 
 	setVector(x, y) {
 		this.x = x;
 		this.y = y;
-		this.__mag = V2D.calcMag(x, y);
-		this.__dir = V2D.calcDir(x, y);
+		this._mag = V2D.calcMag(x, y);
+		this._dir = V2D.calcDir(x, y);
 	}
 
 	setX(x) {
@@ -48,11 +49,16 @@ class V2D extends PIXI.Point {
 	}
 
 	mag() {
-		return this.mag;
+		return this._mag;
 	}
 
 	dir() {
-		return this.dir;
+		return this._dir;
+	}
+
+	mirror(angle) {
+		const newAngle = V2D.mirrorAngle(this.dir(), angle);
+		Vertex.prototype.rotate.call(this, this.dir() - newAngle);
 	}
 
 	/**
@@ -66,9 +72,7 @@ class V2D extends PIXI.Point {
 	 */
 	static mirrorAngle(input, mirror) {
 		var diff = V2D.angleDiff(input, mirror);
-		var sign = Math.sign(diff);
-		diff = Math.PI / 2 - Math.abs(diff);
-		return input - diff * 2 * sign;
+		return input + diff * 2;
 	}
 
 	/**
@@ -117,4 +121,24 @@ class V2D extends PIXI.Point {
 		return Math.atan2(y, x);
 	}
 }
+Object.defineProperty(V2D.prototype, "x", {
+	set: function (x) {
+		this._x = x;
+		this._mag = V2D.calcMag(this.x, this.y);
+		this._dir = V2D.calcDir(this.x, this.y);
+	},
+	get: function () {
+		return this._x;
+	},
+});
+Object.defineProperty(V2D.prototype, "y", {
+	set: function (y) {
+		this._y = y;
+		this._mag = V2D.calcMag(this.x, this.y);
+		this._dir = V2D.calcDir(this.x, this.y);
+	},
+	get: function () {
+		return this._y;
+	},
+});
 Math.TWO_PI = Math.PI * 2;

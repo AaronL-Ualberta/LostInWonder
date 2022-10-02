@@ -14,7 +14,7 @@ class Hitbox {
 		this.rotation = 0;
 		this.sx = 1;
 		this.sy = 1;
-		this.update();
+		this.update(true);
 	}
 
 	setHitbox(hitbox) {
@@ -37,7 +37,7 @@ class Hitbox {
 			this.polygon = this.__generatePolygon();
 			this.polygon.__setParentHitbox(this);
 		}
-		this.update();
+		this.update(true);
 	}
 
 	__generatePolygon() {
@@ -118,10 +118,12 @@ class Hitbox {
 		return this.getPolygonHitbox().containsPoint(x, y);
 	}
 
-	update() {
+	update(recalculate) {
 		this.__match();
-		this.getHitbox().__validate(this);
-		this.__calculateBoundingBox();
+		if (recalculate) {
+			this.getHitbox().__validate(this);
+			this.__calculateBoundingBox();
+		}
 	}
 
 	__match() {

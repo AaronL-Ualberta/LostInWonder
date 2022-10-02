@@ -1,7 +1,7 @@
 // this is a central file for the engine, RPG maker overrides, and any custom code that interacts with the overworld
 
 const $ENGINE_VERSION = "1.1";
-const $ENGINE_NAME = "Cruise Engine";
+const $ENGINE_NAME = "FallEngine";
 
 /** @type {Engine} */
 var $engine;
@@ -23,7 +23,7 @@ $__engineData.__overrideRoomChange = undefined;
 $__engineData.__readyOverride = true;
 $__engineData.__deferredAssets = -1;
 $__engineData.__loadedDeferredAssets = -1;
-$__engineData.loadRoom = null;
+$__engineData.__loadRoom = null;
 
 $__engineData.__debugRequireTextures = false;
 $__engineData.__debugRequireSounds = false;
@@ -43,7 +43,7 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // set PIXI to render as ne
 
 // convenience functions for overworld progammers.
 const SET_ENGINE_ROOM = function (room) {
-	$__engineData.loadRoom = room;
+	$__engineData.__loadRoom = room;
 };
 const ENGINE_START = function () {
 	SceneManager.push(Engine);
@@ -151,7 +151,7 @@ class Engine extends Scene_Base {
 	}
 
 	__startEngine() {
-		this.__setRoom($__engineData.loadRoom);
+		this.__setRoom($__engineData.__loadRoom);
 		IN.__forceClear();
 	}
 
@@ -905,7 +905,7 @@ class Engine extends Scene_Base {
 			this.__cleanup(); // after all the intention of the programmer at this point is that the engine is to be terminated.
 			this.removeChildren();
 			this.__initEngine();
-			$__engineData.loadRoom = $__engineData.__overrideRoom;
+			$__engineData.__loadRoom = $__engineData.__overrideRoom;
 			this.__startEngine();
 			$__engineData.__overrideRoom = undefined;
 			$__engineData.__overrideRoomChange = undefined; // engine would have returned, disregard
@@ -1023,6 +1023,7 @@ class Engine extends Scene_Base {
 			// some actions are called exactly once per frame no matter what.
 			IM.__interpolate();
 			IM.__draw();
+			this.__updateGraphics();
 		}
 
 		this.__prepareRenderToCameras();
@@ -1323,7 +1324,7 @@ class Engine extends Scene_Base {
 	 * will only tell the engine to keep track of it for you.
 	 * @param {EngineInstance} parent The parent to attach the renderable to
 	 * @param {PIXI.DisplayObject} renderable The renderable to auto dispose of
-	 * @param {Boolean | false} [align=false] Whether or not to automatically move the renderable to match the parent instance's x, y, scale, and rotation (default false)
+	 * @param {Boolean | false} [align=false] Whether or not to automatically move the renderable to match the parent instance's x, y, scale, rotation, and alpha (default false)
 	 * @returns {PIXI.DisplayObject} The passed in renderable
 	 */
 	createRenderable(parent, renderable, align = false) {
@@ -1389,10 +1390,12 @@ class Engine extends Scene_Base {
 	 */
 	changeRenderableIndex(parent, renderable, newIndex) {
 		var currentIdx = parent.__renderables.indexOf(renderable);
-		if (currentIdx === -1)
+		if (currentIdx === -1) {
 			throw new Error("Cannot change index of renderable that does not belong to the target instance.");
-		if (newIndex >= parent.__renderables.length)
+		}
+		if (newIndex >= parent.__renderables.length) {
 			throw new Error("New index for renderable is outside the range of valid range");
+		}
 
 		parent.__renderables.splice(currentIdx, 1); // remove
 		parent.__renderables.splice(newIndex, 0, renderable); // place at index
@@ -1407,7 +1410,17 @@ class Engine extends Scene_Base {
 	 * @param {EngineInstance} parent The instance which owns the renderables.
 	 */
 	__recalculateRenderableIndices(parent) {
-		for (var i = 0; i < parent.__renderables.length; i++) parent.__renderables[i].__idx = i;
+		for (var i = 0; i < parent.__renderables.length; i++) {
+			parent.__renderables[i].__idx = i;
+		}
+	}
+
+	__requestRenderOnDisplayObject(obj, renderable) {
+		renderable.__indexRef = obj.__indexRef;
+		if (renderable.parent !== obj) {
+			obj.addChild(renderable);
+		}
+		obj.__indexRef++;
 	}
 
 	/**
@@ -1417,7 +1430,7 @@ class Engine extends Scene_Base {
 	 * @param {PIXI.Container} renderable
 	 */
 	requestRenderOnGUI(renderable) {
-		this.__GUIgraphics.addChild(renderable);
+		this.__requestRenderOnDisplayObject(this.__GUIgraphics, renderable);
 	}
 
 	/**
@@ -1430,7 +1443,7 @@ class Engine extends Scene_Base {
 	 * @param {PIXI.Container} renderable
 	 */
 	requestRenderOnCamera(renderable) {
-		this.getCamera().getCameraGraphics().addChild(renderable);
+		this.__requestRenderOnDisplayObject(this.getCamera().getCameraGraphics(), renderable);
 	}
 
 	/**
@@ -1481,21 +1494,16 @@ class Engine extends Scene_Base {
 			}
 			var camera = this.__cameras[i];
 
-			// STOP: The following code ONLY works because it was checked against PIXIJS containers.
-			// There are no guarantees it will work with other container types such as Graphics.
+			// The following code ONLY works because it was checked against PIXIJS containers.
 			var renderContainer = camera.__getRenderContainer();
 			var children = renderContainer.children;
 
-			// remove destroyed graphics.
-			for (var k = children.length - 1; k >= 0; k--) {
-				var child = children[k];
-				if (child._destroyed) {
-					renderContainer.removeChildAt(k);
-				}
-			}
-
 			// sort our array.
 			children.sort((a, b) => {
+				const des = b._destroyed - a._destroyed;
+				if (des) {
+					return des;
+				}
 				const x = a.__parent;
 				const y = b.__parent;
 				var d = y.depth - x.depth; // first, try depth
@@ -1508,6 +1516,18 @@ class Engine extends Scene_Base {
 				}
 				return d;
 			});
+
+			// remove destroyed graphics.
+			if (children.length && children[children.length - 1]._destroyed) {
+				renderContainer.removeChildren();
+			} else {
+				for (var k = 0; k < children.length; k++) {
+					var child = children[k];
+					if (child._destroyed) {
+						renderContainer.removeChildAt(k--);
+					}
+				}
+			}
 
 			var cameraGraphics = this.getCamera().getCameraGraphics();
 
@@ -1527,14 +1547,38 @@ class Engine extends Scene_Base {
 				}
 			}
 		}
+		this.__removeChildrenAfterRequest(this.__GUIgraphics);
+		this.__removeChildrenAfterRequest(this.getCamera().getCameraGraphics());
+	}
+
+	__removeChildrenAfterRequest(object) {
+		const children = object.children;
+
+		// This code has been tested against our version of PIXIJS and for Graphics specifically.
+		children.sort((a, b) => a.__indexRef - b.__indexRef);
+
+		var end = 0;
+		if (children.length && children[children.length - 1].__indexRef === -1) {
+			end = children.length;
+		}
+		for (var k = 0; k < children.length; k++) {
+			var child = children[k];
+			if (child.__indexRef >= 0 && end === 0) {
+				end = k;
+			}
+			child.__indexRef = -1;
+		}
+		if (end !== 0) {
+			object.removeChildren(0, end);
+		}
+
+		object.__indexRef = 0;
 	}
 
 	__updateGraphics() {
 		this.__GUIgraphics.clear();
-		this.__GUIgraphics.removeChildren();
 
 		this.getCamera().getCameraGraphics().clear();
-		this.getCamera().getCameraGraphics().removeChildren();
 		this.getCamera().__tickUpdate();
 	}
 
@@ -1848,7 +1892,9 @@ class OwO {
 		if (children.length !== 0) {
 			children.sort((x, y) => {
 				var d = y.depth - x.depth;
-				if (d === 0) return x.__id - y.__id;
+				if (d === 0) {
+					return x.__id - y.__id;
+				}
 				return d;
 			});
 			OwO.__renderLayer.addChild(...children);
@@ -2510,7 +2556,7 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 				obj.assetCount++;
 				const isDefault = arr.length > 2 && arr[2] === "default";
 				if (isDefault) {
-					$__engineData.loadRoom = name;
+					$__engineData.__loadRoom = name;
 				}
 				const callback_full_load = function (room) {
 					RoomManager.__addRoom(name, room);
@@ -2897,7 +2943,7 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 		} else {
 			this.checkPlayerLocation();
 			DataManager.setupNewGame();
-			if ($__engineData.loadRoom !== null) {
+			if ($__engineData.__loadRoom !== null) {
 				SceneManager.goto(Engine);
 			} else {
 				SceneManager.goto(Scene_Title);
@@ -2909,14 +2955,14 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 	};
 
 	// Scene_Gameover.prototype.gotoTitle = function () {
-	// 	$__engineData.loadRoom = "MenuIntro";
+	// 	$__engineData.__loadRoom = "MenuIntro";
 	// 	SceneManager.goto(Engine);
 	// };
 
 	// // take over menu
 	// Scene_GameEnd.prototype.commandToTitle = function () {
 	// 	this.fadeOutAll();
-	// 	$__engineData.loadRoom = "MenuIntro";
+	// 	$__engineData.__loadRoom = "MenuIntro";
 	// 	SceneManager.goto(Engine);
 	// };
 
