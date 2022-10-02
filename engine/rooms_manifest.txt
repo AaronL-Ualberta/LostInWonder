@@ -1,5 +1,6 @@
 EngineRoomEditor engine/rooms/room_editor.txt 
-TechDemo engine/rooms/techdemo.txt default
+TechDemo engine/rooms/techdemo.txt
 MyPlatformRoom engine/rooms/myplatformroom.txt 
 TestRoom engine/rooms/testroom.txt 
 TestRoom2 engine/rooms/empty.txt
+Level1 engine/rooms/level1.txt default

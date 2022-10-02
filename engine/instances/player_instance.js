@@ -77,11 +77,10 @@ class PlayerInstance extends EngineInstance {
 	}
 
 	step() {
-
-		if (IN.mouseCheckPressed(0)) {
+		if (IN.mouseCheckPressed(0) && this.current_spell === 0) {
 			const offset = 100
-			const angle = V2D.calcDir(IN.getMouseX() - this.x, IN.getMouseY() - this.y)
-			new Fireball(this.x, this.y-offset, angle)
+			const angle = V2D.calcDir(IN.getMouseX() - this.x, IN.getMouseY() - (this.y - offset))
+			new Fireball(this.x, this.y-offset, angle);
 		}
 		//this.getSprite().skew.x = this.hsp / 15;
 		this.animation.update(1);
@@ -105,6 +104,15 @@ class PlayerInstance extends EngineInstance {
 			this.animation.animationSpeed = Math.abs(this.hsp) / 30;
 		} else {
 			EngineUtils.setAnimation(this.animation, this.animation_standing);
+		}
+
+		// Check for water freezing
+		if (this.current_spell === 3) {
+			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp, WaterBlock);
+			if (water_block !== undefined) {
+				new IceBlock(water_block.x, water_block.y, 300);
+				water_block.destroy();
+			}
 		}
 	}
 
@@ -365,8 +373,10 @@ class PlayerInstance extends EngineInstance {
 
 	collisionCheck(x, y) {
 		var collided = IM.instanceCollision(this, x, y, SolidObject);
-		if (collided) return true;
-
+		if (collided) {
+			return true;
+		}
+		
 		// Dont collide with platforms if you are holding down
 		if (!IN.keyCheck("ArrowDown")) {
 			if (this.vsp >= 0) {

@@ -1,7 +1,7 @@
 // how to use:
 // click + drag to select
 // click + drag on handles / selection to move / scale / rotate
-// ctrl + d to duplicate
+// shift + d to duplicate
 // del to delete
 // g to gridify
 // r to reset rotation
@@ -10,7 +10,7 @@
 // ] to decrease grid size
 // ` pulls up asset browser / type to change map
 // shift + s to save
-// shift + p to live play
+// shift + q / ins to live play
 
 class EngineRoomEditor extends EngineInstance {
 	onEngineCreate() {
@@ -61,34 +61,64 @@ class EngineRoomEditor extends EngineInstance {
 		this.lastY = 0;
 		this.isLivePlay = false;
 		this.roomEditorRoomName = RoomManager.currentRoom().name;
-		this.loadSelectedRoom(RoomManager.defaultRoom().name || RoomManager.currentRoom().name);
+		this.assetSource = null;
+		this.lastCameraData = {};
+		this.loadSelectedRoom();
 		this.setupAssetBrowser();
 		this.depth = -99999999;
 		IM.makePersistent(this);
+		this.removeLingeringInstances();
 	}
 
 	onCreate() {
 		this.onEngineCreate();
 	}
 
-	onRoomEnd() {
-		if (!this.isLivePlay) {
-			this.destroy();
-		} else {
-			const instances = IM.findAll(EngineInstance);
-			for (const inst of instances) {
-				if (inst !== this) {
-					inst.destroy();
-				}
+	removeLingeringInstances() {
+		const instances = IM.findAll(EngineInstance);
+		for (const inst of instances) {
+			if (inst !== this) {
+				inst.destroy();
 			}
 		}
 	}
 
+	storeCamera() {
+		const camera = $engine.getCamera();
+		const data = {};
+		data.x = camera.getX();
+		data.y = camera.getY();
+		data.xScale = camera.getScaleX();
+		data.yScale = camera.getScaleY();
+		this.lastCameraData = data;
+	}
+	restoreCamera() {
+		if (!this.lastCameraData) {
+			return;
+		}
+		const camera = $engine.getCamera();
+		const data = this.lastCameraData;
+		camera.setLocation(data.x, data.y);
+		const m = Math.max(data.xScale, data.yScale);
+		camera.setScale(m, m);
+		this.lastCameraData = null;
+	}
+
+	onRoomEnd() {
+		if (!this.isLivePlay) {
+			IM.clearPersistent(this, true);
+			this.destroy();
+		} else {
+			this.removeLingeringInstances();
+			this.storeCamera();
+		}
+	}
+
 	onRoomStart() {
-		if (RoomManager.currentRoom().name === this.roomEditorRoomName) {
+		if (RoomManager.currentRoom().name === this.roomEditorRoomName && this.isLivePlay) {
 			this.isLivePlay = false;
-			this.loadSelectedRoom(this.roomRef.name);
-			RoomManager.addRoom(this.roomRef);
+			this.loadSelectedRoom(EngineRoomEditor.EDITOR_TEMP_ROOM_NAME);
+			this.restoreCamera();
 		}
 	}
 
@@ -119,7 +149,17 @@ class EngineRoomEditor extends EngineInstance {
 
 	loadSelectedRoom(roomName) {
 		this.deloadRoom();
-		this.roomRef = RoomManager.getRoom(roomName);
+		if (roomName) {
+			this.roomRef = RoomManager.getRoom(roomName);
+			if (roomName !== EngineRoomEditor.EDITOR_TEMP_ROOM_NAME) {
+				this.assetSource = $engine.getAssetSource(this.roomRef);
+			}
+		} else {
+			this.roomRef = new Room(EngineRoomEditor.EDITOR_TEMP_ROOM_NAME);
+			RoomManager.addRoom(this.roomRef);
+			this.assetSource = null;
+		}
+
 		this.setupCamera();
 		this.labelItem(this.selectionGraphics, "Selection");
 		this.setupInstances();
@@ -175,17 +215,19 @@ class EngineRoomEditor extends EngineInstance {
 	saveRoom() {
 		const str = this.getRoomString();
 		const source = $engine.getAssetSource(this.roomRef);
-		if (!source) {
-			throw new Error("Cannot find source file for room!");
-		}
-		if (!window.require) {
+		if (!this.assetSource) {
 			console.log(str);
-			OwO.addTooltip("Cannot save in web mode. Contents output to console.");
+			OwO.addTooltip("New room: Room contents output to console.");
 		} else {
-			const fs = require("fs");
-			fs.copyFileSync(source, source + ".bak");
-			fs.writeFileSync(source, str);
-			OwO.addTooltip("Saved.");
+			if (!window.require) {
+				console.log(str);
+				OwO.addTooltip("Cannot save in web mode. Contents output to console.");
+			} else {
+				const fs = require("fs");
+				fs.copyFileSync(this.assetSource, this.assetSource + ".bak");
+				fs.writeFileSync(this.assetSource, str);
+				OwO.addTooltip("Saved.");
+			}
 		}
 	}
 
@@ -412,13 +454,13 @@ class EngineRoomEditor extends EngineInstance {
 
 	startLivePlay() {
 		const str = this.getRoomString();
-		console.log(str);
 		this.isLivePlay = true;
-		Room.parseRoomFile(this.roomRef.name, str, (room) => {
+
+		Room.parseRoomFile(EngineRoomEditor.EDITOR_TEMP_ROOM_NAME, str, (room) => {
 			this.deloadRoom();
 			this.actionType = EngineRoomEditor.ET_LIVE_PLAY;
 			RoomManager.addRoom(room);
-			RoomManager.changeRooms(this.roomRef.name);
+			RoomManager.changeRooms(EngineRoomEditor.EDITOR_TEMP_ROOM_NAME);
 			this.gridGraphics.visible = false;
 			this.cameraOutlineGraphics.visible = false;
 			this.selectedObjectGraphics.visible = false;
@@ -658,9 +700,11 @@ class EngineRoomEditor extends EngineInstance {
 				const offX = mx - handlePoint.x;
 				const offY = my - handlePoint.y;
 				const line = {
-					l1: new EngineLightweightPoint(mx - offX * fac, my - offY * fac),
-					l2: new EngineLightweightPoint(mx + offX * fac, my + offY * fac),
+					l1: new EngineLightweightPoint(scalePoint.x - offX * fac, scalePoint.y - offY * fac),
+					l2: new EngineLightweightPoint(scalePoint.x + offX * fac, scalePoint.y + offY * fac),
 				};
+				const xFac = idx === 3 ? 1 : idx === 7 ? -1 : 0;
+				const yFac = idx === 1 ? -1 : idx === 5 ? 1 : 0;
 				this.transformData = {
 					anyMove: false,
 					startX: IN.getMouseX(),
@@ -671,8 +715,8 @@ class EngineRoomEditor extends EngineInstance {
 					originalHeight: scalePoint.y - handlePoint.y,
 					line: line,
 					scaleAngle: (this.selectedObject ? this.selectedObject.angle : 0) + ((idx - 3) / 8) * Math.PI * 2,
-					yFac: Number(idx % 4 === 1 || idx % 2 === 0),
-					xFac: Number(idx % 4 === 3 || idx % 2 === 0),
+					yFac: yFac,
+					xFac: xFac,
 					cardinalHandle: idx % 2 === 1,
 				};
 				for (const obj of this.instances) {
@@ -718,26 +762,36 @@ class EngineRoomEditor extends EngineInstance {
 						data.line.l1,
 						data.line.l2
 					);
-					var sign =
-						Math.sign(data.scalePoint.x - point.x + (data.scalePoint.y - point.y)) *
-						-Math.sign(data.line.l1.x - data.line.l2.x + (data.line.l1.y - data.line.l2.x));
-					if (sign === 0) {
-						sign = 1;
-					}
+					const d1 = V2D.calcMag(data.line.l1.x - point.x, data.line.l1.y - point.y);
+					const d2 = V2D.calcMag(data.line.l2.x - point.x, data.line.l2.y - point.y);
+					const sign = d2 < d1 ? -1 : 1;
 					const newDist = V2D.calcMag(data.scalePoint.x - point.x, data.scalePoint.y - point.y) * sign;
 
 					const diff = newDist - data.originalDist;
 					const fac = newDist / data.originalDist - 1;
 					for (const inst of this.instances) {
+						var v = new Vertex(data.xFac, data.yFac);
 						if (inst.selected) {
-							inst.x =
-								inst.transformData.x +
-								diff * inst.transformData.fraction * Math.cos(data.scaleAngle) * Math.sign(inst.transformData.xScale);
-							inst.y =
-								inst.transformData.y +
-								diff * inst.transformData.fraction * Math.sin(data.scaleAngle) * Math.sign(inst.transformData.yScale);
-							inst.xScale = inst.transformData.xScale + inst.transformData.xScale * fac * data.xFac;
-							inst.yScale = inst.transformData.yScale + inst.transformData.yScale * fac * data.yFac;
+							if (this.selectedObject) {
+								v.rotate(inst.angle);
+							}
+							var correction = new V2D(
+								diff * inst.transformData.fraction * v.x,
+								diff * inst.transformData.fraction * v.y
+							);
+							if (this.selectedObject) {
+								if (inst.transformData.xScale < 0) {
+									correction.mirror(Math.PI / 2 + inst.angle);
+								}
+								if (inst.transformData.yScale < 0) {
+									correction.mirror(inst.angle);
+								}
+							}
+
+							inst.x = inst.transformData.x + correction.x;
+							inst.y = inst.transformData.y + correction.y;
+							inst.xScale = inst.transformData.xScale + inst.transformData.xScale * fac * Math.abs(data.xFac);
+							inst.yScale = inst.transformData.yScale + inst.transformData.yScale * fac * Math.abs(data.yFac);
 							if (inst.xScale === 0) {
 								inst.xScale = 0.1;
 							}
@@ -758,10 +812,12 @@ class EngineRoomEditor extends EngineInstance {
 					const idx = data.scalePoint.idx;
 					for (const inst of this.instances) {
 						if (inst.selected) {
+							const v = new Vertex(facX, facY * (Math.sign(((inst.angle + Math.PI / 2) % Math.PI) - Math.PI / 2) || 1));
+							v.rotate(-(((inst.angle + Math.PI / 2) % Math.PI) - Math.PI / 2));
 							inst.x = inst.transformData.x + diffX * inst.transformData.xFraction * (idx === 2 || idx === 4 ? 1 : -1);
 							inst.y = inst.transformData.y + diffY * inst.transformData.yFraction * (idx === 4 || idx === 6 ? 1 : -1);
-							inst.xScale = inst.transformData.xScale + inst.transformData.xScale * facX;
-							inst.yScale = inst.transformData.yScale + inst.transformData.yScale * facY;
+							inst.xScale = inst.transformData.xScale + inst.transformData.xScale * v.x;
+							inst.yScale = inst.transformData.yScale + inst.transformData.yScale * v.y;
 							if (inst.xScale === 0) {
 								inst.xScale = 0.1;
 							}
@@ -831,8 +887,13 @@ class EngineRoomEditor extends EngineInstance {
 					const diffY = (imgDimensions.h / (dimensions.bottom - dimensions.top) / imgDimensions.h) * scaledH;
 					obj.yScale *= diffY;
 
-					obj.x = this.toGrid(obj.x + dimensions.left * diffX, this.gridX) - dimensions.left * diffX;
-					obj.y = this.toGrid(obj.y + dimensions.top * diffY, this.gridY) - dimensions.top * diffY;
+					const ox = dimensions.left * diffX;
+					const oy = dimensions.top * diffY;
+					const v = new Vertex(ox, oy);
+					v.rotate(obj.angle);
+
+					obj.x = this.toGrid(obj.x + v.x, this.gridX) - v.x;
+					obj.y = this.toGrid(obj.y + v.y, this.gridY) - v.y;
 				}
 			}
 		}
@@ -1189,6 +1250,7 @@ class EngineRoomEditor extends EngineInstance {
 		this.selectedObjectBounds = this.calculateMaxSelectedBounds();
 	}
 }
+EngineRoomEditor.EDITOR_TEMP_ROOM_NAME = "ENGINE_ROOM_EDITOR_TEMP";
 EngineRoomEditor.ET_LIVE_PLAY = -1;
 EngineRoomEditor.ET_NONE = 0;
 EngineRoomEditor.ET_SELECT_REGION_START = 1;

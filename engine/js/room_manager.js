@@ -4,7 +4,7 @@ class RoomManager {
 	}
 
 	/**
-	 * Adds a room to the room manager.
+	 * Adds a new room to the room manager, typically a new asset created at runtime.
 	 *
 	 * @param {Room} room The room to add to RoomManager
 	 */
@@ -13,13 +13,13 @@ class RoomManager {
 	}
 
 	/**
-	 * Gets the room associated with the specified name
+	 * Gets the room associated with the specified name, or null if not found.
 	 *
 	 * @param {String} name The name of the room to get
 	 * @returns {Room} The room
 	 */
 	static getRoom(name) {
-		return RoomManager.__rooms[name];
+		return RoomManager.__rooms[name] || null;
 	}
 
 	static __loadRoom(name) {
@@ -34,7 +34,7 @@ class RoomManager {
 	}
 
 	/**
-	 * Checks if the specified room exists or not
+	 * Checks if the specified room exists or not.
 	 *
 	 * @param {String} name The name of the room to check
 	 * @returns {Boolean} True if the room exists, false otherwise

@@ -2,8 +2,8 @@
  * Containter for a room in the engine.
  */
 class Room {
-	constructor() {
-		this.name = "DEFAULT_ROOM_NAME";
+	constructor(name) {
+		this.name = name || "DEFAULT_ROOM_NAME";
 		this.__instances = [];
 		// although technically supported, everything below basically got replaced by
 		// the onCreate() event in the minigameController.
@@ -67,6 +67,20 @@ class Room {
 
 	getRpgTilemap() {
 		return this.__rpgTilemap;
+	}
+
+	getRPGRoomWidth() {
+		if(!this.__rpgRoomData) {
+			return 0;
+		}
+		return this.__rpgRoomData.width * 48;
+	}
+
+	getRPGRoomHeight() {
+		if(!this.__rpgRoomData) {
+			return 0;
+		}
+		return this.__rpgRoomData.height * 48;
 	}
 
 	getInstanceData() {

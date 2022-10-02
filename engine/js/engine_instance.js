@@ -124,9 +124,9 @@ class EngineInstance {
 	/**
 	 * Engine functions. Do not override.
 	 */
-	__updateHitbox() {
+	__updateHitbox(recalculate) {
 		if (this.hitbox) {
-			this.hitbox.update();
+			this.hitbox.update(recalculate);
 			const bounds = this.hitbox.getBoundingBox();
 			this.__hashbuckets = IM.__hashObjectLocation(this, bounds, this.__hashbuckets);
 		}
@@ -434,7 +434,7 @@ Object.defineProperty(EngineInstance.prototype, "x", {
 		const old = this._x;
 		this._x = x;
 		if (old !== x) {
-			this.__updateHitbox();
+			this.__updateHitbox(false);
 		}
 	},
 	get: function () {
@@ -446,7 +446,7 @@ Object.defineProperty(EngineInstance.prototype, "y", {
 		const old = this._y;
 		this._y = y;
 		if (old !== y) {
-			this.__updateHitbox();
+			this.__updateHitbox(false);
 		}
 	},
 	get: function () {
@@ -458,7 +458,7 @@ Object.defineProperty(EngineInstance.prototype, "xScale", {
 		const old = this._xScale;
 		this._xScale = xScale;
 		if (old !== xScale) {
-			this.__updateHitbox();
+			this.__updateHitbox(true);
 		}
 	},
 	get: function () {
@@ -470,7 +470,7 @@ Object.defineProperty(EngineInstance.prototype, "yScale", {
 		const old = this._yScale;
 		this._yScale = yScale;
 		if (old !== yScale) {
-			this.__updateHitbox();
+			this.__updateHitbox(true);
 		}
 	},
 	get: function () {
@@ -482,7 +482,7 @@ Object.defineProperty(EngineInstance.prototype, "angle", {
 		const old = this._angle;
 		this._angle = angle;
 		if (old !== angle) {
-			this.__updateHitbox();
+			this.__updateHitbox(true);
 		}
 	},
 	get: function () {

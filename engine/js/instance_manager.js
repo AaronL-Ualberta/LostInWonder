@@ -480,6 +480,25 @@ class IM {
 	}
 
 	/**
+	 * restores a persistent instance created by makePersistent back to a non persistent form, meaning it will be
+	 * destroyed on room change. If the persistent instace was made by a room, the flag to prevent it from spawning again
+	 * can also be cleared.
+	 *
+	 * @param  {EngineInstance} inst The instance to make persistent
+	 * @param  {Boolean} allowRespawn Whether or not to allow this instance to spawn again
+	 */
+	static clearPersistent(inst, allowRespawn = false) {
+		if (!inst.__persistent) {
+			return;
+		}
+		inst.__persistent = false;
+		IM.__persistentObjects = IM.__persistentObjects.filter((x) => x !== inst);
+		if (allowRespawn && inst.__runtimeId) {
+			IM.__persistentStore.delete(inst.__runtimeId);
+		}
+	}
+
+	/**
 	 * Queries all targets instanes and then marks them for deletion. Also calls the onDestroy() method immediately.
 	 * @param  {...EngineInstance} targets N instances of EngineInstance or classes
 	 */
@@ -504,9 +523,9 @@ class IM {
 	// returns the first target instance that was collided with, or undefined if there were none.
 	static __performCollision(source, x, y, targets) {
 		var hitbox = source.hitbox;
-		const cid = IM.__newCollisionIdFor(source);
 		const lst = IM.__getBucketsForObject(source, x, y);
 		for (var i = 0; i < targets.length; i++) {
+			const cid = IM.__newCollisionIdFor(source);
 			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
 			for (const b of lst) {
 				for (var target of b) {
@@ -564,9 +583,9 @@ class IM {
 	static instanceCollisionList(source, x, y, ...targets) {
 		var results = [];
 		var hitbox = source.hitbox;
-		const cid = IM.__newCollisionIdFor(source);
 		const lst = IM.__getBucketsForObject(source, x, y);
 		for (var i = 0; i < targets.length; i++) {
+			const cid = IM.__newCollisionIdFor(source);
 			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
 			for (const b of lst) {
 				for (var target of b) {
@@ -594,8 +613,8 @@ class IM {
 	 */
 	static instancePosition(x, y, ...targets) {
 		const lst = IM.__getBucketsForBounds({ x1: x, y1: y, x2: x, y2: y });
-		const cid = IM.__newCollisionIdFor(null);
 		for (var i = 0; i < targets.length; i++) {
+			const cid = IM.__newCollisionIdFor(null);
 			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
 			for (var target of lst[0]) {
 				if (
@@ -723,8 +742,8 @@ class IM {
 	static instanceCollisionLine(x1, y1, x2, y2, ...targets) {
 		var p1 = new EngineLightweightPoint(x1, y1);
 		var p2 = new EngineLightweightPoint(x2, y2);
-		const cid = IM.__newCollisionIdFor(null);
 		for (var i = 0; i < targets.length; i++) {
+			const cid = IM.__newCollisionIdFor(null);
 			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
 			const lst = IM.__getBucketsForBounds({ x1: x1, y1: y1, x2: x2, y2: y2 });
 			for (const b of lst) {
@@ -758,8 +777,8 @@ class IM {
 		var result = [];
 		var p1 = new EngineLightweightPoint(x1, y1);
 		var p2 = new EngineLightweightPoint(x2, y2);
-		const cid = IM.__newCollisionIdFor(null);
 		for (var i = 0; i < targets.length; i++) {
+			const cid = IM.__newCollisionIdFor(null);
 			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
 			const lst = IM.__getBucketsForBounds({ x1: x1, y1: y1, x2: x2, y2: y2 });
 			for (const b of lst) {

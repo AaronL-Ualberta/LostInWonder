@@ -1,7 +1,7 @@
 class TechDemoHandler extends EngineInstance {
 	onEngineCreate() {
-		this.room_width = 50;
-		this.room_height = 17;
+		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
+		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
 		this.camera_dimensions = [1008, 816];
 
 		this.camera = $engine.getCamera();
@@ -64,10 +64,19 @@ class TechDemoHandler extends EngineInstance {
 				this.room_width * 48 - this.camera_dimensions[0]
 			)
 		);
+		this.camera.setY(
+			EngineUtils.clamp(
+				this.player.y - this.camera_dimensions[1] / 2,
+				0,
+				this.room_height * 48 - this.camera_dimensions[1]
+			)
+		);
 		this.background.tilePosition.x = -this.camera.getX() / 5;
+		this.background.tilePosition.y = -this.camera.getY() / 5;
 
 		this.fgSprite.skew.x = Math.sin($engine.getGameTimer() / 60) / 20;
 		this.fgSprite.tilePosition.x = -this.camera.getX() / 1.75;
+		this.fgSprite.tilePosition.y = -this.camera.getY() / 1.75;
 
 		this.rayFilter.time = this.camera.getX() / 300 + $engine.getGameTimer() / 200 + this.rayFilter_offset;
 		// this.rayFilter.time = $engine.getGameTimer() / 200;

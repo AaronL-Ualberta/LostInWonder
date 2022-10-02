@@ -184,7 +184,9 @@ class EngineUtils {
 	 * @returns {Number} The distance between two lines
 	 */
 	static distanceBetweenLines(l1, l2, l3, l4) {
-		if (EngineUtils.linesCollide(l1, l2, l3, l4)) return 0;
+		if (EngineUtils.linesCollide(l1, l2, l3, l4)) {
+			return 0;
+		}
 		return Math.sqrt(
 			Math.min(
 				EngineUtils.distanceToLineSq(l1, l3, l4),
@@ -263,7 +265,9 @@ class EngineUtils {
 	 * @param {...PIXI.Texture} anim The animation to use
 	 */
 	static setAnimation(sprite, anim) {
-		if (sprite.textures === anim) return;
+		if (sprite.textures === anim) {
+			return;
+		}
 		sprite.textures = anim;
 		sprite._currentTime = 0;
 	}
@@ -288,8 +292,11 @@ class EngineUtils {
 	 */
 	static interpolate(val, min, max, interpType) {
 		var diff = max - min;
-		if (val >= 1) return max;
-		else if (val <= 0) return min;
+		if (val >= 1) {
+			return max;
+		} else if (val <= 0) {
+			return min;
+		}
 		switch (interpType) {
 			case EngineUtils.INTERPOLATE_LINEAR:
 				return diff * val + min;
