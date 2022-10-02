@@ -6,6 +6,7 @@ bgleaves engine/textures/bg/bg_leaves.png 0 0
 spellwheel engine/textures/spell_wheel.png 0.5 0.5
 fireball engine/textures/fireball.png 0.5 0.5
 ice_block engine/textures/iceblock.png 0 0
+water_block engine/textures/waterblock.png 0 0
 
 spritesheet dimensions 150 50 3 1 dustparticle engine/textures/particles/dust_particle.png 0.5 0.5
 spritesheet dimensions 186 36 6 1 animate playerrunanimation 6 0 1 2 3 4 5 playerrun engine/textures/animations/running.png 0.55 0

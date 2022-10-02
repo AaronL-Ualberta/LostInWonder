@@ -6,14 +6,22 @@ class IceBlock extends SolidObject {
 		// this.y *= 48;
 	}
 
-	onCreate(x, y) {
+	onCreate(x, y, timer=-1) {
 		this.onEngineCreate();
 		this.x = x;
 		this.y = y;
+		this.timer = timer;
 		// do stuff
 	}
 
 	step() {
+		// If there is a time limit set, the ice will melt into water
+		if (this.timer === 0) {
+			new WaterBlock(this.x, this.y);
+			this.destroy();
+		} else if (this.timer !== -1) {
+			this.timer--;
+		}
 	}
 
 	draw(gui, camera) {

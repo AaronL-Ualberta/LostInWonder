@@ -105,6 +105,15 @@ class PlayerInstance extends EngineInstance {
 		} else {
 			EngineUtils.setAnimation(this.animation, this.animation_standing);
 		}
+
+		// Check for water freezing
+		if (this.current_spell === 3) {
+			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp, WaterBlock);
+			if (water_block !== undefined) {
+				new IceBlock(water_block.x, water_block.y, 300);
+				water_block.destroy();
+			}
+		}
 	}
 
 	draw(gui, camera) {
@@ -364,8 +373,10 @@ class PlayerInstance extends EngineInstance {
 
 	collisionCheck(x, y) {
 		var collided = IM.instanceCollision(this, x, y, SolidObject);
-		if (collided) return true;
-
+		if (collided) {
+			return true;
+		}
+		
 		// Dont collide with platforms if you are holding down
 		if (!IN.keyCheck("ArrowDown")) {
 			if (this.vsp >= 0) {
