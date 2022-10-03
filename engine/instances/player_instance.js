@@ -54,8 +54,11 @@ class PlayerInstance extends EngineInstance {
 		this.animation_running = $engine.getAnimation("playerrunanimation");
 		this.animation_standing = [$engine.getTexture("baby2")];
 
+		this.mainHitbox = new Hitbox(this, new RectangleHitbox(-20, 34 * -2, 20, 0))
+		this.iceHitbox = new Hitbox(this, new RectangleHitbox(-25, 36 * -2, 25, 4))
+
 		// this.setSprite(new PIXI.Sprite($engine.getTexture("default")));
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(-20, 34 * -2, 20, 0)));
+		this.setHitbox(this.mainHitbox);
 		this.animation = $engine.createRenderable(this, new PIXI.extras.AnimatedSprite(this.animation_standing), false);
 		// this.spr_scale = 1.2;
 		this.spr_scale = 2;
@@ -108,7 +111,9 @@ class PlayerInstance extends EngineInstance {
 
 		// Check for water freezing
 		if (this.current_spell === 3) {
-			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp, WaterBlock);
+			this.setHitbox(this.iceHitbox)
+			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp+5, WaterBlock);
+			this.setHitbox(this.mainHitbox)
 			if (water_block !== undefined) {
 				new IceBlock(water_block.x, water_block.y, 300);
 				water_block.destroy();
