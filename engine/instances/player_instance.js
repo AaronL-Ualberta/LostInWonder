@@ -123,6 +123,12 @@ class PlayerInstance extends EngineInstance {
 			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp+5, WaterBlock)
 			if (water_block !== undefined) {
 				this.gravity = 0.1
+				if (Math.abs(this.vsp) > 5) {
+					this.vsp *= 0.5
+				}
+				if (Math.abs(this.hsp) > 5) {
+					this.vsp *= 0.5
+				}
 			} else {
 				this.gravity = 0.8
 			}
@@ -205,7 +211,7 @@ class PlayerInstance extends EngineInstance {
 
 			// Check wall cling
 			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
-				if (this.current_spell == 1) {
+				if (this.current_spell === 1) {
 					this.switchState(PLAYERSTATES.WALLCLING);
 					this.facing = inp;
 					return;
@@ -216,7 +222,7 @@ class PlayerInstance extends EngineInstance {
 		this.moveCollide();
 
 		// Check Double Jump
-		if( this.current_spell == 2) {
+		if( this.current_spell === 2) {
 			if (IN.keyCheckPressed("ArrowUp") && this.has_doubleJump) {
 				this.vsp = -this.jump_height;
 				const part_from_center = 18;

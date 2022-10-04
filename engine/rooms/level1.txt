@@ -201,5 +201,8 @@ block instances
 	IceBlock 576 2208 0 0 1 1
 	IceBlock 528 2208 0 0 1 1
 	IceBlock 480 2208 0 0 1 1
+	GrassCreate 480 960 0 0 10 1
+	GrassCreate 960 1056 0 0 4.999999999999998 1
+	GrassCreate 1200 1104 0 0 4.999999999999998 1
 endblock
 

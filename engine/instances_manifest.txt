@@ -11,6 +11,7 @@ SemiSolid engine/instances/SemiSolid.js
 Fireball engine/instances/fireball.js
 IceBlock spr=ice_block engine/instances/ice_block.js
 WaterBlock spr=water_block engine/instances/water_block.js
+GrassCreate Grass engine/instances/grass.js
 
 DustParticle engine/instances/particles/DustParticle.js
 
