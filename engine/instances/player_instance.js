@@ -48,6 +48,7 @@ class PlayerInstance extends EngineInstance {
 		this.facing = 1;
 		this.has_doubleJump = true;
 		this.current_spell = SPELLNAMES.FIRE;
+		this.face_direction = 1
 
 		this.levelHandler = TechDemoHandler.first;
 
@@ -81,7 +82,7 @@ class PlayerInstance extends EngineInstance {
 
 	step() {
 		if (IN.mouseCheckPressed(0) && this.current_spell === 0) {
-			const offset = 100
+			const offset = 40
 			const angle = V2D.calcDir(IN.getMouseX() - this.x, IN.getMouseY() - (this.y - offset))
 			new Fireball(this.x, this.y-offset, angle);
 		}
@@ -118,12 +119,19 @@ class PlayerInstance extends EngineInstance {
 				new IceBlock(water_block.x, water_block.y, 300);
 				water_block.destroy();
 			}
+		} else {
+			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp+5, WaterBlock)
+			if (water_block !== undefined) {
+				this.gravity = 0.1
+			} else {
+				this.gravity = 0.8
+			}
 		}
 	}
 
 	draw(gui, camera) {
 		// EngineDebugUtils.drawHitbox(camera, this);
-		this.animation.scale.x = this.spr_scale - Math.abs(this.vsp) / 50;
+		this.animation.scale.x = this.face_direction * this.spr_scale - Math.abs(this.vsp) / 50;
 		this.animation.scale.y = this.spr_scale + Math.abs(this.vsp) / 50;
 		if (Math.abs(this.hsp) > 0.1) {
 			this.animation.scale.x = Math.abs(this.animation.scale.x) * Math.sign(this.hsp);
@@ -155,7 +163,9 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		const inp = IN.keyCheck("ArrowRight") - IN.keyCheck("ArrowLeft");
-
+		if (inp) {
+			this.face_direction = inp
+		}
 		const part_from_center = 18;
 		const part_from_ground = 5;
 		if (inp !== 0) {
@@ -195,21 +205,27 @@ class PlayerInstance extends EngineInstance {
 
 			// Check wall cling
 			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
-				this.switchState(PLAYERSTATES.WALLCLING);
-				this.facing = inp;
-				return;
+				if (this.current_spell == 1) {
+					this.switchState(PLAYERSTATES.WALLCLING);
+					this.facing = inp;
+					return;
+				}
 			}
 		}
+
 		this.moveCollide();
 
 		// Check Double Jump
-		if (IN.keyCheckPressed("ArrowUp") && this.has_doubleJump) {
-			this.vsp = -this.jump_height;
-			const part_from_center = 18;
-			const part_from_ground = 5;
-			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
-			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
-			this.has_doubleJump = false;
+		if( this.current_spell == 2) {
+			if (IN.keyCheckPressed("ArrowUp") && this.has_doubleJump) {
+				this.vsp = -this.jump_height;
+				const part_from_center = 18;
+				const part_from_ground = 5;
+				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
+				new DustParticle(this.x + part_from_center, this.y - part_from_ground);
+				this.has_doubleJump = false;
+		}
+		
 		}
 	}
 	stepInactive() {}
