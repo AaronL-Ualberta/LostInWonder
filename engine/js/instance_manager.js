@@ -11,6 +11,10 @@ class IM {
 
 	static __initializeVariables() {
 		IM.__objects = [];
+		IM.__stepList = [];
+		IM.__drawList = [];
+		IM.__preDrawList = [];
+		IM.__implicitList = [];
 		for (var i = 0; i < IM.__numRegisteredClasses; i++) {
 			IM.__accessMap[i + 1] = []; // +1 because Instance is given an entry, but isn't counted in the class count.
 		}
@@ -109,6 +113,30 @@ class IM {
 		recurseLoop(IM.__childTree.__children);
 		EngineInstance.__childLow = rangeLookupId--;
 		IM.__childTree.__oid = 1;
+		for (const x of instances) {
+			IM.__getFunctions(x);
+		}
+	}
+
+	static __getFunctions(inst) {
+		const proto = inst.prototype;
+		inst.__userStep = proto.hasOwnProperty("step");
+		inst.__userPreDraw = proto.hasOwnProperty("preDraw");
+		inst.__userDraw = proto.hasOwnProperty("draw");
+		inst.__userImplicit = proto.hasOwnProperty("__implicit");
+	}
+
+	static __fastDeleteDead(arr) {
+		var a = new Array(arr.length);
+		var idx = 0;
+		for (var i = 0; i < arr.length; i++) {
+			var obj = arr[i];
+			if (obj.__alive) {
+				a[idx++] = obj;
+			}
+		}
+		a.length = idx;
+		return a;
 	}
 
 	static __doSimTick(lastFrame) {
@@ -159,11 +187,15 @@ class IM {
 	static __deleteFromObjects() {
 		if (IM.__cleanupList.length !== 0) {
 			// don't waste CPU if there's nothing to update...
-			IM.__objects = IM.__objects.filter((x) => x.__alive);
+			IM.__objects = IM.__fastDeleteDead(IM.__objects);
+			IM.__stepList = IM.__fastDeleteDead(IM.__stepList);
+			IM.__preDrawList = IM.__fastDeleteDead(IM.__preDrawList);
+			IM.__drawList = IM.__fastDeleteDead(IM.__drawList);
+			IM.__implicitList = IM.__fastDeleteDead(IM.__implicitList);
 			for (var i = 1; i <= IM.__numRegisteredClasses + 1; i++) {
 				// only filter lists that were changed
 				if (IM.__alteredLists[i]) {
-					IM.__accessMap[i] = IM.__accessMap[i].filter((x) => x.__alive);
+					IM.__accessMap[i] = IM.__fastDeleteDead(IM.__accessMap[i]);
 				}
 				IM.__alteredLists[i] = false;
 			}
@@ -171,14 +203,14 @@ class IM {
 	}
 
 	static __implicit() {
-		for (var i = 0; i < IM.__objects.length; i++) {
-			IM.__objects[i].__implicit();
+		for (var i = 0; i < IM.__implicitList.length; i++) {
+			IM.__implicitList[i].__implicit();
 		}
 	}
 
 	static __step() {
-		for (var i = 0; i < IM.__objects.length; i++) {
-			IM.__objects[i].step();
+		for (var i = 0; i < IM.__stepList.length; i++) {
+			IM.__stepList[i].step();
 		}
 	}
 
@@ -189,9 +221,9 @@ class IM {
 	}
 
 	static __preDraw() {
-		for (var i = 0; i < IM.__objects.length; i++) {
+		for (var i = 0; i < IM.__preDrawList.length; i++) {
 			// this is where you can prepare for draw by checking collisions and such -- draw should only draw
-			IM.__objects[i].preDraw();
+			IM.__preDrawList[i].preDraw();
 		}
 	}
 
@@ -207,8 +239,8 @@ class IM {
 		gui.clear();
 		camera.clear();
 		// does not actually render anything to the canvas
-		for (var i = 0; i < IM.__objects.length; i++) {
-			IM.__objects[i].draw(gui, camera);
+		for (var i = 0; i < IM.__drawList.length; i++) {
+			IM.__drawList[i].draw(gui, camera);
 		}
 	}
 
@@ -286,10 +318,19 @@ class IM {
 	}
 
 	static __add(inst) {
+		const cons = inst.constructor;
 		if (inst.constructor.__ENGINE_ORDER_FIRST) {
 			IM.__objects.unshift(inst);
+			if (cons.__userStep) IM.__stepList.unshift(inst);
+			if (cons.__userPreDraw) IM.__preDrawList.unshift(inst);
+			if (cons.__userDraw) IM.__drawList.unshift(inst);
+			if (cons.__userImplicit) IM.__implicitList.unshift(inst);
 		} else {
 			IM.__objects.push(inst);
+			if (cons.__userStep) IM.__stepList.push(inst);
+			if (cons.__userPreDraw) IM.__preDrawList.push(inst);
+			if (cons.__userDraw) IM.__drawList.push(inst);
+			if (cons.__userImplicit) IM.__implicitList.push(inst);
 		}
 		//IM.__objectsSorted.push(inst);
 		IM.__accessMap[inst.oid].push(inst);
@@ -410,7 +451,7 @@ class IM {
 	}
 
 	static __getOrMakeBucket(x, y) {
-		const loc = String(x) + " " + String(y);
+		const loc = x + " " + y;
 		var bucket = IM.__spatialLookup.get(loc);
 		if (bucket === undefined) {
 			bucket = new Set();
@@ -742,10 +783,15 @@ class IM {
 	static instanceCollisionLine(x1, y1, x2, y2, ...targets) {
 		var p1 = new EngineLightweightPoint(x1, y1);
 		var p2 = new EngineLightweightPoint(x2, y2);
+		const lst = IM.__getBucketsForBounds({
+			x1: Math.min(x1, x2),
+			y1: Math.min(y1, y2),
+			x2: Math.max(x1, x2),
+			y2: Math.max(y1, y2),
+		});
 		for (var i = 0; i < targets.length; i++) {
 			const cid = IM.__newCollisionIdFor(null);
 			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
-			const lst = IM.__getBucketsForBounds({ x1: x1, y1: y1, x2: x2, y2: y2 });
 			for (const b of lst) {
 				for (var target of b) {
 					if (

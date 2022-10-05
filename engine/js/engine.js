@@ -1532,16 +1532,18 @@ class Engine extends Scene_Base {
 			var cameraGraphics = this.getCamera().getCameraGraphics();
 
 			if ($__engineData.__debugDrawAllHitboxes) {
+				const bb = this.getCamera().getBoundingBox();
 				for (const inst of IM.__objects) {
-					if (inst.hitbox) {
+					if (inst.hitbox && EngineUtils.boxesIntersect(inst.hitbox.getBoundingBox(), bb)) {
 						EngineDebugUtils.drawHitbox(cameraGraphics, inst);
 					}
 				}
 			}
 
 			if ($__engineData.__debugDrawAllBoundingBoxes) {
+				const bb = this.getCamera().getBoundingBox();
 				for (const inst of IM.__objects) {
-					if (inst.hitbox) {
+					if (inst.hitbox && EngineUtils.boxesIntersect(inst.hitbox.getBoundingBox(), bb)) {
 						EngineDebugUtils.drawBoundingBox(cameraGraphics, inst);
 					}
 				}
@@ -2594,20 +2596,22 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 					}
 				}
 				obj.onNextLoaded(); // count the script
-				var lastSpr = undefined;
+				var lastInst = undefined;
 				var c = function () {
 					for (let i = 0; i < instanceCount; i++) {
 						if (arr[i].startsWith("spr=")) {
-							lastSpr = arr[i].substring(4);
+							const spr = arr[i].substring(4);
+							if (!lastInst) {
+								throw new Error("Defining default sprite without supplying instance");
+							}
+							$__engineData.__defaultSprites[lastInst] = spr;
 							continue;
 						}
 						const inst = eval(arr[i]);
 						__defineAssetSource(inst, arr[instanceCount]);
-						if (lastSpr) {
-							$__engineData.__defaultSprites[inst] = lastSpr;
-						}
 
 						obj.instanceRef.push(inst);
+						lastInst = inst;
 						obj.onNextLoaded();
 					}
 				};

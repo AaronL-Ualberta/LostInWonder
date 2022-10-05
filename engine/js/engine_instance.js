@@ -315,9 +315,13 @@ class EngineInstance {
 			}
 		}
 
-		if (delayedActionsChanged) this.__delayedActions = this.__delayedActions.filter((x) => !x.resolved);
+		if (delayedActionsChanged) {
+			this.__delayedActions = this.__delayedActions.filter((x) => !x.resolved);
+		}
 
-		if (routinesChanged) this.__routines = this.__routines.filter((x) => !x.resolved);
+		if (routinesChanged) {
+			this.__routines = this.__routines.filter((x) => !x.resolved);
+		}
 	}
 
 	/**

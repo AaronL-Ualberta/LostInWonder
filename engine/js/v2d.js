@@ -1,29 +1,9 @@
 class V2D extends PIXI.Point {
 	constructor(x, y) {
 		super(x, y);
-		this.setVector(x, y);
-	}
-
-	setVector(x, y) {
-		this.x = x;
+		// delay setter
+		this._x = x;
 		this.y = y;
-		this._mag = V2D.calcMag(x, y);
-		this._dir = V2D.calcDir(x, y);
-	}
-
-	setX(x) {
-		this.setVector(x, this.y);
-	}
-
-	setY(y) {
-		this.setVector(this.x, y);
-	}
-
-	normalize() {
-		var inv = 1 / this.mag;
-		this.x *= inv;
-		this.y *= inv;
-		this.mag = 1;
 	}
 
 	dot(other) {
@@ -37,23 +17,16 @@ class V2D extends PIXI.Point {
 	add(...vertices) {
 		var sx = x;
 		var sy = y;
-		vertices.forEach((v) => {
+		for (const v of vertices) {
 			sx += v.x;
 			sy += v.y;
-		});
-		this.setVector(sx, sy);
+		}
+		this._x = sx;
+		this.y = sy;
 	}
 
 	abs() {
-		return new V2D(Math.abs(x), Math.abs(y));
-	}
-
-	mag() {
-		return this._mag;
-	}
-
-	dir() {
-		return this._dir;
+		return new V2D(Math.abs(this._x), Math.abs(this._y));
 	}
 
 	mirror(angle) {
@@ -124,8 +97,8 @@ class V2D extends PIXI.Point {
 Object.defineProperty(V2D.prototype, "x", {
 	set: function (x) {
 		this._x = x;
-		this._mag = V2D.calcMag(this.x, this.y);
-		this._dir = V2D.calcDir(this.x, this.y);
+		this._length = V2D.calcMag(this.x, this.y);
+		this._angle = V2D.calcDir(this.x, this.y);
 	},
 	get: function () {
 		return this._x;
@@ -134,11 +107,34 @@ Object.defineProperty(V2D.prototype, "x", {
 Object.defineProperty(V2D.prototype, "y", {
 	set: function (y) {
 		this._y = y;
-		this._mag = V2D.calcMag(this.x, this.y);
-		this._dir = V2D.calcDir(this.x, this.y);
+		this._length = V2D.calcMag(this.x, this.y);
+		this._angle = V2D.calcDir(this.x, this.y);
 	},
 	get: function () {
 		return this._y;
+	},
+});
+Object.defineProperty(V2D.prototype, "length", {
+	set: function (len) {
+		var l = Math.sqrt(this._x * this._x + this._y * this._y);
+		const fac = len / l;
+		this._x = this._x * fac;
+		this._y = this._y * fac;
+		this._length = len;
+	},
+	get: function () {
+		return this._length;
+	},
+});
+Object.defineProperty(V2D.prototype, "angle", {
+	set: function (angle) {
+		const len = this.length;
+		this._x = Math.cos(angle) * len;
+		this._y = Math.sin(angle) * len;
+		this._angle = angle;
+	},
+	get: function () {
+		return this._angle;
 	},
 });
 Math.TWO_PI = Math.PI * 2;

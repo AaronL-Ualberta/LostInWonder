@@ -120,15 +120,38 @@ class EngineUtils {
 		return Math.round(Math.random() * high);
 	}
 
+	/**
+	 * Converts a relative box (x, y, width, height) into an absolute box(x1, y1, x2, y2)
+	 *
+	 * @param {Object} box The relative box to convert
+	 * @returns {Object} The absolute form of the relative box.
+	 */
+	static toAbsoluteBox(box) {
+		return { x1: box.x, y1: box.y, x2: box.x + box.width, y2: box.y + box.height };
+	}
+
+	/**
+	 * Checks if the two boxes intersect or are contained within eachother.
+	 *
+	 * The boxes are defined as x1,y1, x2,y2 representing the top left and bottom right
+	 *
+	 * @param {Object} box1 The first box
+	 * @param {Object} box2 The second box
+	 * @returns {Boolean} True if the boxes intersect or are contained within eachother, false otherwise.
+	 */
+	static boxesIntersect(box1, box2) {
+		return box1.x1 < box2.x2 && box1.x2 > box2.x1 && box1.y1 < box2.y2 && box1.y2 > box2.y1;
+	}
+
 	// The following code is written by Gavin, https://stackoverflow.com/users/78216/gavin
 	// https://stackoverflow.com/a/1968345
 	/**
 	 * Calculates the intersection between two lines.
-	 * @param {EnginePoint} v1 The first vertex of the first line
-	 * @param {EnginePoint} v2 The second vertex of the first line
-	 * @param {EnginePoint} v3 The first vertex of the second line
-	 * @param {EnginePoint} v4 The second vertex of the second line
-	 * @returns {EnginePoint} The point in which they collide, or undefined if they don't
+	 * @param {Vertex} v1 The first vertex of the first line
+	 * @param {Vertex} v2 The second vertex of the first line
+	 * @param {Vertex} v3 The first vertex of the second line
+	 * @param {Vertex} v4 The second vertex of the second line
+	 * @returns {EngineLightweightPoint} The point in which they collide, or undefined if they don't
 	 */
 	static linesCollisionPoint(v1, v2, v3, v4) {
 		// point in which they collide
@@ -150,10 +173,10 @@ class EngineUtils {
 
 	/**
 	 * Calculates if two lines intersect
-	 * @param {EnginePoint} v1 The first vertex of the first line
-	 * @param {EnginePoint} v2 The second vertex of the first line
-	 * @param {EnginePoint} v3 The first vertex of the second line
-	 * @param {EnginePoint} v4 The second vertex of the second line
+	 * @param {Vertex} v1 The first vertex of the first line
+	 * @param {Vertex} v2 The second vertex of the first line
+	 * @param {Vertex} v3 The first vertex of the second line
+	 * @param {Vertex} v4 The second vertex of the second line
 	 * @returns {Boolean} Whether or not the two lines collide
 	 */
 	static linesCollide(v1, v2, v3, v4) {
@@ -162,14 +185,16 @@ class EngineUtils {
 
 	/**
 	 * Returns the non null nearest position on a line to point.
-	 * @param {EnginePoint} point The point to check
-	 * @param {EnginePoint} l1 The first vertex of the line
-	 * @param {EnginePoint} l2 The second vertex of the line
+	 * @param {Vertex} point The point to check
+	 * @param {Vertex} l1 The first vertex of the line
+	 * @param {Vertex} l2 The second vertex of the line
 	 * @return {EngineLightweightPoint} The nearest point on the line
 	 */
 	static nearestPositionOnLine(point, l1, l2) {
 		var length = V2D.distanceSq(l1.x, l1.y, l2.x, l2.y);
-		if (length == 0) return l1; //if the line is 0 length
+		if (length == 0) {
+			return l1; //if the line is 0 length
+		}
 
 		var t = EngineUtils.clamp(((point.x - l1.x) * (l2.x - l1.x) + (point.y - l1.y) * (l2.y - l1.y)) / length, 0, 1);
 		return new EngineLightweightPoint(l1.x + t * (l2.x - l1.x), l1.y + t * (l2.y - l1.y));
@@ -177,10 +202,10 @@ class EngineUtils {
 
 	/**
 	 * Calculates the distance between two line segments
-	 * @param {EnginePoint} l1 The first vertex of the first line
-	 * @param {EnginePoint} l2 The second vertex of the first line
-	 * @param {EnginePoint} l3 The first vertex of the second line
-	 * @param {EnginePoint} l4 The second vertex of the second line
+	 * @param {Vertex} l1 The first vertex of the first line
+	 * @param {Vertex} l2 The second vertex of the first line
+	 * @param {Vertex} l3 The first vertex of the second line
+	 * @param {Vertex} l4 The second vertex of the second line
 	 * @returns {Number} The distance between two lines
 	 */
 	static distanceBetweenLines(l1, l2, l3, l4) {
@@ -199,9 +224,9 @@ class EngineUtils {
 
 	/**
 	 * Finds the distance from a specified point to the line
-	 * @param {EnginePoint} point The point to check
-	 * @param {EnginePoint} l1 The first vertex of the line
-	 * @param {EnginePoint} l2 The second vertex of the line
+	 * @param {Vertex} point The point to check
+	 * @param {Vertex} l1 The first vertex of the line
+	 * @param {Vertex} l2 The second vertex of the line
 	 * @returns {Number} The squared distance from the point to the line
 	 */
 	static distanceToLineSq(point, l1, l2) {
@@ -228,6 +253,7 @@ class EngineUtils {
 	/**
 	 * Returns a random element from the array.
 	 * @param {Array} array The array
+	 * @returns {Object} A random element in the array
 	 */
 	static randomFromArray(array) {
 		return array[EngineUtils.irandom(array.length - 1)];
@@ -380,6 +406,11 @@ class EngineDebugUtils {
 		EngineDebugUtils.drawHitboxDirect(graphics, inst.hitbox);
 	}
 
+	/**
+	 * Draws the specified hitbox
+	 * @param {PIXI.Graphics} graphics The grapics instance to use
+	 * @param {Hitbox} hitbox The hitbox to draw
+	 */
 	static drawHitboxDirect(graphics, hitbox) {
 		var poly = hitbox.getPolygonHitbox();
 		var len = poly.__getNumPoints();

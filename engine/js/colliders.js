@@ -344,14 +344,18 @@ class PolygonHitbox extends BaseHitbox {
 			for (var k = 0; k < otherLen; k++) {
 				var v3 = otherPoly.__getAbsolutePoint(k);
 				var v4 = otherPoly.__getAbsolutePoint((k + 1) % otherLen);
-				if (EngineUtils.linesCollide(v1, v2, v3, v4)) return true;
+				if (EngineUtils.linesCollide(v1, v2, v3, v4)) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
 	collisionLine(v1, v2) {
-		if (this.containsPoint(v1.x, v1.y) || this.containsPoint(v2.x, v2.y)) return true;
+		if (this.containsPoint(v1.x, v1.y) || this.containsPoint(v2.x, v2.y)) {
+			return true;
+		}
 		var len = this.__getNumPoints();
 		for (var i = 0; i < len; i++) {
 			if (EngineUtils.linesCollide(v1, v2, this.__getAbsolutePoint(i), this.__getAbsolutePoint((i + 1) % len))) {

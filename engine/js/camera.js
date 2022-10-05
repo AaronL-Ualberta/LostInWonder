@@ -207,6 +207,41 @@ class Camera extends PIXI.Container {
 		return new EngineLightweightPoint(this.engineX + this.getWidth() / 2, this.engineY + this.getHeight() / 2);
 	}
 
+	getLocalBoundingBox() {
+		const w = this.getWidth();
+		const h = this.getHeight();
+		const vertices = [
+			new Vertex(-w / 2, -h / 2),
+			new Vertex(w / 2, -h / 2),
+			new Vertex(w / 2, h / 2),
+			new Vertex(-2 / w, h / 2),
+		];
+
+		var minX = 999999999;
+		var minY = 999999999;
+		var maxX = -999999999;
+		var maxY = -999999999;
+		for (const v of vertices) {
+			v.rotate(this.angle);
+			minX = Math.min(minX, v.x);
+			minY = Math.min(minY, v.y);
+			maxX = Math.max(maxX, v.x);
+			maxY = Math.max(maxY, v.y);
+		}
+		return { x1: minX, y1: minY, x2: maxX, y2: maxY };
+	}
+
+	getBoundingBox() {
+		const w = this.getWidth();
+		const h = this.getHeight();
+		const bb = this.getLocalBoundingBox();
+		bb.x1 += w / 2 + this.engineX;
+		bb.x2 += w / 2 + this.engineX;
+		bb.y1 += h / 2 + this.engineY;
+		bb.y2 += h / 2 + this.engineY;
+		return bb;
+	}
+
 	translate(dx, dy) {
 		this.setLocation(this.getX() + dx, this.getY() + dy);
 	}
@@ -356,24 +391,11 @@ class Camera extends PIXI.Container {
 	__matchTilemap() {
 		const w = this.getWidth();
 		const h = this.getHeight();
-		const vertices = [
-			new Vertex(-w / 2, -h / 2),
-			new Vertex(w / 2, -h / 2),
-			new Vertex(w / 2, h / 2),
-			new Vertex(-2 / w, h / 2),
-		];
-
-		var minX = 999999999;
-		var minY = 999999999;
-		var maxX = -999999999;
-		var maxY = -999999999;
-		for (const v of vertices) {
-			v.rotate(this.angle);
-			minX = Math.min(minX, v.x);
-			minY = Math.min(minY, v.y);
-			maxX = Math.max(maxX, v.x);
-			maxY = Math.max(maxY, v.y);
-		}
+		const bb = this.getLocalBoundingBox();
+		const minX = bb.x1;
+		const minY = bb.y1;
+		const maxX = bb.x2;
+		const maxY = bb.y2;
 
 		const maxW = maxX - minX;
 		const maxH = maxY - minY;

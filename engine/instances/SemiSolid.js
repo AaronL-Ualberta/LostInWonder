@@ -1,8 +1,8 @@
 class SemiSolid extends EngineInstance {
 	onEngineCreate() {
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(0, 0, 48, 48)));
-		this.x *= 48;
-		this.y *= 48;
+		this.setHitbox(new Hitbox(this, new RectangleHitbox(-24, -24, 24, 24)));
+		// this.x *= 48;
+		// this.y *= 48;
 	}
 
 	onCreate(x, y) {
