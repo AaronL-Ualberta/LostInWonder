@@ -503,8 +503,8 @@
   }
  ],
  "testTroopId": 4,
- "title1Name": "Castle",
- "title2Name": "",
+ "title1Name": "Night",
+ "title2Name": "Floral",
  "titleBgm": {
   "name": "Theme6",
   "pan": 0,
@@ -534,7 +534,7 @@
   "",
   ""
  ],
- "versionId": 32572405,
+ "versionId": 96816919,
  "victoryMe": {
   "name": "Victory1",
   "pan": 0,

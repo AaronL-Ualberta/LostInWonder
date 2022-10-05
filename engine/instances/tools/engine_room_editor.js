@@ -1,7 +1,7 @@
 // how to use:
 // click + drag to select
 // click + drag on handles / selection to move / scale / rotate
-// shift + d to duplicate
+// ctrl + d to duplicate
 // del to delete
 // g to gridify
 // r to reset rotation
@@ -40,7 +40,7 @@ class EngineRoomEditor extends EngineInstance {
 		this.assetBrowserInstances = [];
 		this.assetBrowserScroll = 0;
 		this.assetBrowserScrollMax = 0;
-		this.setGridScale(48, 48);
+		this.setGridScale(this.gridX, this.gridY);
 		this.selectionX = 0;
 		this.selectionY = 0;
 		this.selectionWidth = 0;
@@ -66,8 +66,11 @@ class EngineRoomEditor extends EngineInstance {
 		this.loadSelectedRoom();
 		this.setupAssetBrowser();
 		this.depth = -99999999;
+		$engine.getCamera().reset();
 		IM.makePersistent(this);
 		this.removeLingeringInstances();
+		// cursed
+		this.delayedAction(0, () => {this.setGridScale(this.gridX, this.gridY)})
 	}
 
 	onCreate() {
@@ -435,10 +438,8 @@ class EngineRoomEditor extends EngineInstance {
 	step() {
 		this.handleLivePlay();
 		if (this.actionType !== EngineRoomEditor.ET_LIVE_PLAY) {
-			this.handleGrid();
 			this.handleAssetBrowser();
 			this.handleMouseCameraControls();
-			this.handleLabels();
 			this.handleTranslateObject();
 			this.handleScale();
 			this.handleRotate();
@@ -447,6 +448,8 @@ class EngineRoomEditor extends EngineInstance {
 			this.drawSelectedBounds();
 			this.drawHandles();
 			this.handleGlobalHotkeys();
+			this.handleLabels();
+			this.handleGrid();
 			this.lastX = this.currentX;
 			this.lastY = this.currentY;
 		}
@@ -604,8 +607,8 @@ class EngineRoomEditor extends EngineInstance {
 					anyMove: false,
 					startX: IN.getMouseX(),
 					startY: IN.getMouseY(),
-					centerX: this.selectedObjectBounds.x + this.selectedObjectBounds.width / 2,
-					centerY: this.selectedObjectBounds.y + this.selectedObjectBounds.height / 2,
+					centerX: this.selectedObject? this.selectedObject.x : this.selectedObjectBounds.x + this.selectedObjectBounds.width / 2,
+					centerY: this.selectedObject? this.selectedObject.y : this.selectedObjectBounds.y + this.selectedObjectBounds.height / 2,
 				};
 				this.transformData.originalAngle = V2D.calcDir(
 					this.transformData.startX - this.transformData.centerX,
@@ -870,6 +873,19 @@ class EngineRoomEditor extends EngineInstance {
 			for (const label of this.labels) {
 				label.label.alpha = !this.labelsDisabled;
 			}
+		}
+
+		if(IN.keyCheck("ArrowRight")) {
+			$engine.getCamera().translate(this.gridX,0);
+		}
+		if(IN.keyCheck("ArrowUp")) {
+			$engine.getCamera().translate(0,-this.gridY);
+		}
+		if(IN.keyCheck("ArrowLeft")) {
+			$engine.getCamera().translate(-this.gridX,0);
+		}
+		if(IN.keyCheck("ArrowDown")) {
+			$engine.getCamera().translate(0,this.gridY);
 		}
 
 		if (IN.keyCheckPressed("KeyG")) {

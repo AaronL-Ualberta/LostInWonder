@@ -55,8 +55,8 @@ class PlayerInstance extends EngineInstance {
 		this.animation_running = $engine.getAnimation("playerrunanimation");
 		this.animation_standing = [$engine.getTexture("baby2")];
 
-		this.mainHitbox = new Hitbox(this, new RectangleHitbox(-20, 34 * -2, 20, 0))
-		this.iceHitbox = new Hitbox(this, new RectangleHitbox(-25, 36 * -2, 25, 4))
+		this.mainHitbox = new Hitbox(this, new RectangleHitbox(-20, 34 * -2, 20, 0));
+		this.iceHitbox = new Hitbox(this, new RectangleHitbox(-25, 36 * -2, 25, 4));
 
 		// this.setSprite(new PIXI.Sprite($engine.getTexture("default")));
 		this.setHitbox(this.mainHitbox);
@@ -82,9 +82,9 @@ class PlayerInstance extends EngineInstance {
 
 	step() {
 		if (IN.mouseCheckPressed(0) && this.current_spell === 0) {
-			const offset = 40
-			const angle = V2D.calcDir(IN.getMouseX() - this.x, IN.getMouseY() - (this.y - offset))
-			new Fireball(this.x, this.y-offset, angle);
+			const offset = 50;
+			const angle = V2D.calcDir(IN.getMouseX() - (this.x + offset), IN.getMouseY() - (this.y - offset));
+			new Fireball(this.x + offset, this.y - offset, angle);
 		}
 		//this.getSprite().skew.x = this.hsp / 15;
 		this.animation.update(1);
@@ -112,9 +112,9 @@ class PlayerInstance extends EngineInstance {
 
 		// Check for water freezing
 		if (this.current_spell === 3) {
-			this.setHitbox(this.iceHitbox)
-			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp+5, WaterBlock);
-			this.setHitbox(this.mainHitbox)
+			this.setHitbox(this.iceHitbox);
+			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp + 5, WaterBlock);
+			this.setHitbox(this.mainHitbox);
 			if (water_block !== undefined) {
 				new IceBlock(water_block.x, water_block.y, 300);
 				water_block.destroy();
@@ -403,7 +403,7 @@ class PlayerInstance extends EngineInstance {
 		if (collided) {
 			return true;
 		}
-		
+
 		// Dont collide with platforms if you are holding down
 		if (!IN.keyCheck("ArrowDown")) {
 			if (this.vsp >= 0) {
