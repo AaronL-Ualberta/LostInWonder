@@ -84,7 +84,7 @@ class PlayerInstance extends EngineInstance {
 		if (IN.mouseCheckPressed(0) && this.current_spell === 0) {
 			const offset = 50;
 			const angle = V2D.calcDir(IN.getMouseX() - (this.x + offset), IN.getMouseY() - (this.y - offset));
-			new Fireball(this.x + offset, this.y - offset, angle);
+			new Fireball(this.x, this.y - offset, angle);
 		}
 		//this.getSprite().skew.x = this.hsp / 15;
 		this.animation.update(1);
