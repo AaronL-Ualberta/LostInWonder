@@ -1,13 +1,13 @@
 require default engine/textures/default.png 0.5 0.5
-baby engine/textures/baby.png 0.5 0
-baby2 engine/textures/baby2.png 0.45 0
-bgfar engine/textures/bg/bg_far.png 0 0
-bgleaves engine/textures/bg/bg_leaves.png 0 0
-spellwheel engine/textures/spell_wheel.png 0.5 0.5
-fireball engine/textures/fireball.png 0.5 0.5
-ice_block engine/textures/iceblock.png 0 0
-water_block engine/textures/waterblock.png 0 0
-sign_down engine/textures/Down_Sign.png 0 0
+require baby engine/textures/baby.png 0.5 0
+require baby2 engine/textures/baby2.png 0.45 0
+require bgfar engine/textures/bg/bg_far.png 0 0
+require bgleaves engine/textures/bg/bg_leaves.png 0 0
+require spellwheel engine/textures/spell_wheel.png 0.5 0.5
+require fireball engine/textures/fireball.png 0.5 0.5
+require ice_block engine/textures/iceblock.png 0 0
+require water_block engine/textures/waterblock.png 0 0
+require sign_down engine/textures/Down_Sign.png 0 0
 
 spritesheet dimensions 150 50 3 1 dustparticle engine/textures/particles/dust_particle.png 0.5 0.5
 require spritesheet dimensions 186 36 6 1 animate playerrunanimation 6 0 1 2 3 4 5 playerrun engine/textures/animations/running.png 0.55 0
