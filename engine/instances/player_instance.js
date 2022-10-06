@@ -82,9 +82,9 @@ class PlayerInstance extends EngineInstance {
 
 	step() {
 		if (IN.mouseCheckPressed(0) && this.current_spell === 0) {
-			const offset = 50;
-			const angle = V2D.calcDir(IN.getMouseX() - (this.x + offset), IN.getMouseY() - (this.y - offset));
-			new Fireball(this.x, this.y - offset, angle);
+			const offset = 40;
+			const angle = V2D.calcDir(IN.getMouseX() - (this.x + (this.face_direction * offset)), IN.getMouseY() - (this.y - offset));
+			new Fireball(this.x + (this.face_direction * offset), this.y - offset, angle);
 		}
 		//this.getSprite().skew.x = this.hsp / 15;
 		this.animation.update(1);
@@ -137,7 +137,7 @@ class PlayerInstance extends EngineInstance {
 
 	draw(gui, camera) {
 		// EngineDebugUtils.drawHitbox(camera, this);
-		this.animation.scale.x = this.face_direction * this.spr_scale - Math.abs(this.vsp) / 50;
+		this.animation.scale.x = this.face_direction * (this.spr_scale - Math.abs(this.vsp) / 50);
 		this.animation.scale.y = this.spr_scale + Math.abs(this.vsp) / 50;
 		if (Math.abs(this.hsp) > 0.1) {
 			this.animation.scale.x = Math.abs(this.animation.scale.x) * Math.sign(this.hsp);
