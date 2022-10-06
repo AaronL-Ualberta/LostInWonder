@@ -508,5 +508,7 @@ block instances
 	IceBlock 720 2064 0 0 1 1
 	IceBlock 960 2064 0 0 1 1
 	SignDown 6864 1728 0 0 1 1
+	GrassCreate 480 408 0 0 18 1
+	GrassCreate 1224 312 0 0 13 1
 endblock
 

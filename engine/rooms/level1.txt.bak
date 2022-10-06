@@ -14,7 +14,7 @@ endblock
 
 block instances
 	TechDemoHandler 0 0 0 0 1 1
-	PlayerInstance 6744 1752 0 0 1 1
+	PlayerInstance 72 408 0 0 1 1
 	SemiSolid 1704 168 0 0 3 1
 	SemiSolid 1896 216 0 0 3 1
 	SemiSolid 2808 600 0 0 3 1
@@ -508,5 +508,6 @@ block instances
 	IceBlock 720 2064 0 0 1 1
 	IceBlock 960 2064 0 0 1 1
 	SignDown 6864 1728 0 0 1 1
+	GrassCreate 720 408 0 0 8 1
 endblock
 
