@@ -1,1 +1,2 @@
 require Level1Background engine/audio/BackgroundMusic_Level1.ogg BGM
+require FireSoundEffect engine/audio/FireSoundEffect.ogg SE
