@@ -2,8 +2,8 @@ class Camera extends PIXI.Container {
 	constructor(x, y, w, h, r) {
 		// these are the IN GAME camera variables.
 		super();
-		this.CANVAS_WIDTH = Graphics.boxWidth;
-		this.CANVAS_HEIGHT = Graphics.boxHeight;
+		this.__canvasWidth = Graphics.boxWidth;
+		this.__canvasHeight = Graphics.boxHeight;
 		this.engineX = this.x;
 		this.engineY = this.y;
 		this.angle = 0;
@@ -290,27 +290,27 @@ class Camera extends PIXI.Container {
 	}
 
 	setDimensions(w, h) {
-		var sx = this.CANVAS_WIDTH / w;
-		var sy = this.CANVAS_HEIGHT / h;
+		var sx = this.__canvasWidth / w;
+		var sy = this.__canvasHeight / h;
 		this.setScale(sx, sy);
 	}
 
 	setWidth(w) {
-		var sx = this.CANVAS_WIDTH / w;
+		var sx = this.__canvasWidth / w;
 		this.setScaleX(sx);
 	}
 
 	setHeight(h) {
-		var sy = this.CANVAS_HEIGHT / h;
+		var sy = this.__canvasHeight / h;
 		this.setScaleY(sy);
 	}
 
 	getWidth() {
-		return this.CANVAS_WIDTH / this.getScaleX();
+		return this.__canvasWidth / this.getScaleX();
 	}
 
 	getHeight() {
-		return this.CANVAS_HEIGHT / this.getScaleY();
+		return this.__canvasHeight / this.getScaleY();
 	}
 
 	setRotation(rot) {

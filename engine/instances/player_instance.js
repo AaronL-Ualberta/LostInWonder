@@ -168,7 +168,7 @@ class PlayerInstance extends EngineInstance {
 			return;
 		}
 
-		const inp = IN.keyCheck("ArrowRight") - IN.keyCheck("ArrowLeft");
+		const inp = IN.keyCheck("KeyD") - IN.keyCheck("KeyA");
 		if (inp) {
 			this.face_direction = inp;
 			this.facing = inp;
@@ -187,7 +187,7 @@ class PlayerInstance extends EngineInstance {
 			this.hsp -= Math.sign(this.hsp) * this.decel_const;
 			if (Math.abs(this.hsp) < 0.05) this.hsp = 0;
 		}
-		if (IN.keyCheckPressed("ArrowUp")) {
+		if (IN.keyCheckPressed("KeyW")) {
 			// Jump
 			this.vsp -= this.jump_height;
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
@@ -216,7 +216,7 @@ class PlayerInstance extends EngineInstance {
 
 		// Make shorthop lower
 		if (this.vsp < 0) {
-			if (!IN.keyCheck("ArrowUp")) {
+			if (!IN.keyCheck("KeyW")) {
 				this.vsp *= 0.9;
 			}
 		}
@@ -230,7 +230,7 @@ class PlayerInstance extends EngineInstance {
 		if (Math.abs(this.hsp) < 0.03) this.hsp = 0;
 
 		// INP
-		const inp = IN.keyCheck("ArrowRight") - IN.keyCheck("ArrowLeft");
+		const inp = IN.keyCheck("KeyD") - IN.keyCheck("KeyA");
 		if (inp !== 0) {
 			this.hsp = EngineUtils.clamp(this.hsp + inp * this.ground_accel, -this.max_run_speed, this.max_run_speed);
 
@@ -255,7 +255,7 @@ class PlayerInstance extends EngineInstance {
 
 		// Check Double Jump
 		if (this.current_spell === 2) {
-			if (IN.keyCheckPressed("ArrowUp") && this.has_doubleJump) {
+			if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
 				this.vsp = -this.jump_height;
 				const part_from_center = 18;
 				const part_from_ground = 5;
@@ -269,17 +269,17 @@ class PlayerInstance extends EngineInstance {
 	}
 	stepInactive() {}
 	stepWallCling() {
-		if (IN.keyCheckPressed("ArrowUp")) {
+		if (IN.keyCheckPressed("KeyW")) {
 			this.vsp = -this.jump_height / 1.1;
 			this.hsp = 6 * -this.facing;
 			this.switchState(PLAYERSTATES.AIRBORNE);
 			return;
 		}
 		var inp = 0;
-		if (IN.keyCheck("ArrowRight")) {
+		if (IN.keyCheck("KeyD")) {
 			inp = 1;
 		}
-		if (IN.keyCheck("ArrowLeft")) {
+		if (IN.keyCheck("KeyA")) {
 			inp = -1;
 		}
 		if (this.facing === -inp) {
@@ -439,7 +439,7 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		// Dont collide with platforms if you are holding down
-		if (!IN.keyCheck("ArrowDown")) {
+		if (!IN.keyCheck("KeyS")) {
 			if (this.vsp >= 0) {
 				// Only collide if the semisolid is below you
 				var collided_list = IM.instanceCollisionList(this, x, y, SemiSolid);

@@ -216,6 +216,7 @@ class EngineInstance {
 	 * @param {String} dst The name of the variable to write back to
 	 */
 	registerInterpolationVariable(src, dst) {
+		IM.__registerInterpolator(this);
 		var obj = {
 			__variableName: src,
 			__lastValue: this[src],

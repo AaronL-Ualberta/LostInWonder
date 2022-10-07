@@ -15,6 +15,7 @@ class IM {
 		IM.__drawList = [];
 		IM.__preDrawList = [];
 		IM.__implicitList = [];
+		IM.__interpolationList = [];
 		for (var i = 0; i < IM.__numRegisteredClasses; i++) {
 			IM.__accessMap[i + 1] = []; // +1 because Instance is given an entry, but isn't counted in the class count.
 		}
@@ -192,6 +193,7 @@ class IM {
 			IM.__preDrawList = IM.__fastDeleteDead(IM.__preDrawList);
 			IM.__drawList = IM.__fastDeleteDead(IM.__drawList);
 			IM.__implicitList = IM.__fastDeleteDead(IM.__implicitList);
+			IM.__interpolationList = IM.__fastDeleteDead(IM.__interpolationList);
 			for (var i = 1; i <= IM.__numRegisteredClasses + 1; i++) {
 				// only filter lists that were changed
 				if (IM.__alteredLists[i]) {
@@ -261,16 +263,9 @@ class IM {
 
 	static __interpolate() {
 		// called once per frame, no matter what
-		var frac = $engine.getTimescaleFraction();
-
-		if ($engine.isTimeScaled()) {
-			for (var i = 0; i < IM.__objects.length; i++) {
-				IM.__objects[i].__applyInterpolations(frac);
-			}
-		} else {
-			for (var i = 0; i < IM.__objects.length; i++) {
-				IM.__objects[i].__applyInterpolationsNoFraction();
-			}
+		var frac = $engine.isTimeScaled() ? $engine.getTimescaleFraction() : 1.0;
+		for (var i = 0; i < IM.__interpolationList.length; i++) {
+			IM.__objects[i].__applyInterpolations(frac);
 		}
 	}
 
@@ -315,6 +310,12 @@ class IM {
 		Object.defineProperty(inst, "oid", { value: oid });
 		Object.defineProperty(inst, "id", { value: IM.ind });
 		IM.ind++;
+	}
+
+	static __registerInterpolator(inst) {
+		if (inst.__interpVars.length === 0) {
+			IM.__interpolationList.push(inst);
+		}
 	}
 
 	static __add(inst) {
@@ -541,10 +542,13 @@ class IM {
 
 	/**
 	 * Queries all targets instanes and then marks them for deletion. Also calls the onDestroy() method immediately.
+	 *
+	 * Calling destroy on an object that is already destroyed has no effect.
+	 *
 	 * @param  {...EngineInstance} targets N instances of EngineInstance or classes
 	 */
 	static destroy(...targets) {
-		for (const input of targets)
+		for (const input of targets) {
 			for (const inst of IM.__queryObjects(input)) {
 				if (inst.__alive) {
 					inst.__alive = false;
@@ -559,6 +563,24 @@ class IM {
 					}
 				}
 			}
+		}
+	}
+
+	/**
+	 * Checks if any of the specified inputs exist.
+	 *
+	 * @param  {...EngineInstance} targets N instances of EngineInstance or classes
+	 * @returns {Boolean} True if any target could be found, false otherwise.
+	 */
+	static exists(...targets) {
+		for (const input of targets) {
+			for (const inst of IM.__queryObjects(input)) {
+				if (inst.__alive) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	// returns the first target instance that was collided with, or undefined if there were none.

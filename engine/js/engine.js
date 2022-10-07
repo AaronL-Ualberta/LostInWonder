@@ -1503,10 +1503,6 @@ class Engine extends Scene_Base {
 
 			// sort our array.
 			children.sort((a, b) => {
-				const des = b._destroyed - a._destroyed;
-				if (des) {
-					return des;
-				}
 				const x = a.__parent;
 				const y = b.__parent;
 				var d = y.depth - x.depth; // first, try depth
@@ -1519,18 +1515,6 @@ class Engine extends Scene_Base {
 				}
 				return d;
 			});
-
-			// remove destroyed graphics.
-			if (children.length && children[children.length - 1]._destroyed) {
-				renderContainer.removeChildren();
-			} else {
-				for (var k = 0; k < children.length; k++) {
-					var child = children[k];
-					if (child._destroyed) {
-						renderContainer.removeChildAt(k--);
-					}
-				}
-			}
 
 			var cameraGraphics = this.getCamera().getCameraGraphics();
 
@@ -1563,16 +1547,14 @@ class Engine extends Scene_Base {
 		children.sort((a, b) => a.__indexRef - b.__indexRef);
 
 		var end = 0;
-		if (children.length && children[children.length - 1].__indexRef === -1) {
-			end = children.length;
-		}
 		for (var k = 0; k < children.length; k++) {
 			var child = children[k];
-			if (child.__indexRef >= 0 && end === 0) {
-				end = k;
+			if (child.__indexRef < 0) {
+				end = k + 1;
 			}
 			child.__indexRef = -1;
 		}
+
 		if (end !== 0) {
 			object.removeChildren(0, end);
 		}
