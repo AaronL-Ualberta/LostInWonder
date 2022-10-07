@@ -137,7 +137,7 @@ class PlayerInstance extends EngineInstance {
 
 	draw(gui, camera) {
 		// EngineDebugUtils.drawHitbox(camera, this);
-		this.animation.scale.x = this.face_direction * this.spr_scale - Math.abs(this.vsp) / 50;
+		this.animation.scale.x = this.facing * (this.spr_scale - Math.abs(this.vsp) / 50);
 		this.animation.scale.y = this.spr_scale + Math.abs(this.vsp) / 50;
 		if (Math.abs(this.hsp) > 0.1) {
 			this.animation.scale.x = Math.abs(this.animation.scale.x) * Math.sign(this.hsp);
@@ -171,6 +171,7 @@ class PlayerInstance extends EngineInstance {
 		const inp = IN.keyCheck("ArrowRight") - IN.keyCheck("ArrowLeft");
 		if (inp) {
 			this.face_direction = inp
+            this.facing = inp
 		}
 		const part_from_center = 18;
 		const part_from_ground = 5;
