@@ -167,7 +167,7 @@ class Camera extends PIXI.Container {
 		this.setScale(1, 1);
 	}
 
-	free() {
+	__free() {
 		$engine.freeRenderable(this.getCameraGraphics());
 		$engine.freeRenderable(this.__getCameraRenderContainer());
 		$engine.freeRenderable(this.__renderContainer);
