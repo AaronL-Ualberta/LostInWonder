@@ -174,6 +174,8 @@ class PlayerInstance extends EngineInstance {
 			this.vsp -= this.jump_height;
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
 			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
+			// Jump SoundEffect
+			$engine.audioPlaySound("JumpSoundEffect", 1.0, false);
 		}
 		this.moveCollide();
 	}
@@ -210,6 +212,8 @@ class PlayerInstance extends EngineInstance {
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
 			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
 			this.has_doubleJump = false;
+			// double jump sound effect
+			$engine.audioPlaySound("DoubleJumpSoundEffect", 1.0, false, 0.2, 0.5);
 		}
 	}
 	stepInactive() {}
