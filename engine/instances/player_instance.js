@@ -48,7 +48,7 @@ class PlayerInstance extends EngineInstance {
 		this.facing = 1;
 		this.has_doubleJump = true;
 		this.current_spell = SPELLNAMES.FIRE;
-		this.face_direction = 1
+		this.face_direction = 1;
 
 		this.levelHandler = TechDemoHandler.first;
 
@@ -83,8 +83,11 @@ class PlayerInstance extends EngineInstance {
 	step() {
 		if (IN.mouseCheckPressed(0) && this.current_spell === 0) {
 			const offset = 40;
-			const angle = V2D.calcDir(IN.getMouseX() - (this.x + (this.face_direction * offset)), IN.getMouseY() - (this.y - offset));
-			new Fireball(this.x + (this.face_direction * offset), this.y - offset, angle);
+			const angle = V2D.calcDir(
+				IN.getMouseX() - (this.x + this.face_direction * offset),
+				IN.getMouseY() - (this.y - offset)
+			);
+			new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
 		}
 		//this.getSprite().skew.x = this.hsp / 15;
 		this.animation.update(1);
@@ -120,17 +123,17 @@ class PlayerInstance extends EngineInstance {
 				water_block.destroy();
 			}
 		} else {
-			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp+5, WaterBlock)
+			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp + 5, WaterBlock);
 			if (water_block !== undefined) {
-				this.gravity = 0.1
+				this.gravity = 0.1;
 				if (Math.abs(this.vsp) > 5) {
-					this.vsp *= 0.5
+					this.vsp *= 0.5;
 				}
 				if (Math.abs(this.hsp) > 5) {
-					this.vsp *= 0.5
+					this.vsp *= 0.5;
 				}
 			} else {
-				this.gravity = 0.8
+				this.gravity = 0.8;
 			}
 		}
 	}
@@ -170,7 +173,7 @@ class PlayerInstance extends EngineInstance {
 
 		const inp = IN.keyCheck("ArrowRight") - IN.keyCheck("ArrowLeft");
 		if (inp) {
-			this.face_direction = inp
+			this.face_direction = inp;
 		}
 		const part_from_center = 18;
 		const part_from_ground = 5;
@@ -190,6 +193,8 @@ class PlayerInstance extends EngineInstance {
 			this.vsp -= this.jump_height;
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
 			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
+			// Jump SoundEffect
+			$engine.audioPlaySound("JumpSoundEffect", 1.0, false);
 		}
 		this.moveCollide();
 	}
@@ -222,16 +227,15 @@ class PlayerInstance extends EngineInstance {
 		this.moveCollide();
 
 		// Check Double Jump
-		if( this.current_spell === 2) {
-			if (IN.keyCheckPressed("ArrowUp") && this.has_doubleJump) {
-				this.vsp = -this.jump_height;
-				const part_from_center = 18;
-				const part_from_ground = 5;
-				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
-				new DustParticle(this.x + part_from_center, this.y - part_from_ground);
-				this.has_doubleJump = false;
-		}
-		
+		if (IN.keyCheckPressed("ArrowUp") && this.has_doubleJump) {
+			this.vsp = -this.jump_height;
+			const part_from_center = 18;
+			const part_from_ground = 5;
+			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
+			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
+			this.has_doubleJump = false;
+			// double jump sound effect
+			$engine.audioPlaySound("DoubleJumpSoundEffect", 1.0, false, 0.2, 0.5);
 		}
 	}
 	stepInactive() {}
