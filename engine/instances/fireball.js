@@ -5,11 +5,11 @@ class Fireball extends EngineInstance {
 		this.y = y;
 		this.angle = angle;
 		this.velocity = 10;
-		this.xScale = 0.2;
-		this.yScale = 0.2;
+		this.xScale = 1;
+		this.yScale = 1;
 		this.animation = [$engine.getTexture("fireball")];
 		this.sprite = $engine.createRenderable(this, new PIXI.extras.AnimatedSprite(this.animation), true);
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(-160, -160, 160, 160)));
+		this.setHitbox(new Hitbox(this, new RectangleHitbox(-30, -20, 30, 20)));
 	}
 
 	step() {

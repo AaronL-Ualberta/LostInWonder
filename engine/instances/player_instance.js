@@ -6,6 +6,7 @@ class PlayerInstance extends EngineInstance {
 		this.gravity = 0.8;
 		this.max_run_speed = 5;
 		this.decel_coeff = 0.8;
+		this.decel_coeff_air = 0.98;
 		this.decel_const = 0.1;
 
 		this.snap_distance = 8;
@@ -48,12 +49,14 @@ class PlayerInstance extends EngineInstance {
 		this.facing = 1;
 		this.has_doubleJump = true;
 		this.current_spell = SPELLNAMES.FIRE;
-		this.face_direction = 1
+		this.face_direction = 1;
 
 		this.levelHandler = TechDemoHandler.first;
 
 		this.animation_running = $engine.getAnimation("playerrunanimation");
 		this.animation_standing = [$engine.getTexture("baby2")];
+		this.animation_jumping_up = [$engine.getTexture("jumping_up")];
+		this.animation_jumping_down = [$engine.getTexture("jumping_down")];
 
 		this.mainHitbox = new Hitbox(this, new RectangleHitbox(-20, 34 * -2, 20, 0));
 		this.iceHitbox = new Hitbox(this, new RectangleHitbox(-25, 36 * -2, 25, 4));
@@ -83,8 +86,11 @@ class PlayerInstance extends EngineInstance {
 	step() {
 		if (IN.mouseCheckPressed(0) && this.current_spell === 0) {
 			const offset = 40;
-			const angle = V2D.calcDir(IN.getMouseX() - (this.x + (this.face_direction * offset)), IN.getMouseY() - (this.y - offset));
-			new Fireball(this.x + (this.face_direction * offset), this.y - offset, angle);
+			const angle = V2D.calcDir(
+				IN.getMouseX() - (this.x + this.face_direction * offset),
+				IN.getMouseY() - (this.y - offset)
+			);
+			new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
 		}
 		//this.getSprite().skew.x = this.hsp / 15;
 		this.animation.update(1);
@@ -103,12 +109,6 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		//  this.filter.blur = this.x / 120;
-		if (Math.abs(this.hsp) > 0.1) {
-			EngineUtils.setAnimation(this.animation, this.animation_running);
-			this.animation.animationSpeed = Math.abs(this.hsp) / 30;
-		} else {
-			EngineUtils.setAnimation(this.animation, this.animation_standing);
-		}
 
 		// Check for water freezing
 		if (this.current_spell === 3) {
@@ -120,28 +120,24 @@ class PlayerInstance extends EngineInstance {
 				water_block.destroy();
 			}
 		} else {
-			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp+5, WaterBlock)
+			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp + 5, WaterBlock);
 			if (water_block !== undefined) {
-				this.gravity = 0.1
+				this.gravity = 0.1;
 				if (Math.abs(this.vsp) > 5) {
-					this.vsp *= 0.5
+					this.vsp *= 0.5;
 				}
 				if (Math.abs(this.hsp) > 5) {
-					this.vsp *= 0.5
+					this.vsp *= 0.5;
 				}
 			} else {
-				this.gravity = 0.8
+				this.gravity = 0.8;
 			}
 		}
 	}
 
 	draw(gui, camera) {
 		// EngineDebugUtils.drawHitbox(camera, this);
-<<<<<<< HEAD
 		this.animation.scale.x = this.facing * (this.spr_scale - Math.abs(this.vsp) / 50);
-=======
-		this.animation.scale.x = this.face_direction * (this.spr_scale - Math.abs(this.vsp) / 50);
->>>>>>> f06bd27f13cb2169cab8194a65e4a11ce1c04cc4
 		this.animation.scale.y = this.spr_scale + Math.abs(this.vsp) / 50;
 		if (Math.abs(this.hsp) > 0.1) {
 			this.animation.scale.x = Math.abs(this.animation.scale.x) * Math.sign(this.hsp);
@@ -174,8 +170,8 @@ class PlayerInstance extends EngineInstance {
 
 		const inp = IN.keyCheck("ArrowRight") - IN.keyCheck("ArrowLeft");
 		if (inp) {
-			this.face_direction = inp
-            this.facing = inp
+			this.face_direction = inp;
+			this.facing = inp;
 		}
 		const part_from_center = 18;
 		const part_from_ground = 5;
@@ -189,6 +185,7 @@ class PlayerInstance extends EngineInstance {
 			// Decel
 			this.hsp *= this.decel_coeff;
 			this.hsp -= Math.sign(this.hsp) * this.decel_const;
+			if (Math.abs(this.hsp) < 0.05) this.hsp = 0;
 		}
 		if (IN.keyCheckPressed("ArrowUp")) {
 			// Jump
@@ -196,6 +193,15 @@ class PlayerInstance extends EngineInstance {
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
 			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
 		}
+
+		// Animate
+		if (Math.abs(this.hsp) > 0.1) {
+			EngineUtils.setAnimation(this.animation, this.animation_running);
+			this.animation.animationSpeed = Math.abs(this.hsp) / 30;
+		} else {
+			EngineUtils.setAnimation(this.animation, this.animation_standing);
+		}
+
 		this.moveCollide();
 	}
 	stepAirborne() {
@@ -206,8 +212,20 @@ class PlayerInstance extends EngineInstance {
 			return;
 		}
 
+		// Make shorthop lower
+		if (this.vsp < 0) {
+			if (!IN.keyCheck("ArrowUp")) {
+				this.vsp *= 0.9;
+			}
+		}
+
+		// Apply gravity
 		this.vsp += this.gravity;
-		if (Math.abs(this.vsp) < 1) this.vsp -= this.gravity / 1.5;
+		if (this.vsp > -0.5 && this.vsp < 1.5) this.vsp -= this.gravity / 1.4;
+
+		// Decel
+		this.hsp *= this.decel_coeff_air;
+		if (Math.abs(this.hsp) < 0.03) this.hsp = 0;
 
 		// INP
 		const inp = IN.keyCheck("ArrowRight") - IN.keyCheck("ArrowLeft");
@@ -224,10 +242,17 @@ class PlayerInstance extends EngineInstance {
 			}
 		}
 
+		// Jumping Animation
+		if (this.vsp < 0) {
+			EngineUtils.setAnimation(this.animation, this.animation_jumping_up);
+		} else {
+			EngineUtils.setAnimation(this.animation, this.animation_jumping_down);
+		}
+
 		this.moveCollide();
 
 		// Check Double Jump
-		if( this.current_spell === 2) {
+		if (this.current_spell === 2) {
 			if (IN.keyCheckPressed("ArrowUp") && this.has_doubleJump) {
 				this.vsp = -this.jump_height;
 				const part_from_center = 18;
@@ -235,8 +260,7 @@ class PlayerInstance extends EngineInstance {
 				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
 				new DustParticle(this.x + part_from_center, this.y - part_from_ground);
 				this.has_doubleJump = false;
-		}
-		
+			}
 		}
 	}
 	stepInactive() {}
@@ -287,6 +311,7 @@ class PlayerInstance extends EngineInstance {
 		this.hsp = 0;
 		this.vsp = 0;
 		this.has_doubleJump = true;
+		EngineUtils.setAnimation(this.animation, this.animation_standing);
 		// console.log("helo");
 	}
 
