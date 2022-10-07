@@ -45,10 +45,10 @@ class Grass extends EngineInstance {
 
         const bend_distance = 50
         const distance_player_grass = V2D.distanceSq(this.x, this.y, this.player.x, this.player.y)
-        if (distance_player_grass < bend_distance**2) {
+        /*if (distance_player_grass < bend_distance**2) {
             const interpolation = EngineUtils.interpolate(Math.sqrt(distance_player_grass), -this.player.x, -this.x, EngineUtils.INTERPOLATE_IN_QUAD)
             this.angle += interpolation*Math.sign(this.x-this.player.x)*0.1
-        }
+        }*/
         
     }
     

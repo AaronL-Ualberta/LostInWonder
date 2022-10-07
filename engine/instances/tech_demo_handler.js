@@ -46,6 +46,11 @@ class TechDemoHandler extends EngineInstance {
 		this.spellWheel_origAngle = 0;
 		this.spellWheel_targetAngle = 0;
 		this.spellWheel_timer = 0;
+
+		this.timer = 0;
+		this.adjustFilter = new PIXI.filters.AdjustmentFilter();
+		this.adjustFilter.brightness = 0;
+		this.camera.addFilter(this.adjustFilter);
 	}
 
 	onCreate() {
@@ -59,16 +64,19 @@ class TechDemoHandler extends EngineInstance {
 	}
 
 	step() {
+		var camX = this.camera.getX();
+		var camY = this.camera.getY();
+		var divVal = 5;
 		this.camera.setX(
 			EngineUtils.clamp(
-				this.player.x - this.camera_dimensions[0] / 2,
+				camX - (camX - (this.player.x - this.camera_dimensions[0] / 2)) / divVal,
 				0,
 				this.room_width * 48 - this.camera_dimensions[0]
 			)
 		);
 		this.camera.setY(
 			EngineUtils.clamp(
-				this.player.y - this.camera_dimensions[1] / 2,
+				camY - (camY - (this.player.y - this.camera_dimensions[1] / 2)) / divVal,
 				0,
 				this.room_height * 48 - this.camera_dimensions[1]
 			)
@@ -95,6 +103,15 @@ class TechDemoHandler extends EngineInstance {
 			this.spellWheel_timer++;
 			if (this.spellWheel_timer >= rot_time_total) {
 				this.spellWheel_rotating = false;
+			}
+		}
+
+		// Fade in
+		if (this.timer < 60) {
+			this.adjustFilter.brightness = this.timer / 60;
+			this.timer++;
+			if (this.timer === 60) {
+				this.camera.removeFilter(this.adjustFilter);
 			}
 		}
 	}

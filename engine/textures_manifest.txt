@@ -1,6 +1,11 @@
 require default engine/textures/default.png 0.5 0.5
+
 require baby engine/textures/baby.png 0.5 0
 require baby2 engine/textures/baby2.png 0.45 0
+require jumping_up engine/textures/jumping_up.png 0.5 0
+require jumping_down engine/textures/jumping_down.png 0.5 0
+require evil_laraya engine/textures/evil_laraya.png 0.5 1
+
 require bgfar engine/textures/bg/bg_far.png 0 0
 require bgleaves engine/textures/bg/bg_leaves.png 0 0
 require spellwheel engine/textures/spell_wheel.png 0.5 0.5
@@ -9,6 +14,20 @@ require ice_block engine/textures/iceblock.png 0 0
 require water_block engine/textures/waterblock.png 0 0
 require sign_down engine/textures/Down_Sign.png 0 0
 
+dial_laraya_angry engine/textures/dialogue/angy.png 0 0
+dial_laraya_hurt engine/textures/dialogue/dies.png 0 0
+dial_laraya_scared engine/textures/dialogue/scared.png 0 0
+dial_laraya_surprised engine/textures/dialogue/surprised.png 0 0
+dial_laraya_happy engine/textures/dialogue/happy.png 0 0
+dial_box engine/textures/dialogue/text_box.png 0 0
+
 require spritesheet dimensions 150 50 3 1 dustparticle engine/textures/particles/dust_particle.png 0.5 0.5
 require spritesheet dimensions 186 36 6 1 animate playerrunanimation 6 0 1 2 3 4 5 playerrun engine/textures/animations/running.png 0.55 0
 require spritesheet dimensions 18 48 3 1 GrassBlade engine/textures/grass.png 0.5 1
+
+title_screen engine/textures/cutscenes/title.png 0 0
+cutscene_1 engine/textures/cutscenes/1.png 0 0
+cutscene_2 engine/textures/cutscenes/2.png 0 0
+cutscene_3 engine/textures/cutscenes/3.png 0 0
+cutscene_4 engine/textures/cutscenes/4.png 0 0
+cutscene_5 engine/textures/cutscenes/5.png 0 0

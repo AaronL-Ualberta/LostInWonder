@@ -11,10 +11,4 @@ class InvisibleWall extends SolidObject {
 		this.y = y;
 		// do stuff
 	}
-
-	step() {}
-
-	draw(gui, camera) {
-		// EngineDebugUtils.drawHitbox(camera, this);
-	}
 }
