@@ -1,6 +1,6 @@
 class TechDemoHandler extends EngineInstance {
 	onEngineCreate() {
-		$engine.audioPlaySound("Level1Background", 0.5, true);
+		this.audioSound = $engine.audioPlaySound("Level1Background", 0.5, true);
 
 		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
 		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
@@ -114,6 +114,15 @@ class TechDemoHandler extends EngineInstance {
 				this.camera.removeFilter(this.adjustFilter);
 			}
 		}
+
+		// Check for falling out of the map
+		if (this.player.y >= this.room_height * 48) {
+			$engine.setRoom(RoomManager.currentRoom().name);
+		}
+	}
+
+	onDestroy() {
+		$engine.audioStopSound(this.audioSound);
 	}
 
 	draw(gui, camera) {
