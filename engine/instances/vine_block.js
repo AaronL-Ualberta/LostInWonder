@@ -18,11 +18,11 @@ class VineBlock extends SolidObject {
 				this.burnTimer--;
 			} else {
 				// Before destroying self, set adjacent vines on fire
-				var vineBlock = IM.instancePlace(this, this.x, this.y - 1, VineBlock);
+				var vineBlock = IM.instancePlace(this, this.x, this.y - 48, VineBlock);
 				if (vineBlock !== undefined) {
 					vineBlock.startBurning();
 				}
-				vineBlock = IM.instancePlace(this, this.x, this.y + 1, VineBlock);
+				vineBlock = IM.instancePlace(this, this.x, this.y + 48, VineBlock);
 				if (vineBlock !== undefined) {
 					vineBlock.startBurning();
 				}

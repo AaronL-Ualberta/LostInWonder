@@ -9,6 +9,7 @@ InvisibleWall engine/instances/invisible_wall.js
 TechDemoHandler engine/instances/tech_demo_handler.js
 SemiSolid engine/instances/SemiSolid.js
 Fireball engine/instances/fireball.js
+BoulderBlock engine/instances/boulder_block.js
 IceBlock spr=ice_block engine/instances/ice_block.js
 WaterBlock spr=water_block engine/instances/water_block.js
 VineBlock spr=vine_block engine/instances/vine_block.js
