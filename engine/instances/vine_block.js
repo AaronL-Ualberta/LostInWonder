@@ -27,8 +27,6 @@ class VineBlock extends SolidObject {
 					vineBlock.startBurning();
 				}
 
-
-
 				this.destroy();
 			}
 		}
