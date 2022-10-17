@@ -18,6 +18,7 @@ class PlayerInstance extends EngineInstance {
 		this.snap_enabled = false;
 
 		// Player vars
+		this.player_health = 100;
 		this.spr_width = 50;
 		this.spr_height = 80;
 		this.state_timer = 0;
@@ -84,6 +85,7 @@ class PlayerInstance extends EngineInstance {
 	}
 
 	step() {
+		// console.log("Player health: ", this.player_health);
 		if (IN.mouseCheckPressed(0) && this.current_spell === 0) {
 			const offset = 40;
 			const angle = V2D.calcDir(

@@ -13,6 +13,7 @@ require fireball engine/textures/fireball.png 0.5 0.5
 require ice_block engine/textures/iceblock.png 0 0
 require water_block engine/textures/waterblock.png 0 0
 require sign_down engine/textures/Down_Sign.png 0 0
+require leaf engine/textures/leaf.png 0 0
 
 dial_laraya_angry engine/textures/dialogue/angy.png 0 0
 dial_laraya_hurt engine/textures/dialogue/dies.png 0 0

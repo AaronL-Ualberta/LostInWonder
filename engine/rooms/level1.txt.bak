@@ -14,7 +14,7 @@ endblock
 
 block instances
 	TechDemoHandler 0 0 0 0 1 1
-	PlayerInstance 72 408 0 0 1 1
+	PlayerInstance 172 408 0 0 1 1
 	SemiSolid 1704 168 0 0 3 1
 	SemiSolid 1896 216 0 0 3 1
 	SemiSolid 2808 600 0 0 3 1
@@ -508,7 +508,22 @@ block instances
 	IceBlock 720 2064 0 0 1 1
 	IceBlock 960 2064 0 0 1 1
 	SignDown 6864 1728 0 0 1 1
+	EvilLaraya 648 432 0 0 1 1
+	Enemy 984 336 0 0 1 1
+	Enemy 456 432 0 0 1 1
 	GrassCreate 480 408 0 0 18 1
+	Global 0 0 0 0 1 1
 	GrassCreate 1224 312 0 0 13 1
+	GrassCreate 1752 360 0 0 9 1
+	GrassCreate 2328 312 0 0 15 1
+	GrassCreate 3192 312 0 0 9 1
+	GrassCreate 2832 312 0 0 2 1
+	GrassCreate 3672 456 0 0 3 1
+	GrassCreate 3480 648 0 0 3 1
+	GrassCreate 3672 840 0 0 3 1
+	GrassCreate 3480 1032 0 0 3 1
+	GrassCreate 3672 1176 0 0 3 1
+	GrassCreate 3672 1368 0 0 3 1
+	GrassCreate 2736 456 0 0 2 1
 endblock
 
