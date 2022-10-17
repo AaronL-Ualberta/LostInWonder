@@ -4,6 +4,8 @@ class PlayerInstance extends EngineInstance {
 		this.ground_accel = 0.5;
 		this.jump_height = 13;
 		this.gravity = 0.8;
+		this.default_gravity = this.gravity;
+		this.water_gravity = 0.15;
 		this.max_run_speed = 5;
 		this.decel_coeff = 0.8;
 		this.decel_coeff_air = 0.98;
@@ -23,6 +25,11 @@ class PlayerInstance extends EngineInstance {
 		this.state_timer = 0;
 		this.state = PLAYERSTATES.GROUNDED;
 		this.state_funcs = {
+			[PLAYERSTATES.DEVMODE]: {
+				enter: this.enterGrounded.bind(this),
+				step: this.stepDevmode.bind(this),
+				exit: this.exitGrounded.bind(this),
+			},
 			[PLAYERSTATES.GROUNDED]: {
 				enter: this.enterGrounded.bind(this),
 				step: this.stepGrounded.bind(this),
@@ -43,20 +50,32 @@ class PlayerInstance extends EngineInstance {
 				step: this.stepWallCling.bind(this),
 				exit: this.exitWallCling.bind(this),
 			},
+			[PLAYERSTATES.WATERDASH]: {
+				enter: this.enterWaterDash.bind(this),
+				step: this.stepWaterDash.bind(this),
+				exit: this.exitWaterDash.bind(this),
+			},
+			[PLAYERSTATES.UNDERWATER]: {
+				enter: this.enterUnderwater.bind(this),
+				step: this.stepUnderwater.bind(this),
+				exit: this.exitUnderwater.bind(this),
+			},
 		};
 		this.vsp = 0;
 		this.hsp = 0;
 		this.facing = 1;
 		this.has_doubleJump = true;
+		this.has_waterdash = true;
 		this.current_spell = SPELLNAMES.FIRE;
 		this.face_direction = 1;
 
 		this.levelHandler = TechDemoHandler.first;
 
-		this.animation_running = $engine.getAnimation("playerrunanimation");
+		this.animation_running = $engine.getAnimation("player_runanimation");
 		this.animation_standing = [$engine.getTexture("baby2")];
 		this.animation_jumping_up = [$engine.getTexture("jumping_up")];
 		this.animation_jumping_down = [$engine.getTexture("jumping_down")];
+		this.animation_wallcling = [$engine.getTexture("player_wallcling")];
 
 		this.mainHitbox = new Hitbox(this, new RectangleHitbox(-20, 34 * -2, 20, 0));
 		this.iceHitbox = new Hitbox(this, new RectangleHitbox(-25, 36 * -2, 25, 4));
@@ -84,13 +103,55 @@ class PlayerInstance extends EngineInstance {
 	}
 
 	step() {
-		if (IN.mouseCheckPressed(0) && this.current_spell === 0) {
-			const offset = 40;
-			const angle = V2D.calcDir(
-				IN.getMouseX() - (this.x + this.face_direction * offset),
-				IN.getMouseY() - (this.y - offset)
-			);
-			new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
+		// DEVMODE
+		if (IN.keyCheckPressed("Slash")) {
+			if (this.state === PLAYERSTATES.DEVMODE) {
+				this.switchState(PLAYERSTATES.AIRBORNE);
+			} else {
+				this.switchState(PLAYERSTATES.DEVMODE);
+			}
+		}
+
+		if (IN.mouseCheckPressed(0)) {
+			if (this.current_spell === SPELLNAMES.FIRE) {
+				// FIRE
+				const offset = 40;
+				const angle = V2D.calcDir(
+					IN.getMouseX() - (this.x + this.face_direction * offset),
+					IN.getMouseY() - (this.y - offset)
+				);
+				new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
+			} else if (this.current_spell === SPELLNAMES.EARTH) {
+				// EARTH
+				const offset = 40;
+				const angle = V2D.calcDir(
+					IN.getMouseX() - (this.x + this.face_direction * offset),
+					IN.getMouseY() - (this.y - offset)
+				);
+				new RockBlock(this.x + this.face_direction * offset, this.y - offset, angle);
+			} else if (this.current_spell === SPELLNAMES.AIR) {
+				// AIR
+			} else if (this.current_spell === SPELLNAMES.WATER) {
+				// WATER
+				if (this.has_waterdash) {
+					this.has_waterdash = false;
+					this.switchState(PLAYERSTATES.WATERDASH);
+
+					const offset = 40;
+					const angle = V2D.calcDir(
+						IN.getMouseX() - (this.x + this.face_direction * offset),
+						IN.getMouseY() - (this.y - offset)
+					);
+					const spd = 13;
+					this.hsp = Math.cos(angle) * spd;
+					this.vsp = Math.sin(angle) * spd;
+					// if (this.vsp > 0) {
+					// 	this.vsp *= 1.1;
+					// } else {
+					// 	this.vsp *= 0.8;
+					// }
+				}
+			}
 		}
 		//this.getSprite().skew.x = this.hsp / 15;
 		this.animation.update(1);
@@ -119,19 +180,6 @@ class PlayerInstance extends EngineInstance {
 				new IceBlock(water_block.x, water_block.y, 300);
 				water_block.destroy();
 			}
-		} else {
-			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp + 5, WaterBlock);
-			if (water_block !== undefined) {
-				this.gravity = 0.1;
-				if (Math.abs(this.vsp) > 5) {
-					this.vsp *= 0.5;
-				}
-				if (Math.abs(this.hsp) > 5) {
-					this.vsp *= 0.5;
-				}
-			} else {
-				this.gravity = 0.8;
-			}
 		}
 	}
 
@@ -156,10 +204,30 @@ class PlayerInstance extends EngineInstance {
 		this.getStateGroup().exit(this.state);
 		this.state = _state;
 		this.state_timer = 0;
+		console.log("works");
 		this.getStateGroup().enter(this.state);
 	}
 
 	// Step functions
+	stepDevmode() {
+		var spd = 16;
+		if (IN.keyCheck("Shift")) {
+			spd = 64;
+		}
+		if (IN.keyCheck("KeyD")) {
+			this.x += spd;
+		}
+		if (IN.keyCheck("KeyA")) {
+			this.x -= spd;
+		}
+		if (IN.keyCheck("KeyW")) {
+			this.y -= spd;
+		}
+		if (IN.keyCheck("KeyS")) {
+			this.y += spd;
+		}
+	}
+
 	stepGrounded() {
 		// Become airborne if no ground under you
 		if (!this.collisionCheck(this.x, this.y + 1)) {
@@ -195,6 +263,8 @@ class PlayerInstance extends EngineInstance {
 			// Jump SoundEffect
 			// $engine.audioPlaySound("JumpSoundEffect", 1.0, false);
 		}
+
+		this.checkUnderwater();
 
 		// Animate
 		if (Math.abs(this.hsp) > 0.1) {
@@ -251,7 +321,7 @@ class PlayerInstance extends EngineInstance {
 			EngineUtils.setAnimation(this.animation, this.animation_jumping_down);
 		}
 
-		this.moveCollide();
+		this.checkUnderwater();
 
 		// Check Double Jump
 		if (this.current_spell === 2) {
@@ -266,6 +336,8 @@ class PlayerInstance extends EngineInstance {
 				// $engine.audioPlaySound("DoubleJumpSoundEffect", 1.0, false, 0.2, 0.5);
 			}
 		}
+
+		this.moveCollide();
 	}
 	stepInactive() {}
 	stepWallCling() {
@@ -288,7 +360,7 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		if ($engine.getGameTimer() % 7 === 0) {
-			new DustParticle(this.x + this.facing * 10, this.y - 50);
+			new DustParticle(this.x + this.facing * 18, this.y - 64);
 		}
 
 		if (this.collisionCheck(this.x, this.y + 1)) {
@@ -301,13 +373,81 @@ class PlayerInstance extends EngineInstance {
 			return;
 		}
 
+		this.checkUnderwater();
+
 		this.vsp = Math.min(this.vsp + 0.1, 3);
+		this.moveCollide();
+	}
+	stepWaterDash() {
+		if (this.state_timer >= 8) {
+			this.switchState(PLAYERSTATES.AIRBORNE);
+		}
+
+		if (this.state_timer % 2 === 0) new DustParticle(this.x, this.y);
+
+		this.moveCollide();
+	}
+	stepUnderwater() {
+		// Make shorthop lower
+		if (this.vsp < 0) {
+			if (!IN.keyCheck("KeyW")) {
+				this.vsp *= 0.98;
+			}
+		}
+
+		// Apply gravity
+		this.vsp += this.water_gravity; // this.gravity;
+		this.vsp = Math.min(this.vsp, 5);
+		//if (this.vsp > -0.2 && this.vsp < 0.8) this.vsp -= this.gravity / 1.2;
+
+		// Decel
+		this.hsp *= this.decel_coeff_air;
+		if (Math.abs(this.hsp) < 0.03) this.hsp = 0;
+
+		// INP
+		const inp = IN.keyCheck("KeyD") - IN.keyCheck("KeyA");
+		const mult = 0.7;
+		if (inp !== 0) {
+			this.hsp = EngineUtils.clamp(
+				this.hsp + inp * this.ground_accel * mult,
+				-this.max_run_speed * mult,
+				this.max_run_speed * mult
+			);
+		}
+
+		// Jumping Animation
+		if (this.vsp < 0) {
+			EngineUtils.setAnimation(this.animation, this.animation_jumping_up);
+		} else {
+			EngineUtils.setAnimation(this.animation, this.animation_jumping_down);
+		}
+
+		if (this.state_timer > 8) {
+			// "Jump" infinitely
+			if (IN.keyCheckPressed("KeyW")) {
+				this.vsp = -this.jump_height / 4;
+				const part_from_center = 18;
+				const part_from_ground = 5;
+				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
+				new DustParticle(this.x + part_from_center, this.y - part_from_ground);
+				// this.has_doubleJump = false;
+				// double jump sound effect
+				// $engine.audioPlaySound("DoubleJumpSoundEffect", 1.0, false, 0.2, 0.5);
+			}
+		}
+
+		// Leave underwater state
+		if (!IM.instanceCollision(this, this.x, this.y, WaterBlock)) {
+			this.switchState(PLAYERSTATES.AIRBORNE);
+		}
+
 		this.moveCollide();
 	}
 
 	// Transition functions
 	enterGrounded() {
 		this.has_doubleJump = true;
+		this.has_waterdash = true;
 	}
 	enterAirborne() {}
 	enterInactive() {}
@@ -315,8 +455,16 @@ class PlayerInstance extends EngineInstance {
 		this.hsp = 0;
 		this.vsp = 0;
 		this.has_doubleJump = true;
-		EngineUtils.setAnimation(this.animation, this.animation_standing);
-		// console.log("helo");
+		EngineUtils.setAnimation(this.animation, this.animation_wallcling);
+	}
+	enterWaterDash() {
+		EngineUtils.setAnimation(this.animation, this.animation_running);
+		this.animation.animationSpeed = 0;
+	}
+	enterUnderwater() {
+		// this.gravity = this.water_gravity;
+		this.has_waterdash = true;
+		this.has_doubleJump = true;
 	}
 
 	exitGrounded() {}
@@ -325,6 +473,10 @@ class PlayerInstance extends EngineInstance {
 	}
 	exitInactive() {}
 	exitWallCling() {}
+	exitWaterDash() {}
+	exitUnderwater() {
+		// this.gravity = this.default_gravity;
+	}
 
 	moveCollide() {
 		// Move X
@@ -496,16 +648,26 @@ class PlayerInstance extends EngineInstance {
 			this.x += this.hsp;
 		}
 	}
+
+	checkUnderwater() {
+		var collided = IM.instanceCollision(this, this.x, this.y - 30, WaterBlock);
+		if (collided) {
+			this.switchState(PLAYERSTATES.UNDERWATER);
+		}
+	}
 }
 
 class PLAYERSTATES {}
+PLAYERSTATES.DEVMODE = -1;
 PLAYERSTATES.GROUNDED = 0;
 PLAYERSTATES.AIRBORNE = 1;
 PLAYERSTATES.INACTIVE = 2;
 PLAYERSTATES.WALLCLING = 3;
+PLAYERSTATES.WATERDASH = 4;
+PLAYERSTATES.UNDERWATER = 5;
 
 class SPELLNAMES {}
 SPELLNAMES.FIRE = 0;
-SPELLNAMES.EARTH = 0;
-SPELLNAMES.AIR = 0;
-SPELLNAMES.WATER = 0;
+SPELLNAMES.EARTH = 1;
+SPELLNAMES.AIR = 2;
+SPELLNAMES.WATER = 3;
