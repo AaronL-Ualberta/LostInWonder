@@ -15,7 +15,6 @@ IceBlock spr=ice_block engine/instances/ice_block.js
 WaterBlock spr=water_block engine/instances/water_block.js
 GrassCreate engine/instances/grass.js
 VineBlock spr=vine_block engine/instances/vine_block.js
-GrassCreate Grass engine/instances/grass.js
 SignDown spr=sign_down engine/instances/Sign_Down.js
 Dialogue engine/instances/dialogue.js
 EvilLaraya engine/instances/evil_laraya.js

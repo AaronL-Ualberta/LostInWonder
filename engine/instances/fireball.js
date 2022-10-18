@@ -21,15 +21,14 @@ class Fireball extends EngineInstance {
 			this.destroy();
 		}
 
-			var iceBlock = IM.instancePlace(this, this.x, this.y, IceBlock);
-			if (iceBlock !== undefined) {
-				iceBlock.destroy();
-			}
+		var iceBlock = IM.instancePlace(this, this.x, this.y, IceBlock);
+		if (iceBlock !== undefined) {
+			iceBlock.destroy();
+		}
 
-			var vineBlock = IM.instancePlace(this, this.x, this.y, VineBlock);
-			if (vineBlock !== undefined) {
-				vineBlock.startBurning();
-			}
+		var vineBlock = IM.instancePlace(this, this.x, this.y, VineBlock);
+		if (vineBlock !== undefined) {
+			vineBlock.startBurning();
 		}
 	}
 }
