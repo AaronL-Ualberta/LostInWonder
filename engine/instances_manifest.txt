@@ -21,6 +21,7 @@ EvilLaraya engine/instances/evil_laraya.js
 Enemy engine/instances/enemy.js
 Global engine/instances/global_variables.js
 Leaf LeafCreate engine/instances/leaf.js
+Artifact engine/instances/artifact.js
 
 DustParticle engine/instances/particles/DustParticle.js
 

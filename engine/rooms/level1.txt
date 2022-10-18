@@ -526,5 +526,6 @@ block instances
 	GrassCreate 3672 1368 0 0 3 1
 	GrassCreate 2736 456 0 0 2 1
 	LeafCreate -24 264 0 0 1 1
+	Artifact 504 312 0 0 1 1
 endblock
 

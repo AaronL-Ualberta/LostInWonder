@@ -19,6 +19,7 @@ require leaf engine/textures/leaf.png 0 0
 require vine_block engine/textures/vineblock.png 0 0
 require burning_vine_block engine/textures/burningvineblock.png 0 0
 require boulder_block engine/textures/boulderblock.png 0.5 0.5
+require artifact engine/textures/artifact.png 0.5 0.5
 
 dial_laraya_angry engine/textures/dialogue/angy.png 0 0
 dial_laraya_hurt engine/textures/dialogue/dies.png 0 0
