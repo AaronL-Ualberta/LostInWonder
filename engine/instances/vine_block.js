@@ -20,11 +20,11 @@ class VineBlock extends SolidObject {
 				// Before destroying self, set adjacent vines on fire
 				var vineBlock = IM.instancePlace(this, this.x, this.y - 48, VineBlock);
 				if (vineBlock !== undefined) {
-					vineBlock.startBurning();
+					vineBlock.startBurning(true);
 				}
 				vineBlock = IM.instancePlace(this, this.x, this.y + 48, VineBlock);
 				if (vineBlock !== undefined) {
-					vineBlock.startBurning();
+					vineBlock.startBurning(false);
 				}
 
 				this.destroy();
@@ -32,10 +32,17 @@ class VineBlock extends SolidObject {
 		}
 	}
 
-	startBurning() {
+	// The burnFromBottom variable controls the sprite of the burning vine to show it's burning from the bottom or top
+	startBurning(burnFromBottom) {
 		if (!this.isBurning) {
 			this.isBurning = true;
-			this.sprite.texture = $engine.getTexture("burning_vine_block");
+
+			// Determine which direction the vine is burning from
+			if (burnFromBottom) {
+				this.sprite.texture = $engine.getTexture("burning_vine_block_bottom");
+			} else {
+				this.sprite.texture = $engine.getTexture("burning_vine_block_top");
+			}
 			this.burnTimer = 60;
 		}
 	}
