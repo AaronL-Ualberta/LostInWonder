@@ -151,6 +151,8 @@ class PlayerInstance extends EngineInstance {
 					// } else {
 					// 	this.vsp *= 0.8;
 					// }
+					// Water Dash Sound Effect
+					$engine.audioPlaySound("WaterDashSoundEffect", 0.08, false);
 				}
 			}
 		}
@@ -262,7 +264,7 @@ class PlayerInstance extends EngineInstance {
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
 			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
 			// Jump SoundEffect
-			// $engine.audioPlaySound("JumpSoundEffect", 1.0, false);
+			$engine.audioPlaySound("JumpSoundEffect", 0.6, false);
 		}
 
 		this.checkUnderwater();
@@ -304,12 +306,13 @@ class PlayerInstance extends EngineInstance {
 		const inp = IN.keyCheck("KeyD") - IN.keyCheck("KeyA");
 		if (inp !== 0) {
 			this.hsp = EngineUtils.clamp(this.hsp + inp * this.ground_accel, -this.max_run_speed, this.max_run_speed);
-
 			// Check wall cling
 			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
 				if (this.current_spell === 1) {
 					this.switchState(PLAYERSTATES.WALLCLING);
 					this.facing = inp;
+					// Wall Impact Sound Effect
+					$engine.audioPlaySound("WallImpactSoundEffect", 1.0, false);
 					return;
 				}
 			}
@@ -334,7 +337,7 @@ class PlayerInstance extends EngineInstance {
 				new DustParticle(this.x + part_from_center, this.y - part_from_ground);
 				this.has_doubleJump = false;
 				// double jump sound effect
-				// $engine.audioPlaySound("DoubleJumpSoundEffect", 1.0, false, 0.2, 0.5);
+				$engine.audioPlaySound("DoubleJumpSoundEffect", 0.1, false);
 			}
 		}
 

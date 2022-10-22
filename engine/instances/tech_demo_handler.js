@@ -1,6 +1,6 @@
 class TechDemoHandler extends EngineInstance {
 	onEngineCreate() {
-		this.audioSound = $engine.audioPlaySound("Level1Background", 0.5, true);
+		this.audioSound = $engine.audioPlaySound("Level1Background", 0.07, true);
 
 		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
 		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
@@ -119,7 +119,7 @@ class TechDemoHandler extends EngineInstance {
 		if (this.player.y >= this.room_height * 48) {
 			$engine.setRoom(RoomManager.currentRoom().name);
 		}
-		
+
 		// Check if player beats the level
 		if (this.player.x >= (this.room_width - 3) * 48) {
 			$engine.setRoom(RoomManager.currentRoom().name);

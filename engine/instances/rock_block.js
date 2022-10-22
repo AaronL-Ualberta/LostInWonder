@@ -1,6 +1,7 @@
 class RockBlock extends SemiSolid {
 	onCreate(x, y, angle) {
-		// $engine.audioPlaySound("FireBallSoundEffect", 0.8, false, 0.5, 1.0);
+		// Earth Sound Effect
+		$engine.audioPlaySound("EarthSoundEffect", 0.07, false);
 		this.spd = 10;
 		this.x = x;
 		this.y = y;

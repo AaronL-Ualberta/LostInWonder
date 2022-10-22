@@ -3,3 +3,7 @@ require FireBallSoundEffect engine/audio/FireBallSoundEffect.ogg SE
 require JumpSoundEffect engine/audio/JumpSoundEffect.ogg SE
 require DoubleJumpSoundEffect engine/audio/DoubleJumpSoundEffect.ogg SE
 require IceBlockSoundEffect engine/audio/IceBlockSoundEffect.ogg SE
+require FootStepsSoundEffect engine/audio/FootStepsSoundEffect.ogg SE
+require WallImpactSoundEffect engine/audio/WallImpactSoundEffect.ogg SE
+require WaterDashSoundEffect  engine/audio/WaterDashSoundEffect.ogg SE
+require EarthSoundEffect  engine/audio/EarthSoundEffect.ogg SE

@@ -9,7 +9,7 @@ class IceBlock extends SolidObject {
 	onCreate(x, y, timer = -1) {
 		this.onEngineCreate();
 		// iceBlock sound effect added
-		$engine.audioPlaySound("IceBlockSoundEffect", 0.8, false, 0.0, 1.0);
+		$engine.audioPlaySound("IceBlockSoundEffect", 0.07, false, 0.0, 1.0);
 		this.x = x;
 		this.y = y;
 		this.timer = timer;
