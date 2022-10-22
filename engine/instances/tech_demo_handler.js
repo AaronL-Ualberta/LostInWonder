@@ -119,6 +119,11 @@ class TechDemoHandler extends EngineInstance {
 		if (this.player.y >= this.room_height * 48) {
 			$engine.setRoom(RoomManager.currentRoom().name);
 		}
+		
+		// Check if player beats the level
+		if (this.player.x >= (this.room_width - 3) * 48) {
+			$engine.setRoom(RoomManager.currentRoom().name);
+		}
 	}
 
 	onDestroy() {
