@@ -21,8 +21,8 @@ class WaterDashParticle extends EngineInstance {
 		// this.rot = EngineUtils.randomRange(-rot_range, rot_range);
 
 		const filter = new PIXI.filters.PixelateFilter();
-		filter.size.x = 4;
-		filter.size.y = 4;
+		filter.size.x = 2;
+		filter.size.y = 2;
 		this.animation.filters = [filter];
 
 		// this.xOrig = this.x;

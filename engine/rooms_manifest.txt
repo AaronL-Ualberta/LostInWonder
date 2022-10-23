@@ -5,3 +5,4 @@ TestRoom engine/rooms/testroom.txt
 TestRoom2 engine/rooms/empty.txt
 Level1 engine/rooms/level1.txt 
 TitleScreen engine/rooms/title_screen.txt default
+VerticalSlice engine/rooms/verticalslice.txt

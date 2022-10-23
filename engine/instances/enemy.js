@@ -41,6 +41,8 @@ class Enemy extends EngineInstance {
 			this.y += this.dvsp;
 			this.dvsp += 0.3;
 			this.dhsp *= 0.95;
+			//this.angle += 0.2 * this.direction;
+
 			if (this.dying_timer > 40) {
 				new DustParticle(this.x + EngineUtils.irandom(-50, 50), this.y - 17 + EngineUtils.irandom(-50, 50), 1.5);
 			}
@@ -55,6 +57,7 @@ class Enemy extends EngineInstance {
 		}
 
 		if (this.turning) {
+			this.checkDying();
 			return;
 		}
 
@@ -79,15 +82,7 @@ class Enemy extends EngineInstance {
 			this.gotoTurning();
 		}
 
-		if (IM.instanceCollision(this, this.x, this.y, Fireball)) {
-			const fireball = IM.instancePlace(this, this.x, this.y, Fireball);
-			this.dhsp = 8 * Math.sign(this.x - fireball.x);
-			fireball.destroy();
-
-			this.dying = true;
-			EngineUtils.setAnimation(this.animation, this.gaterhurt);
-			// this.destroy();
-		}
+		this.checkDying();
 
 		if (IM.instanceCollision(this, this.x, this.y, PlayerInstance) && !this.damage_done) {
 			var player = IM.instancePlace(this, this.x, this.y, PlayerInstance);
@@ -101,5 +96,17 @@ class Enemy extends EngineInstance {
 	gotoTurning() {
 		this.turning = true;
 		EngineUtils.setAnimation(this.animation, this.gaterturn);
+	}
+
+	checkDying() {
+		if (IM.instanceCollision(this, this.x, this.y, Fireball)) {
+			const fireball = IM.instancePlace(this, this.x, this.y, Fireball);
+			this.dhsp = 8 * Math.sign(this.x - fireball.x);
+			fireball.destroy();
+
+			this.dying = true;
+			EngineUtils.setAnimation(this.animation, this.gaterhurt);
+			// this.destroy();
+		}
 	}
 }

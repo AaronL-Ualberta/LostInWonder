@@ -6,7 +6,9 @@ InstanceMover engine/instances/shared/instance_mover.js
 PlayerInstance engine/instances/player_instance.js
 SolidObject engine/instances/solid_object.js
 InvisibleWall engine/instances/invisible_wall.js
+LevelHandler engine/instances/level_handler.js
 TechDemoHandler engine/instances/tech_demo_handler.js
+Level4Handler engine/instances/level_4_handler.js
 SemiSolid engine/instances/SemiSolid.js
 Fireball engine/instances/fireball.js
 RockBlock engine/instances/rock_block.js
@@ -22,9 +24,11 @@ Enemy engine/instances/enemy.js
 Global engine/instances/global_variables.js
 Leaf LeafCreate engine/instances/leaf.js
 Artifact engine/instances/artifact.js
+WindSpell engine/instances/wind_spell.js
 
 DustParticle engine/instances/particles/DustParticle.js
 WaterDashParticle engine/instances/particles/WaterDashParticle.js
+WindParticle engine/instances/particles/WindParticle.js
 
 TitleScreenHandler engine/instances/title_screen_handler.js
 
