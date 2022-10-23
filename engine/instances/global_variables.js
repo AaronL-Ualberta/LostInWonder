@@ -8,14 +8,17 @@ class Global extends EngineInstance {
         grass_movement_span >> 5 ideal for now
          */
 		this.wind_direction = 0;
+		this.prev_wind = 0;
 		this.timer = 300;
 		this.clock = this.timer;
+		this.artifact_count = 0;
 	}
 
 	step() {
 		this.clock--;
 		if (this.clock === 0) {
 			this.clock = this.timer;
+			this.prev_wind = this.wind_direction;
 			this.wind_direction = EngineUtils.irandomRange(-1, 1);
 		}
 	}
