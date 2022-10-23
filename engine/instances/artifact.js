@@ -13,7 +13,7 @@ class Artifact extends EngineInstance {
 			this.global.artifact_count += 1;
 			this.destroy();
 			// Artifact Collectile Sound Effect
-			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.1, false);
+			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
 		}
 	}
 }
