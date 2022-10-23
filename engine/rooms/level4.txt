@@ -392,5 +392,6 @@ block instances
 	Artifact 4440 1560 0 0 1 1
 	Artifact 3912 1272 0 0 1 1
 	SemiSolid 2232 1608 0 0 5 1
+	Global -72 -72 0 0 1 1
 endblock
 
