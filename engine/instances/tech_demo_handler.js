@@ -11,7 +11,7 @@ class TechDemoHandler extends EngineInstance {
 		// this.camera.setScaleY(0.5);
 		this.camera.setDimensions(this.camera_dimensions[0], this.camera_dimensions[1]);
 		//this.camera.setY(2 * 48);
-		$engine.setBackground(new PIXI.extras.TilingSprite($engine.getTexture("bgfar")));
+		$engine.setBackground(new PIXI.extras.TilingSprite($engine.getTexture("bgswamp")));
 		this.background = $engine.getBackground();
 		this.background.tileScale.set(2, 2);
 		this.background.width = this.camera_dimensions[0];
