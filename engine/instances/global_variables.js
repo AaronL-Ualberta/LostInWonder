@@ -10,6 +10,7 @@ class Global extends EngineInstance {
 		this.wind_direction = 0;
 		this.timer = 300;
 		this.clock = this.timer;
+		this.artifact_count = 0;
 	}
 
 	step() {

@@ -1,7 +1,7 @@
 class Enemy extends EngineInstance {
 	onEngineCreate() {
 		this.speed = 3;
-		this.damage = 5;
+		this.damage = 50;
 		this.no_damage_period = 0;
 		this.damage_done = false;
 		this.direction = -1;
@@ -36,6 +36,9 @@ class Enemy extends EngineInstance {
 		if (IM.instanceCollision(this, this.x, this.y, PlayerInstance) && !this.damage_done) {
 			var player = IM.instancePlace(this, this.x, this.y, PlayerInstance);
 			player.player_health -= this.damage;
+			if (player.player_health === 0) {
+				$engine.setRoom(RoomManager.currentRoom().name);
+			}
 			this.alpha = 0.5;
 			this.damage_done = true;
 			this.no_damage_period = 90;

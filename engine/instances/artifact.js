@@ -5,4 +5,15 @@ class Artifact extends EngineInstance {
 		this.xScale = 0.2;
 		this.yScale = 0.2;
 	}
+
+	onRoomStart() {
+		this.global = Global.first;
+	}
+
+	step() {
+		if (IM.instanceCollision(this, this.x, this.y, PlayerInstance)) {
+			this.global.artifact_count += 1;
+			this.destroy();
+		}
+	}
 }
