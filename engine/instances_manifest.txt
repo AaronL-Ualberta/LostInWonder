@@ -24,6 +24,7 @@ Leaf LeafCreate engine/instances/leaf.js
 Artifact engine/instances/artifact.js
 
 DustParticle engine/instances/particles/DustParticle.js
+WaterDashParticle engine/instances/particles/WaterDashParticle.js
 
 TitleScreenHandler engine/instances/title_screen_handler.js
 

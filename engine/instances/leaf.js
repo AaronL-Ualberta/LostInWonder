@@ -1,5 +1,6 @@
 class Leaf extends EngineInstance {
 	onCreate(x, intercept) {
+		this.x = x;
 		this.y = 0;
 		this.speed = EngineUtils.irandomRange(2, 5);
 		this.slope = EngineUtils.randomRange(-2, 2);
@@ -43,6 +44,7 @@ class LeafCreate extends EngineInstance {
 		this.timer--;
 		if (this.timer == 0) {
 			var cam = $engine.getCamera().getBoundingBox();
+			//var x = PlayerInstance.first.x - (cam.x1 + cam.x2) / 2 - EngineUtils.irandom(500, 1000);
 			var x = PlayerInstance.first.x - (cam.x1 + cam.x2) / 2 - EngineUtils.irandom(500, 1000);
 			for (let i = 0; i < 20; i++) {
 				var intercept = EngineUtils.irandomRange(cam.y1, cam.y2);

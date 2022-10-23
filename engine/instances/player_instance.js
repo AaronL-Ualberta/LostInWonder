@@ -91,6 +91,9 @@ class PlayerInstance extends EngineInstance {
 		this.animation.anchor.y = 1;
 		this.animation.animationSpeed = 0.1;
 
+		this.fire_cooldown = 60;
+		this.fire_cooldown_timer = 0;
+
 		// Marcus cool code!!!!!!!!!!!!!!!!!!!!!!!!!
 		// this.filter = new PIXI.filters.BlurFilter();
 		// this.spr.filters = [this.filter];
@@ -113,15 +116,20 @@ class PlayerInstance extends EngineInstance {
 			}
 		}
 
+		this.fire_cooldown_timer--;
 		if (IN.mouseCheckPressed(0)) {
 			if (this.current_spell === SPELLNAMES.FIRE) {
 				// FIRE
-				const offset = 40;
-				const angle = V2D.calcDir(
-					IN.getMouseX() - (this.x + this.face_direction * offset),
-					IN.getMouseY() - (this.y - offset)
-				);
-				new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
+				if (this.fire_cooldown_timer <= 0) {
+					const offset = 40;
+					const angle = V2D.calcDir(
+						IN.getMouseX() - (this.x + this.face_direction * offset),
+						IN.getMouseY() - (this.y - offset)
+					);
+					new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
+
+					this.fire_cooldown_timer = this.fire_cooldown;
+				}
 			} else if (this.current_spell === SPELLNAMES.EARTH) {
 				// EARTH
 				const offset = 40;
@@ -153,6 +161,9 @@ class PlayerInstance extends EngineInstance {
 					// }
 					// Water Dash Sound Effect
 					$engine.audioPlaySound("WaterDashSoundEffect", 0.08, false);
+
+					// Spawn water particle
+					new WaterDashParticle(this.x - this.facing * 20, this.y + 1, 0.5, angle);
 				}
 			}
 		}
@@ -207,7 +218,6 @@ class PlayerInstance extends EngineInstance {
 		this.getStateGroup().exit(this.state);
 		this.state = _state;
 		this.state_timer = 0;
-		console.log("works");
 		this.getStateGroup().enter(this.state);
 	}
 
@@ -387,7 +397,7 @@ class PlayerInstance extends EngineInstance {
 			this.switchState(PLAYERSTATES.AIRBORNE);
 		}
 
-		if (this.state_timer % 2 === 0) new DustParticle(this.x, this.y);
+		// if (this.state_timer % 2 === 0) new DustParticle(this.x, this.y);
 
 		this.moveCollide();
 	}
