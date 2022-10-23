@@ -7,3 +7,4 @@ require FootStepsSoundEffect engine/audio/FootStepsSoundEffect.ogg SE
 require WallImpactSoundEffect engine/audio/WallImpactSoundEffect.ogg SE
 require WaterDashSoundEffect  engine/audio/WaterDashSoundEffect.ogg SE
 require EarthSoundEffect  engine/audio/EarthSoundEffect.ogg SE
+require ArtifactCollectibleSoundEffect engine/audio/ArtifactCollectibleSoundEffect.ogg SE
