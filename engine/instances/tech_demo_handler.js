@@ -13,7 +13,7 @@ class TechDemoHandler extends EngineInstance {
 		//this.camera.setY(2 * 48);
 		$engine.setBackground(new PIXI.extras.TilingSprite($engine.getTexture("bgswamp")));
 		this.background = $engine.getBackground();
-		this.background.tileScale.set(2, 2);
+		this.background.tileScale.set(2, 3);
 		this.background.width = this.camera_dimensions[0];
 		this.background.height = this.camera_dimensions[1];
 
@@ -81,8 +81,9 @@ class TechDemoHandler extends EngineInstance {
 				this.room_height * 48 - this.camera_dimensions[1]
 			)
 		);
+
+		// This is responsible for moving the background
 		this.background.tilePosition.x = -this.camera.getX() / 5;
-		this.background.tilePosition.y = -this.camera.getY() / 5;
 
 		this.fgSprite.skew.x = Math.sin($engine.getGameTimer() / 60) / 20;
 		this.fgSprite.tilePosition.x = -this.camera.getX() / 1.75;
