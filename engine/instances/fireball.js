@@ -1,6 +1,6 @@
 class Fireball extends EngineInstance {
 	onCreate(x, y, angle) {
-		$engine.audioPlaySound("FireBallSoundEffect", 0.07, false, 0.5, 1.0);
+		$engine.audioPlaySound("FireBallSoundEffect", 0.07, false, 0.3, 1.0);
 		this.x = x;
 		this.y = y;
 		this.angle = angle;

@@ -8,6 +8,7 @@ require evil_laraya engine/textures/evil_laraya.png 0.5 1
 require player_wallcling engine/textures/player/wallcling.png 0.1 0
 
 require bgfar engine/textures/bg/bg_far.png 0 0
+require bgswamp engine/textures/bg/bg_swamp.png 0 0
 require bgleaves engine/textures/bg/bg_leaves.png 0 0
 require spellwheel engine/textures/spell_wheel.png 0.5 0.5
 require fireball engine/textures/fireball.png 0.5 0.5
@@ -33,9 +34,9 @@ require spritesheet dimensions 150 50 3 1 dustparticle engine/textures/particles
 require spritesheet dimensions 186 36 6 1 animate player_runanimation 6 0 1 2 3 4 5 playerrun engine/textures/animations/running.png 0.55 0
 spritesheet dimensions 2080 44 10 1 animate waterdashparticle_animation 10 0 1 2 3 4 5 6 7 8 9 waterdashparticle engine/textures/animations/waterdash.png 0 0.5
 require spritesheet dimensions 18 48 3 1 GrassBlade engine/textures/grass.png 0.5 1
-spritesheet dimensions 180 33 6 1 animate gaterwalk_animation 6 0 1 2 3 4 5 gaterwalk engine/textures/animations/gater.png 0.5 1
-spritesheet dimensions 128 33 4 1 animate gaterturn_animation 4 0 1 2 3 gaterturn engine/textures/animations/gater_turn.png 0.5 1
-gaterhurt engine/textures/animations/gater_hurt.png 0.5 1
+require spritesheet dimensions 180 33 6 1 animate gaterwalk_animation 6 0 1 2 3 4 5 gaterwalk engine/textures/animations/gater.png 0.5 1
+require spritesheet dimensions 128 33 4 1 animate gaterturn_animation 4 0 1 2 3 gaterturn engine/textures/animations/gater_turn.png 0.5 1
+require gaterhurt engine/textures/animations/gater_hurt.png 0.5 1
 spritesheet dimensions 132 98 6 1 animate windspell_animation 6 0 1 2 3 4 5 windspell engine/textures/animations/wind.png 0.5 0
 
 title_screen engine/textures/cutscenes/title.png 0 0

@@ -290,7 +290,7 @@ class PlayerInstance extends EngineInstance {
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
 			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
 			// Jump SoundEffect
-			$engine.audioPlaySound("JumpSoundEffect", 0.6, false);
+			$engine.audioPlaySound("JumpSoundEffect", 0.3, false);
 		}
 
 		this.checkUnderwater();
@@ -345,7 +345,7 @@ class PlayerInstance extends EngineInstance {
 				this.switchState(PLAYERSTATES.WALLCLING);
 				this.facing = inp;
 				// Wall Impact Sound Effect
-				$engine.audioPlaySound("WallImpactSoundEffect", 1.0, false);
+				$engine.audioPlaySound("WallImpactSoundEffect", 0.07, false);
 				return;
 				//}
 			}
@@ -370,7 +370,7 @@ class PlayerInstance extends EngineInstance {
 			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
 			this.has_doubleJump = false;
 			// double jump sound effect
-			$engine.audioPlaySound("DoubleJumpSoundEffect", 0.1, false);
+			$engine.audioPlaySound("DoubleJumpSoundEffect", 0.07, false);
 		}
 		//}
 
