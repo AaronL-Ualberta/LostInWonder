@@ -28,6 +28,8 @@ class VineBlock extends SolidObject {
 				}
 
 				this.destroy();
+				// Vine Burn Sound Effect
+				$engine.audioPlaySound("VineBurnSoundEffect", 1, false, 0.24, 0.29);
 			}
 		}
 	}

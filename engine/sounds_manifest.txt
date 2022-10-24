@@ -8,3 +8,5 @@ require WallImpactSoundEffect engine/audio/WallImpactSoundEffect.ogg SE
 require WaterDashSoundEffect  engine/audio/WaterDashSoundEffect.ogg SE
 require EarthSoundEffect  engine/audio/EarthSoundEffect.ogg SE
 require ArtifactCollectibleSoundEffect engine/audio/ArtifactCollectibleSoundEffect.ogg SE
+require BoulderDropSoundEffect engine/audio/BoulderDropSoundEffect.ogg SE
+require VineBurnSoundEffect engine/audio/VineBurnSoundEffect.ogg SE
