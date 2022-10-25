@@ -11,7 +11,7 @@ class Dialogue extends EngineInstance {
 		this.laraya_portraits[LARAYA_PORTRAITS.HAPPY] = this.portrait_happy;
 		this.laraya_portraits[LARAYA_PORTRAITS.ANGRY] = this.portrait_angry;
 		this.laraya_portraits[LARAYA_PORTRAITS.HURT] = this.portrait_hurt;
-		this.laraya_portraits[LARAYA_PORTRAITS.SCARED] = this.portrait_hurt;
+		this.laraya_portraits[LARAYA_PORTRAITS.SCARED] = this.portrait_scared;
 		this.laraya_portraits[LARAYA_PORTRAITS.SURPRISED] = this.portrait_surprised;
 
 		this.dialogue = $engine.createManagedRenderable(this, new PIXI.Container());
@@ -79,7 +79,7 @@ class Dialogue extends EngineInstance {
 		// 	new DialogueLine("Ack... too many instructions!", this.portrait_hurt),
 		// ];
 		// this.dialogue_text = this.lines[0].text;
-		this.dialogue_portrait.texture = this.lines[0].image;
+		this.dialogue_portrait.texture = this.laraya_portraits[this.lines[0].image];
 
 		this.line_on = 0;
 		this.first_frame = true;
@@ -110,7 +110,8 @@ class Dialogue extends EngineInstance {
 				if (IN.keyCheckPressed("KeyZ")) {
 					// Change to next slide
 					if (this.line_on === this.lines.length - 1) {
-						this.destroy();
+						// Dialogue ends
+						this.dialogueEnd();
 					} else {
 						this.timer = 0;
 						this.line_on++;
@@ -125,12 +126,16 @@ class Dialogue extends EngineInstance {
 	draw(gui, camera) {
 		$engine.requestRenderOnGUI(this.dialogue);
 	}
+
+	dialogueEnd() {
+		this.destroy();
+	}
 }
 
 class DialogueLine {
 	constructor(text, image, name = "Laraya") {
 		this.text = text;
-		this.image = image;
+		this.image = image; //Integer, e.g. LARAYA_PORTRAITS.HAPPY
 		this.name = name;
 	}
 }

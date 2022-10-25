@@ -1,6 +1,6 @@
 class Artifact extends EngineInstance {
 	onEngineCreate() {
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(0, 0, 48, 48)));
+		this.setHitbox(new Hitbox(this, new RectangleHitbox(-24, -24, 24, 24)));
 		this.sprite = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture("artifact")), true);
 	}
 

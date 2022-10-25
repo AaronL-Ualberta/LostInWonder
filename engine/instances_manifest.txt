@@ -31,6 +31,7 @@ WaterDashParticle engine/instances/particles/WaterDashParticle.js
 WindParticle engine/instances/particles/WindParticle.js
 
 TitleScreenHandler engine/instances/title_screen_handler.js
+Level4IntroCutscene engine/instances/level_4_intro_cutscene.js
 
 TestInstance engine/instances/test_instance.js
 TestInstance2 engine/instances/test_instance2.js

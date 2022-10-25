@@ -31,14 +31,14 @@ class EvilLaraya extends EngineInstance {
 				const lines = [
 					new DialogueLine("Hey! Why are you me!? You look too evil, though.", LARAYA_PORTRAITS.ANGRY),
 					new DialogueLine("Press W to jump, and press Q and E to swap between spells:", LARAYA_PORTRAITS.SURPRISED),
-					new DialogueLine("Click on the screen while using FIRE to shoot a fireball,", LARAYA_PORTRAITS.ANGRY),
-					new DialogueLine("Walk on water by freezing it while using WATER,", LARAYA_PORTRAITS.ANGRY),
+					new DialogueLine("Click on the screen while using FIRE to shoot a fireball,", LARAYA_PORTRAITS.HAPPY),
+					new DialogueLine("Walk on water by freezing it while using WATER,", LARAYA_PORTRAITS.SCARED),
 					new DialogueLine(
 						"Hold toward a wall while using EARTH to slide down and jump off of it,",
 						LARAYA_PORTRAITS.ANGRY
 					),
-					new DialogueLine("And finally, jump while airborne using AIR to double jump!", LARAYA_PORTRAITS.ANGRY),
-					new DialogueLine("Ack... too many instructions!", LARAYA_PORTRAITS.ANGRY),
+					new DialogueLine("And finally, jump while airborne using AIR to double jump!", LARAYA_PORTRAITS.HAPPY),
+					new DialogueLine("Ack... too many instructions!", LARAYA_PORTRAITS.HURT),
 				];
 				this.dialogue_instance = new Dialogue(0, 0, lines);
 				this.talking = true;

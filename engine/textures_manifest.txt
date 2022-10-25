@@ -45,3 +45,4 @@ cutscene_2 engine/textures/cutscenes/2.png 0 0
 cutscene_3 engine/textures/cutscenes/3.png 0 0
 cutscene_4 engine/textures/cutscenes/4.png 0 0
 cutscene_5 engine/textures/cutscenes/5.png 0 0
+level_4_intro_cutscene engine/textures/cutscenes/level4.jpg 0 0
