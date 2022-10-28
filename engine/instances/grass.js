@@ -12,7 +12,9 @@ class GrassCreate extends EngineInstance {
 		this.grass_array = [];
 		while (start_x <= right) {
 			if (start_x <= right) {
-				var temp = new Grass(start_x, this.y + 24);
+				if (RoomManager.currentRoom().name === "Level4") {
+					var temp = new Grass(start_x, this.y + 24, [90, 120], [30, 50], [70, 110]);
+				}
 				var grass_type = $engine.getTexturesFromSpritesheet(
 					"GrassBlade",
 					0,
@@ -27,7 +29,7 @@ class GrassCreate extends EngineInstance {
 				this.grass_array.push(temp);
 				this.container.addChild(sprite);
 
-				start_x += EngineUtils.irandomRange(3, 6);
+				start_x += EngineUtils.irandomRange(2, 3);
 			}
 		}
 	}
@@ -53,7 +55,7 @@ class GrassCreate extends EngineInstance {
 }
 
 class Grass {
-	constructor(x, y) {
+	constructor(x, y, red_val, green_val, blue_val) {
 		this.x = x;
 		this.y = y;
 		this.yScale = EngineUtils.randomRange(0.35, 0.75);
@@ -62,9 +64,9 @@ class Grass {
 		this.timer = 0;
 		this.sprite = null;
 
-		const red = Math.round(EngineUtils.irandomRange(20, 40));
-		const green = Math.round(255 * EngineUtils.randomRange(0.3, 0.8));
-		const blue = Math.round(EngineUtils.irandomRange(20, 40));
+		const red = Math.round(EngineUtils.irandomRange(red_val[0], red_val[1])); //20, 40
+		const green = Math.round(EngineUtils.irandomRange(green_val[0], green_val[1])); //77, 204
+		const blue = Math.round(EngineUtils.irandomRange(blue_val[0], blue_val[1])); //20, 40
 
 		this.tint = (red << 16) | (green << 8) | blue;
 
