@@ -12,6 +12,16 @@ class Global extends EngineInstance {
 		this.timer = 300;
 		this.clock = this.timer;
 		this.artifact_count = 0;
+		if (!("myVar" in $engine.getEngineGlobalData())) {
+			var data = $engine.getEngineGlobalData();
+			data.myVar = 0;
+		}
+		$engine.saveEngineGlobalData();
+	}
+
+	saveCollectible() {
+		$engine.getEngineGlobalData().myVar += this.artifact_count;
+		$engine.saveEngineGlobalData();
 	}
 
 	step() {

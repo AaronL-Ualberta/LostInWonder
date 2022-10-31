@@ -1,6 +1,6 @@
 class TechDemoHandler extends EngineInstance {
 	onEngineCreate() {
-		this.audioSound = $engine.audioPlaySound("Level1Background", 0.03, true);
+		//this.audioSound = $engine.audioPlaySound("Level1Background", 0.03, true);
 
 		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
 		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
@@ -128,7 +128,7 @@ class TechDemoHandler extends EngineInstance {
 	}
 
 	onDestroy() {
-		$engine.audioStopSound(this.audioSound);
+		//$engine.audioStopSound(this.audioSound);
 	}
 
 	draw(gui, camera) {

@@ -1,6 +1,6 @@
 class Artifact extends EngineInstance {
 	onEngineCreate() {
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(0, 0, 48, 48)));
+		this.setHitbox(new Hitbox(this, new RectangleHitbox(-12, -12, 12, 12)));
 		this.bound = 0;
 		this.speed = 0.5;
 		this.move = 1;

@@ -23,6 +23,8 @@ require burning_vine_block_top engine/textures/burningvineblocktop.png 0 0
 require boulder_block engine/textures/boulderblock.png 0.5 0.5
 require artifact engine/textures/artifact.png 0.5 0.5
 require health engine/textures/Health.png 0 0.5
+require flying_enemy engine/textures/fly_enemy.png 0.5 0.5
+require bomb engine/textures/fireball3.png 0.5 0.5
 
 dial_laraya_angry engine/textures/dialogue/angy.png 0 0
 dial_laraya_hurt engine/textures/dialogue/dies.png 0 0

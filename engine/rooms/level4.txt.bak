@@ -421,5 +421,7 @@ block instances
 	GrassCreate 2280 2520 0 0 3 1
 	GrassCreate 1608 2520 0 0 3 1
 	Counter -120 2904 0 0 1 1
+	FlyEnemy 552 2760 0 0 1 1
+	EnemyBomb 744 2760 0 0 1 1
 endblock
 
