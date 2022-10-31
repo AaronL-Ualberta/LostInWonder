@@ -48,5 +48,6 @@ block instances
 	VineBlock 2256 1488 0 0 1 1
 	VineBlock 2256 1584 0 0 1 1
 	VineBlock 2256 1632 0 0 1 1
+	Artifact 1560 1704 0 0 1 1
 endblock
 

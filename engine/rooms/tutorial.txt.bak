@@ -32,8 +32,21 @@ block instances
 	VineBlock 2304 1440 0 0 1 1
 	VineBlock 2304 1488 0 0 1 1
 	VineBlock 2304 1536 0 0 1 1
-	VineBlock 2336 1512 0 0 1 1
-	VineBlock 2336 1560 0 0 1 1
-	VineBlock 2336 1608 0 0 1 1
+	VineBlock 2304 1632 0 0 1 1
+	VineBlock 2304 1584 0 0 1 1
+	VineBlock 2304 1680 0 0 1 1
+	VineBlock 2352 1392 0 0 1 1
+	VineBlock 2352 1440 0 0 1 1
+	VineBlock 2352 1488 0 0 1 1
+	VineBlock 2352 1584 0 0 1 1
+	VineBlock 2352 1536 0 0 1 1
+	VineBlock 2352 1632 0 0 1 1
+	VineBlock 2256 1344 0 0 1 1
+	VineBlock 2256 1392 0 0 1 1
+	VineBlock 2256 1440 0 0 1 1
+	VineBlock 2256 1536 0 0 1 1
+	VineBlock 2256 1488 0 0 1 1
+	VineBlock 2256 1584 0 0 1 1
+	VineBlock 2256 1632 0 0 1 1
 endblock
 
