@@ -115,6 +115,11 @@ class Dialogue extends EngineInstance {
 					} else {
 						this.timer = 0;
 						this.line_on++;
+						if (this.lines[this.line_on] === DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE) {
+							// Switch to the next image in the cutscene
+
+							this.line_on++;
+						}
 						this.dialogue_portrait.texture = this.laraya_portraits[this.lines[this.line_on].image];
 						this.dialogue_char_name.text = this.lines[this.line_on].name;
 					}
@@ -146,3 +151,6 @@ LARAYA_PORTRAITS.ANGRY = 1;
 LARAYA_PORTRAITS.SURPRISED = 2;
 LARAYA_PORTRAITS.SCARED = 3;
 LARAYA_PORTRAITS.HURT = 4;
+
+class DIALOGUE_COMMANDS {}
+DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE = "";
