@@ -1,0 +1,52 @@
+block room_data
+	cameraX 0
+	cameraY 0
+	cameraWidth 816
+	cameraHeight 624
+	cameraRotation 0
+	backgroundColour 0
+	rpgRoom 8
+	rpgCollider InvisibleWall
+	rpgIgnoreEmptyTiles 0
+	rpgColliderOriginX 0
+	rpgColliderOriginY 0
+endblock
+
+block instances
+	TechDemoHandler 0 0 0 0 1 1
+	PlayerInstance 264 72 0 0 1 1
+	Global -72 -72 0 0 1 1
+	SemiSolid 288 216 0 0 12 1
+	SemiSolid 552 408 0 0 3 1
+	InvisibleWall 24 0 0 0 1 4
+	InvisibleWall 624 0 0 0 1 26
+	SemiSolid 552 1128 0 0 3 1
+	InvisibleWall 240 240 0 0 2 1
+	InvisibleWall 0 384 0 0 2 1
+	InvisibleWall 96 336 0 0 1 1
+	InvisibleWall 144 288 0 0 1 1
+	InvisibleWall 0 0 0 0 1 8
+	InvisibleWall 432 480 0 0 1 1
+	InvisibleWall 432 1200 0 0 1 1
+	VineBlock 2304 1392 0 0 1 1
+	VineBlock 2304 1440 0 0 1 1
+	VineBlock 2304 1488 0 0 1 1
+	VineBlock 2304 1536 0 0 1 1
+	VineBlock 2304 1632 0 0 1 1
+	VineBlock 2304 1584 0 0 1 1
+	VineBlock 2304 1680 0 0 1 1
+	VineBlock 2352 1392 0 0 1 1
+	VineBlock 2352 1440 0 0 1 1
+	VineBlock 2352 1488 0 0 1 1
+	VineBlock 2352 1584 0 0 1 1
+	VineBlock 2352 1536 0 0 1 1
+	VineBlock 2352 1632 0 0 1 1
+	VineBlock 2256 1344 0 0 1 1
+	VineBlock 2256 1392 0 0 1 1
+	VineBlock 2256 1440 0 0 1 1
+	VineBlock 2256 1536 0 0 1 1
+	VineBlock 2256 1488 0 0 1 1
+	VineBlock 2256 1584 0 0 1 1
+	VineBlock 2256 1632 0 0 1 1
+endblock
+

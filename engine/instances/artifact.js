@@ -1,6 +1,10 @@
 class Artifact extends EngineInstance {
 	onEngineCreate() {
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(-24, -24, 24, 24)));
+		this.setHitbox(new Hitbox(this, new RectangleHitbox(-12, -12, 12, 12)));
+		this.bound = 0;
+		this.speed = 0.5;
+		this.move = 1;
+		this.limit = 8;
 		this.sprite = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture("artifact")), true);
 	}
 
@@ -15,5 +19,13 @@ class Artifact extends EngineInstance {
 			// Artifact Collectile Sound Effect
 			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
 		}
+		if (this.bound > this.limit) {
+			this.move = -1;
+		} else if (this.bound < -this.limit) {
+			this.move = 1;
+		}
+
+		this.y += this.move * this.speed;
+		this.bound += this.move * this.speed;
 	}
 }

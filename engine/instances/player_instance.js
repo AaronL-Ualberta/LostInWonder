@@ -18,8 +18,10 @@ class PlayerInstance extends EngineInstance {
 		this.allowSnapRight = false;
 		this.allowSnapUp = false;
 		this.snap_enabled = false;
+		this.underwater_time = 0;
 
 		// Player vars
+
 		this.player_health = 100;
 		this.spr_width = 50;
 		this.spr_height = 80;
@@ -112,6 +114,9 @@ class PlayerInstance extends EngineInstance {
 	}
 
 	step() {
+		if (this.player_health <= 0) {
+			$engine.setRoom(RoomManager.currentRoom().name);
+		}
 		// DEVMODE
 		if (IN.keyCheckPressed("Slash")) {
 			if (this.state === PLAYERSTATES.DEVMODE) {
@@ -425,7 +430,12 @@ class PlayerInstance extends EngineInstance {
 		this.moveCollide();
 	}
 	stepUnderwater() {
+		this.underwater_time += 1;
+		if (this.underwater_time % 60 === 0) {
+			this.player_health -= 5;
+		}
 		// Make shorthop lower
+
 		if (this.vsp < 0) {
 			if (!IN.keyCheck("KeyW")) {
 				this.vsp *= 0.98;
