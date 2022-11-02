@@ -1,6 +1,6 @@
 class Dialogue extends EngineInstance {
 	// Swap Engine Instance with SoildObject if you want collision
-	onEngineCreate(lines) {
+	onEngineCreate(lines, pause_level = false) {
 		// Dialogue
 		this.portrait_angry = $engine.getTexture("dial_laraya_angry");
 		this.portrait_hurt = $engine.getTexture("dial_laraya_hurt");
@@ -83,10 +83,15 @@ class Dialogue extends EngineInstance {
 
 		this.line_on = 0;
 		this.first_frame = true;
+
+		if (pause_level) {
+			this.pause_level = true;
+			$engine.pauseGameSpecial(this);
+		}
 	}
 
-	onCreate(x, y, lines) {
-		this.onEngineCreate(lines);
+	onCreate(x, y, lines, pause_level = false) {
+		this.onEngineCreate(lines, pause_level);
 		this.x = x;
 		this.y = y;
 		// do stuff
@@ -133,6 +138,9 @@ class Dialogue extends EngineInstance {
 	}
 
 	dialogueEnd() {
+		if (this.pause_level) {
+			$engine.unpauseGameSpecial();
+		}
 		this.destroy();
 	}
 }
@@ -153,4 +161,4 @@ LARAYA_PORTRAITS.SCARED = 3;
 LARAYA_PORTRAITS.HURT = 4;
 
 class DIALOGUE_COMMANDS {}
-DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE = "";
+DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE = "COMMAND_NEXT_CUTSCENE_IMAGE";
