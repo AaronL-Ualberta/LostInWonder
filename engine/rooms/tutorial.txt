@@ -13,7 +13,7 @@ block room_data
 endblock
 
 block instances
-	TechDemoHandler 0 0 0 0 1 1
+	TutorialHandler 0 0 0 0 1 1
 	PlayerInstance 264 72 0 0 1 1
 	Global -72 -72 0 0 1 1
 	SemiSolid 288 216 0 0 12 1
@@ -49,5 +49,8 @@ block instances
 	VineBlock 2256 1584 0 0 1 1
 	VineBlock 2256 1632 0 0 1 1
 	Artifact 1560 1704 0 0 1 1
+	Counter -24 72 0 0 1 1
+	SemiSolid 552 792 0 0 3 1
+	InvisibleWall 432 816 0 0 1 1
 endblock
 
