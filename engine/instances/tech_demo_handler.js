@@ -1,4 +1,4 @@
-class TechDemoHandler extends EngineInstance {
+class TechDemoHandler extends LevelHandler {
 	onEngineCreate() {
 		//this.audioSound = $engine.audioPlaySound("Level1Background", 0.03, true);
 
@@ -51,6 +51,9 @@ class TechDemoHandler extends EngineInstance {
 		this.adjustFilter = new PIXI.filters.AdjustmentFilter();
 		this.adjustFilter.brightness = 0;
 		this.camera.addFilter(this.adjustFilter);
+
+		this.beatLevel = false;
+		this.timer2 = 0;
 	}
 
 	onCreate() {
@@ -64,66 +67,79 @@ class TechDemoHandler extends EngineInstance {
 	}
 
 	step() {
-		var camX = this.camera.getX();
-		var camY = this.camera.getY();
-		var divVal = 5;
-		this.camera.setX(
-			EngineUtils.clamp(
-				camX - (camX - (this.player.x - this.camera_dimensions[0] / 2)) / divVal,
-				0,
-				this.room_width * 48 - this.camera_dimensions[0]
-			)
-		);
-		this.camera.setY(
-			EngineUtils.clamp(
-				camY - (camY - (this.player.y - this.camera_dimensions[1] / 2)) / divVal,
-				0,
-				this.room_height * 48 - this.camera_dimensions[1]
-			)
-		);
-
-		// This is responsible for moving the background
-		this.background.tilePosition.x = -this.camera.getX() / 5;
-
-		this.fgSprite.skew.x = Math.sin($engine.getGameTimer() / 60) / 20;
-		this.fgSprite.tilePosition.x = -this.camera.getX() / 1.75;
-		this.fgSprite.tilePosition.y = -this.camera.getY() / 1.75;
-
-		this.rayFilter.time = this.camera.getX() / 300 + $engine.getGameTimer() / 200 + this.rayFilter_offset;
-		// this.rayFilter.time = $engine.getGameTimer() / 200;
-
-		// Spell wheel rotation
-		if (this.spellWheel_rotating) {
-			const rot_time_total = 20;
-			this.spellWheel_sprite.rotation = EngineUtils.interpolate(
-				this.spellWheel_timer / rot_time_total,
-				this.spellWheel_origAngle,
-				this.spellWheel_targetAngle,
-				EngineUtils.INTERPOLATE_OUT
+		if (!this.beatLevel) {
+			var camX = this.camera.getX();
+			var camY = this.camera.getY();
+			var divVal = 5;
+			this.camera.setX(
+				EngineUtils.clamp(
+					camX - (camX - (this.player.x - this.camera_dimensions[0] / 2)) / divVal,
+					0,
+					this.room_width * 48 - this.camera_dimensions[0]
+				)
 			);
-			this.spellWheel_timer++;
-			if (this.spellWheel_timer >= rot_time_total) {
-				this.spellWheel_rotating = false;
+			this.camera.setY(
+				EngineUtils.clamp(
+					camY - (camY - (this.player.y - this.camera_dimensions[1] / 2)) / divVal,
+					0,
+					this.room_height * 48 - this.camera_dimensions[1]
+				)
+			);
+
+			// This is responsible for moving the background
+			this.background.tilePosition.x = -this.camera.getX() / 5;
+
+			this.fgSprite.skew.x = Math.sin($engine.getGameTimer() / 60) / 20;
+			this.fgSprite.tilePosition.x = -this.camera.getX() / 1.75;
+			this.fgSprite.tilePosition.y = -this.camera.getY() / 1.75;
+
+			this.rayFilter.time = this.camera.getX() / 300 + $engine.getGameTimer() / 200 + this.rayFilter_offset;
+			// this.rayFilter.time = $engine.getGameTimer() / 200;
+
+			// Spell wheel rotation
+			if (this.spellWheel_rotating) {
+				const rot_time_total = 20;
+				this.spellWheel_sprite.rotation = EngineUtils.interpolate(
+					this.spellWheel_timer / rot_time_total,
+					this.spellWheel_origAngle,
+					this.spellWheel_targetAngle,
+					EngineUtils.INTERPOLATE_OUT
+				);
+				this.spellWheel_timer++;
+				if (this.spellWheel_timer >= rot_time_total) {
+					this.spellWheel_rotating = false;
+				}
 			}
-		}
 
-		// Fade in
-		if (this.timer < 60) {
-			this.adjustFilter.brightness = this.timer / 60;
-			this.timer++;
-			if (this.timer === 60) {
-				this.camera.removeFilter(this.adjustFilter);
+			// Fade in
+			if (this.timer < 60) {
+				this.adjustFilter.brightness = this.timer / 60;
+				this.timer++;
+				if (this.timer === 60) {
+					this.camera.removeFilter(this.adjustFilter);
+				}
 			}
-		}
 
-		// Check for falling out of the map
-		if (this.player.y >= this.room_height * 48) {
-			$engine.setRoom(RoomManager.currentRoom().name);
-		}
+			// Check for falling out of the map
+			if (this.player.y >= this.room_height * 48) {
+				$engine.setRoom(RoomManager.currentRoom().name);
+			}
 
-		// Check if player beats the level
-		if (this.player.x >= (this.room_width - 3) * 48) {
-			$engine.setRoom(RoomManager.currentRoom().name);
+			// Check if player beats the level
+			if (this.player.x >= (this.room_width - 3) * 48) {
+				//$engine.setRoom(RoomManager.currentRoom().name);
+				this.winLevel();
+			}
+		} else {
+			this.timer2++;
+
+			const fadeTime = 220;
+
+			if (this.timer2 < fadeTime) {
+				this.adjustFilter.brightness = 1 - this.timer2 / fadeTime;
+				this.adjustFilter2.alpha = this.timer2 / fadeTime;
+				return;
+			}
 		}
 	}
 
@@ -133,17 +149,36 @@ class TechDemoHandler extends EngineInstance {
 
 	draw(gui, camera) {
 		// EngineDebugUtils.drawHitbox(camera, this);
-		$engine.requestRenderOnGUI(this.spellWheel);
+		if (!this.beatLevel) {
+			$engine.requestRenderOnGUI(this.spellWheel);
+		} else {
+			$engine.requestRenderOnGUI(this.winScreenSprite);
+			$engine.requestRenderOnGUI(this.winMessage);
+		}
 	}
 
-	spellWheelRotate(toSpellID) {
-		// console.log("HLO");
-		// this.spellWheel_sprite.rotation = toSpellID * (Math.PI / 2);
-		this.spellWheel_rotating = true;
-		this.spellWheel_origAngle = this.spellWheel_sprite.rotation;
-		//this.spellWheel_targetAngle = -toSpellID * (Math.PI / 2);
-		this.spellWheel_targetAngle =
-			this.spellWheel_origAngle + V2D.angleDiff(this.spellWheel_origAngle, -toSpellID * (Math.PI / 2));
-		this.spellWheel_timer = 0;
+	winLevel() {
+		$engine.pauseGameSpecial(this);
+		this.beatLevel = true;
+		this.winScreenSprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("cutscene_1")));
+		this.winScreenSprite.width = $engine.getCamera().getWidth();
+		this.winScreenSprite.height = $engine.getCamera().getHeight();
+
+		this.winMessage = $engine.createManagedRenderable(
+			this,
+			new PIXI.Text("You Win! Thank you for playing the Vertical Slice", { ...$engine.getDefaultTextStyle() })
+		);
+		this.winMessage.x = 200;
+		this.winMessage.y = 100;
+
+		this.camera = $engine.getCamera();
+		this.adjustFilter = new PIXI.filters.AdjustmentFilter();
+		this.adjustFilter.brightness = 1;
+		this.camera.addFilter(this.adjustFilter);
+
+		this.adjustFilter2 = new PIXI.filters.AdjustmentFilter();
+		this.adjustFilter2.alpha = 0;
+		this.winScreenSprite.filters = [this.adjustFilter2];
+		this.winMessage.filters = [this.adjustFilter2];
 	}
 }

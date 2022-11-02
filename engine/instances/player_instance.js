@@ -5,7 +5,7 @@ class PlayerInstance extends EngineInstance {
 		this.jump_height = 13;
 		this.gravity = 0.8;
 		this.default_gravity = this.gravity;
-		this.water_gravity = 0.15;
+		this.water_gravity = 0.12;
 		this.max_run_speed = 5;
 		this.decel_coeff = 0.8;
 		this.decel_coeff_air = 0.98;
@@ -72,7 +72,7 @@ class PlayerInstance extends EngineInstance {
 		this.current_spell = SPELLNAMES.FIRE;
 		this.face_direction = 1;
 
-		this.levelHandler = TechDemoHandler.first;
+		this.levelHandler = LevelHandler.first;
 
 		this.animation_running = $engine.getAnimation("player_runanimation");
 		this.animation_standing = [$engine.getTexture("baby2")];
@@ -92,6 +92,14 @@ class PlayerInstance extends EngineInstance {
 		// this.getSprite().anchor.y = 1;
 		this.animation.anchor.y = 1;
 		this.animation.animationSpeed = 0.1;
+
+		this.fire_cooldown = 60;
+		this.fire_cooldown_timer = 0;
+
+		this.wind_cooldown = 300;
+		this.wind_cooldown_timer = 0;
+
+		this.rock_spell_count = 0;
 
 		// Marcus cool code!!!!!!!!!!!!!!!!!!!!!!!!!
 		// this.filter = new PIXI.filters.BlurFilter();
@@ -118,25 +126,41 @@ class PlayerInstance extends EngineInstance {
 			}
 		}
 
+		this.fire_cooldown_timer--;
+		this.wind_cooldown_timer--;
 		if (IN.mouseCheckPressed(0)) {
 			if (this.current_spell === SPELLNAMES.FIRE) {
 				// FIRE
 				const offset = 40;
-				const angle = V2D.calcDir(
-					IN.getMouseX() - (this.x + this.face_direction * offset),
-					IN.getMouseY() - (this.y - offset)
-				);
-				new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
+				if (this.fire_cooldown_timer <= 0) {
+					const angle = V2D.calcDir(
+						IN.getMouseX() - (this.x + this.face_direction * offset),
+						IN.getMouseY() - (this.y - offset)
+					);
+					new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
+
+					this.fire_cooldown_timer = this.fire_cooldown;
+				} else {
+					new DustParticle(this.x + this.face_direction * offset, this.y - offset, 0.7);
+				}
 			} else if (this.current_spell === SPELLNAMES.EARTH) {
 				// EARTH
 				const offset = 40;
-				const angle = V2D.calcDir(
-					IN.getMouseX() - (this.x + this.face_direction * offset),
-					IN.getMouseY() - (this.y - offset)
-				);
-				new RockBlock(this.x + this.face_direction * offset, this.y - offset, angle);
+				if (this.rock_spell_count < 2) {
+					const angle = V2D.calcDir(
+						IN.getMouseX() - (this.x + this.face_direction * offset),
+						IN.getMouseY() - (this.y - offset)
+					);
+					new RockBlock(this.x + this.face_direction * offset, this.y - offset - 20, angle);
+				} else {
+					new DustParticle(this.x + this.face_direction * offset, this.y - offset, 0.7);
+				}
 			} else if (this.current_spell === SPELLNAMES.AIR) {
 				// AIR
+				if (this.wind_cooldown_timer <= 0) {
+					new WindSpell(IN.getMouseX(), IN.getMouseY());
+					this.wind_cooldown_timer = this.wind_cooldown;
+				}
 			} else if (this.current_spell === SPELLNAMES.WATER) {
 				// WATER
 				if (this.has_waterdash) {
@@ -158,6 +182,9 @@ class PlayerInstance extends EngineInstance {
 					// }
 					// Water Dash Sound Effect
 					$engine.audioPlaySound("WaterDashSoundEffect", 0.08, false);
+
+					// Spawn water particle
+					new WaterDashParticle(this.x - this.facing * 20, this.y + 1, 0.5, angle);
 				}
 			}
 		}
@@ -212,7 +239,6 @@ class PlayerInstance extends EngineInstance {
 		this.getStateGroup().exit(this.state);
 		this.state = _state;
 		this.state_timer = 0;
-		console.log("works");
 		this.getStateGroup().enter(this.state);
 	}
 
@@ -300,8 +326,15 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		// Apply gravity
-		this.vsp += this.gravity;
-		if (this.vsp > -0.5 && this.vsp < 1.5) this.vsp -= this.gravity / 1.4;
+		this.grav_real = this.gravity;
+		if (IM.instanceCollision(this, this.x, this.y, WindSpell)) {
+			// In the wind spell
+			this.grav_real /= 2;
+			this.vsp = Math.min(this.vsp, 5);
+		} else {
+			if (this.vsp > -0.5 && this.vsp < 1.5) this.vsp -= this.gravity / 1.4;
+		}
+		this.vsp += this.grav_real;
 
 		// Decel
 		this.hsp *= this.decel_coeff_air;
@@ -313,13 +346,13 @@ class PlayerInstance extends EngineInstance {
 			this.hsp = EngineUtils.clamp(this.hsp + inp * this.ground_accel, -this.max_run_speed, this.max_run_speed);
 			// Check wall cling
 			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
-				if (this.current_spell === 1) {
-					this.switchState(PLAYERSTATES.WALLCLING);
-					this.facing = inp;
-					// Wall Impact Sound Effect
-					$engine.audioPlaySound("WallImpactSoundEffect", 0.07, false);
-					return;
-				}
+				//if (this.current_spell === 1) {
+				this.switchState(PLAYERSTATES.WALLCLING);
+				this.facing = inp;
+				// Wall Impact Sound Effect
+				$engine.audioPlaySound("WallImpactSoundEffect", 0.07, false);
+				return;
+				//}
 			}
 		}
 
@@ -333,18 +366,18 @@ class PlayerInstance extends EngineInstance {
 		this.checkUnderwater();
 
 		// Check Double Jump
-		if (this.current_spell === 2) {
-			if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
-				this.vsp = -this.jump_height;
-				const part_from_center = 18;
-				const part_from_ground = 5;
-				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
-				new DustParticle(this.x + part_from_center, this.y - part_from_ground);
-				this.has_doubleJump = false;
-				// double jump sound effect
-				$engine.audioPlaySound("DoubleJumpSoundEffect", 0.07, false);
-			}
+		//if (this.current_spell === 2) {
+		if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
+			this.vsp = -this.jump_height;
+			const part_from_center = 18;
+			const part_from_ground = 5;
+			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
+			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
+			this.has_doubleJump = false;
+			// double jump sound effect
+			$engine.audioPlaySound("DoubleJumpSoundEffect", 0.07, false);
 		}
+		//}
 
 		this.moveCollide();
 	}
@@ -392,7 +425,7 @@ class PlayerInstance extends EngineInstance {
 			this.switchState(PLAYERSTATES.AIRBORNE);
 		}
 
-		if (this.state_timer % 2 === 0) new DustParticle(this.x, this.y);
+		// if (this.state_timer % 2 === 0) new DustParticle(this.x, this.y);
 
 		this.moveCollide();
 	}
@@ -439,7 +472,7 @@ class PlayerInstance extends EngineInstance {
 		if (this.state_timer > 8) {
 			// "Jump" infinitely
 			if (IN.keyCheckPressed("KeyW")) {
-				this.vsp = -this.jump_height / 4;
+				this.vsp += -this.jump_height / 6;
 				const part_from_center = 18;
 				const part_from_ground = 5;
 				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
@@ -470,6 +503,8 @@ class PlayerInstance extends EngineInstance {
 		this.vsp = 0;
 		this.has_doubleJump = true;
 		EngineUtils.setAnimation(this.animation, this.animation_wallcling);
+		new DustParticle(this.x + this.facing * 18, this.y - 64);
+		new DustParticle(this.x + this.facing * 18, this.y - 4);
 	}
 	enterWaterDash() {
 		EngineUtils.setAnimation(this.animation, this.animation_running);

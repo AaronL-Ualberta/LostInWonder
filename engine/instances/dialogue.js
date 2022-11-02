@@ -1,12 +1,18 @@
 class Dialogue extends EngineInstance {
 	// Swap Engine Instance with SoildObject if you want collision
-	onEngineCreate() {
+	onEngineCreate(lines, pause_level = false) {
 		// Dialogue
 		this.portrait_angry = $engine.getTexture("dial_laraya_angry");
 		this.portrait_hurt = $engine.getTexture("dial_laraya_hurt");
 		this.portrait_happy = $engine.getTexture("dial_laraya_happy");
 		this.portrait_scared = $engine.getTexture("dial_laraya_scared");
 		this.portrait_surprised = $engine.getTexture("dial_laraya_surprised");
+		this.laraya_portraits = [];
+		this.laraya_portraits[LARAYA_PORTRAITS.HAPPY] = this.portrait_happy;
+		this.laraya_portraits[LARAYA_PORTRAITS.ANGRY] = this.portrait_angry;
+		this.laraya_portraits[LARAYA_PORTRAITS.HURT] = this.portrait_hurt;
+		this.laraya_portraits[LARAYA_PORTRAITS.SCARED] = this.portrait_scared;
+		this.laraya_portraits[LARAYA_PORTRAITS.SURPRISED] = this.portrait_surprised;
 
 		this.dialogue = $engine.createManagedRenderable(this, new PIXI.Container());
 		this.dialogue_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("dial_box")));
@@ -62,24 +68,30 @@ class Dialogue extends EngineInstance {
 		this.timer = 0;
 
 		// Conversation
-		this.lines = [
-			new DialogueLine("Hey! Why are you me!? You look too evil, though.", this.portrait_angry),
-			new DialogueLine("Press W to jump, and press Q and E to swap between spells:", this.portrait_surprised),
-			new DialogueLine("Click on the screen while using FIRE to shoot a fireball,", this.portrait_scared),
-			new DialogueLine("Walk on water by freezing it while using WATER,", this.portrait_angry),
-			new DialogueLine("Hold toward a wall while using EARTH to slide down and jump off of it,", this.portrait_happy),
-			new DialogueLine("And finally, jump while airborne using AIR to double jump!", this.portrait_surprised),
-			new DialogueLine("Ack... too many instructions!", this.portrait_hurt),
-		];
+		this.lines = lines;
+		// [
+		// 	new DialogueLine("Hey! Why are you me!? You look too evil, though.", this.portrait_angry),
+		// 	new DialogueLine("Press W to jump, and press Q and E to swap between spells:", this.portrait_surprised),
+		// 	new DialogueLine("Click on the screen while using FIRE to shoot a fireball,", this.portrait_scared),
+		// 	new DialogueLine("Walk on water by freezing it while using WATER,", this.portrait_angry),
+		// 	new DialogueLine("Hold toward a wall while using EARTH to slide down and jump off of it,", this.portrait_happy),
+		// 	new DialogueLine("And finally, jump while airborne using AIR to double jump!", this.portrait_surprised),
+		// 	new DialogueLine("Ack... too many instructions!", this.portrait_hurt),
+		// ];
 		// this.dialogue_text = this.lines[0].text;
-		this.dialogue_portrait.texture = this.lines[0].image;
+		this.dialogue_portrait.texture = this.laraya_portraits[this.lines[0].image];
 
 		this.line_on = 0;
 		this.first_frame = true;
+
+		if (pause_level) {
+			this.pause_level = true;
+			$engine.pauseGameSpecial(this);
+		}
 	}
 
-	onCreate(x, y) {
-		this.onEngineCreate();
+	onCreate(x, y, lines, pause_level = false) {
+		this.onEngineCreate(lines, pause_level);
 		this.x = x;
 		this.y = y;
 		// do stuff
@@ -103,11 +115,18 @@ class Dialogue extends EngineInstance {
 				if (IN.keyCheckPressed("KeyZ")) {
 					// Change to next slide
 					if (this.line_on === this.lines.length - 1) {
-						this.destroy();
+						// Dialogue ends
+						this.dialogueEnd();
 					} else {
 						this.timer = 0;
 						this.line_on++;
-						this.dialogue_portrait.texture = this.lines[this.line_on].image;
+						if (this.lines[this.line_on] === DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE) {
+							// Switch to the next image in the cutscene
+
+							this.line_on++;
+						}
+						this.dialogue_portrait.texture = this.laraya_portraits[this.lines[this.line_on].image];
+						this.dialogue_char_name.text = this.lines[this.line_on].name;
 					}
 				}
 			}
@@ -117,11 +136,29 @@ class Dialogue extends EngineInstance {
 	draw(gui, camera) {
 		$engine.requestRenderOnGUI(this.dialogue);
 	}
+
+	dialogueEnd() {
+		if (this.pause_level) {
+			$engine.unpauseGameSpecial();
+		}
+		this.destroy();
+	}
 }
 
 class DialogueLine {
-	constructor(text, image) {
+	constructor(text, image, name = "Laraya") {
 		this.text = text;
-		this.image = image;
+		this.image = image; //Integer, e.g. LARAYA_PORTRAITS.HAPPY
+		this.name = name;
 	}
 }
+
+class LARAYA_PORTRAITS {}
+LARAYA_PORTRAITS.HAPPY = 0;
+LARAYA_PORTRAITS.ANGRY = 1;
+LARAYA_PORTRAITS.SURPRISED = 2;
+LARAYA_PORTRAITS.SCARED = 3;
+LARAYA_PORTRAITS.HURT = 4;
+
+class DIALOGUE_COMMANDS {}
+DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE = "COMMAND_NEXT_CUTSCENE_IMAGE";
