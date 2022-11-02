@@ -29,6 +29,7 @@ class Enemy extends EngineInstance {
 
 		if (IM.instanceCollision(this, this.x, this.y, Fireball)) {
 			IM.instancePlace(this, this.x, this.y, Fireball).destroy();
+			new EndCondition();
 			this.destroy();
 		}
 
