@@ -349,3 +349,53 @@ class DialogueLine {
 	this.airelement = [
 		new DialogueLine("This element is temperamental. It can move objects upwards and lessen the effects of gravity with strong gusts, and allow the user to jump again in midair as if on a cloud.")
 	];
+
+
+//ALL ENEMIES ENCOUNTED IN THE GAME, DIALOGUE SHOULD APPEAR THE FIRST TIME THEY ARE ON SCREEN
+
+// ENEMY ENCOUNTERED - SNAKA
+	this.snaka = [
+		new DialogueLine("Scaled serpents that are lazy, but vicious when disturbed.")
+	];
+
+
+// ENEMY ENCOUNTERED - RED COMPRIMIA
+	this.redcomprimia = [
+		new DialogueLine("Small beings with sharp teeth and talons that have evolved to live underground.")
+	];
+
+
+// ENEMY ENCOUNTERED - LEOTA
+	this.leota = [
+		new DialogueLine("Large felines that like high places, hiding in plain sight, and pouncing on unsuspecting prey.")
+	];
+
+
+// ENEMY ENCOUNTERED - GREEN COMPRIMIA
+	this.greencomprimia = [
+		new DialogueLine("Small beings with sharp teeth and talons that have evolved to easily scale trees.")
+	];
+
+
+// ENEMY ENCOUNTERED - MOSQUEETLE
+	this.mosqueetle = [
+		new DialogueLine("Large insects with a hard exoskeleton that seek out warm-blooded creatures for blood")
+	];
+
+
+// ENEMY ENCOUNTERED - PURPLE COMPRIMIA
+	this.purplecomprimia = [
+		new DialogueLine("Small beings with sharp teeth and talons that have evolved to live in wetland ecosystems")
+	];
+
+
+// FRIENDLY ENCOUNTERED - FLICKOW
+	this.flickow = [
+		new DialogueLine("Friendly, rare birds with glow-tipped feathers that live in tall trees.")
+	];
+
+
+// FRIENDLY ENCOUNTERED - AXODILE
+	this.axodile = [
+		new DialogueLine("Friendly, midsize reptiles that can survive on land for a time, but prefer long periods underwater")
+	];
