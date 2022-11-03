@@ -63,7 +63,7 @@ class Dialogue extends EngineInstance {
 
 		// Conversation
 		this.lines = [
-			new DialogueLine("Hey! Why are you me!? You look too evil, though.", this.portrait_angry),
+			new DialogueLine("Hey! Why are you me!? You look evil, though.", this.portrait_angry),
 			new DialogueLine("Press W to jump, and press Q and E to swap between spells:", this.portrait_surprised),
 			new DialogueLine("Click on the screen while using FIRE to shoot a fireball,", this.portrait_scared),
 			new DialogueLine("Walk on water by freezing it while using WATER,", this.portrait_angry),
@@ -125,3 +125,227 @@ class DialogueLine {
 		this.image = image;
 	}
 }
+
+// ----------   INTRO CUTSCENE DIALOGUE LINES   ----------
+
+	this.introlines = [
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //should be intro shot 1 here
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to intro shot 2
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to intro shot 3
+		new DialogueLine("And what have we here? Guards!", XIMARA_PORTRAITS.NEUTRAL), //happens in intro shot 3
+		new DialogueLine("This sorceress has been experimenting on rare species! Look at all of this! Scales and feathers and fur!", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 4) here
+		new DialogueLine("Laraya, Asu sorceress of Calchara, for crimes against this Tribunal you are hereby banished from the city of Ishana.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("From now until evermore, you shall be unwelcome in Ishana and all its surrounding lands.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("But I didn't even do anything wr-", LARAYA_PORTRAITS.SCARED),
+		new DialogueLine("Silence. Maralan, remember the rest.", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("Of course. Furthermore, in accordance with our most sacred laws, your wand must be snapped.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Your banishment begins today. Give me your wand." , MARALAN_PORTRAITS.NEUTRAL), 
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 5) here
+		new DialogueLine("But I need my stuff! Everything I own is here!", LARAYA_PORTRAITS.SURPRISED),
+		new DialogueLine("Your wand, Laraya.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("You're making a mistake. I didn't - oof!", LARAYA_PORTRAITS.SURPRISED), 
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 6) here
+	];
+
+
+// ----------   JUNGLE/TUTORIAL/LEVEL 1 DIALOGUE LINES   ----------
+
+	this.junglelines = [
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //should be jungle shot 1
+		new DialogueLine("Aaaaaaaaaaaaaahhh!", LARAYA_PORTRAITS.SCARED), //happens in jungle shot 1, then cutscene ends
+		new DialogueLine("Ouch! That hurt.", LARAYA_PORTRAITS.HURT), //tutorial info appears on screen (different black dialogue box?), keys to move left, right, jump, and talk to NPC's
+		new DialogueLine("Alright then. Now all I need to do is find the pieces of my wand and portal back home! Once I know how to prove my innocence, I suppose…", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine("I didn't even break that law, the Tribunal knows that! Why would they do this?", LARAYA_PORTRAITS.ANGRY),
+		new DialogueLine("I've lived at the Spire my whole life, the Tribunal knows I didn't do it!", LARAYA_PORTRAITS.ANGRY),
+		new DialogueLine("Hang on, what's over there? Something's glowing!", LARAYA_PORTRAITS.HAPPY), //fire wand piece is on the ground, nowhere else to go but interact with it. Lore appears on screen (see LORE section of dialogue) when clicked
+		new DialogueLine("One step closer to getting home! Once my wand is complete, I can make a portal and go back!", LARAYA_PORTRAITS.HAPPY), //tutorial obstacle, then she goes in the cave
+	];
+
+
+// ----------   CAVE/LEVEL 2 DIALOGUE LINES   ----------
+
+	this.cavelines = [
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //should be cave shot 1
+		new DialogueLine("Would you look at that! There was a point coming down here after all!", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 2
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 3
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 4
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 5
+		new DialogueLine("Oh no! Maybe this cave is going to be less helpful than I thought…", LARAYA_PORTRAITS.SCARED), //happens in cave shot 5, then cutscene ends
+		new DialogueLine("Well, if I leave them alone, they'll leave me alone. Right?", LARAYA_PORTRAITS.SCARED),
+		new DialogueLine("“I think I remember now. They're lazy and don't like to move much, but they'll definitely move if something comes and disturbs them.", LARAYA_PORTRAITS.SCARED),
+		new DialogueLine("Which, in this case, would be me…", LARAYA_PORTRAITS.SCARED),
+	];
+
+
+// ----------   TREES/LEVEL 3 DIALOGUE LINES   ----------
+
+	this.treeslines = [
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //should be trees shot 1
+		new DialogueLine("Where am I? Woah! The ground is really, really far away! That's probably not good!", LARAYA_PORTRAITS.SURPRISED), //happens in trees shot 1
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to trees shot 2
+		new DialogueLine("Wow! A flickow! It's gorgeous! I've read that they like collecting things, maybe it's picked up a part of my wand?", LARAYA_PORTRAITS.HAPPY), //happens in trees shot 2, then cutscene ends
+		new DialogueLine("I can't believe I'm seeing a flickow for real! What do you say, buddy, can I have it?", LARAYA_PORTRAITS.HAPPY), //triggers when player is close to nest/flickow sprite?
+		new DialogueLine("I promise not to touch anything else, I know how defensive you can get about your nest!", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine("Chirp!", FLICKOW_PORTRAITS.NEUTRAL),
+		new DialogueLine("How about I give you this stick instead? It's a lot better, wouldn't you say?", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine("Chirp! Chirp!", FLICKOW_PORTRAITS.NEUTRAL),
+		new DialogueLine("You've got yourself a deal, little guy! I get my wand piece, and you get these two sticks!", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine("Chirp! Chirp! Tweet!", FLICKOW_PORTRAITS.NEUTRAL), //interact with water wand piece, lore (from LORE section) appears on screen
+	];
+
+
+// ----------   SWAMP/LEVEL 4 DIALOGUE LINES   ----------
+
+	this.swamplines = [
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //should be swamp shot 1
+		new DialogueLine("This place doesn't look very friendly…", LARAYA_PORTRAITS.HAPPY), //happens in swamp shot 1
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to swamp shot 2
+		new DialogueLine("Ah! What was that! Who goes there! Show yourself!", LARAYA_PORTRAITS.SCARED), //need audio to occur just before this in swamp shot 2
+		new DialogueLine("Well, just please don't eat my hand!", LARAYA_PORTRAITS.SCARED), 
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to swamp shot 3
+		new DialogueLine("Oh! An axodile! Out of the water? And injured? What happened to you?", LARAYA_PORTRAITS.SURPRISED), //cutscene ends
+		new DialogueLine("I've read about your kind, buddy, and I think I know how to help! You can regenerate naturally, but you need to be in water for that.", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine("So all I have to do is get you into that pool over there, and you'll be right as rain… theoretically.", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine("The books I've read say it's just a myth, but I hope for your sake it's not.", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine("Raaaar!", AXODILE_PORTRAITS.HAPPY),
+		new DialogueLine("What's all this? Scale fragments… Drag marks… Cleanly cut rope bindings… And an Asu tool someone left behind!", LARAYA_PORTRAITS.SURPRISED),
+		new DialogueLine("Argh! Someone did this on purpose, and tried to make it look like an accident if anyone came by! But who… Ximara!", LARAYA_PORTRAITS.ANGRY),
+		new DialogueLine("Grrrr… I saw these scales in her despicable workshop.", LARAYA_PORTRAITS.ANGRY),
+	];
+
+
+// ----------   MUSHROOM VILLAGE CUTSCENE DIALOGUE LINES   ----------
+
+	this.villagelines = [
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //should be village shot 1
+		new DialogueLine("Wow! This is beautiful! This must be a Dwargin village, I've seen signs of them nearby. Is anyone home?", LARAYA_PORTRAITS.HAPPY), //happens in village shot 1
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to village shot 2
+		new DialogueLine("Ahh! Calm down, everyone, I mean you no harm! What's going on? I haven't done anything wrong!", LARAYA_PORTRAITS.SCARED),
+		new DialogueLine("Evil Asu sorceress is not welcome here. Leave!"), //villagers speaking, no portrait
+		new DialogueLine("What? Evil? I'm not evil, why would you…", LARAYA_PORTRAITS.SURPRISED),
+		new DialogueLine("Ximara. You have to understand, I'm not her!", LARAYA_PORTRAITS.SURPRISED),
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to village shot 3
+		new DialogueLine("The sorceress speaks the truth. You must relax."), //elder speaking, portrait added for gold release?
+		new DialogueLine("She is not the one we fear, and I sense she may be on our side."), //elder speaking, portrait added for gold release?
+		new DialogueLine("Thank you, Elder. You speak true, for I am in search of ways to bring down her evil.", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to village shot 4
+		new DialogueLine("In that case, you may be needing this. Do not let her actions go unanswered."), //elder speaking, portrait added for gold release?
+		new DialogueLine("Thank you, Elder. With this, I can finally get back to the Spire and make them see the truth.", LARAYA_PORTRAITS.HAPPY),
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to village shot 5
+	];
+
+
+// ----------   ENDING CUTSCENE DIALOGUE LINES   ----------
+
+	this.allendingstarts = [
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //should be ending shot 1
+		new DialogueLine("I demand an audience with the Tribunal! I bring with me evidence to confirm my innocence and declare the true law-breaker... Ximara!", LARAYA_PORTRAITS.ANGRY),
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to ending shot 2
+		new DialogueLine("Guards, at ease. Ximara, calm yourself.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Speak, Laraya. Tell us what you have found, but know that we are not easily convinced.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to ending shot 3, segue into appropriate ending
+	];
+
+// 100% collectibles gathered ending
+	this.hundredpercentlines = [
+		new DialogueLine("Look at all of this! Conclusive proof that Ximara is the owner of that horrific workshop, not me, and that she is behind everything happening to the beings on Calchara!", LARAYA_PORTRAITS.ANGRY),
+		new DialogueLine("Outstanding, Laraya! This is everything you could have possibly found to prove yourself innocent and show us Ximara's true nature! Ximara, do you have any last words?", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Foolish girl! You should not have dared to spy on me, and banishment is what you deserved!", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("The animals on Calchara are more valuable as objects than beings. I was making huge strides in my research until you came medding!", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("We are Asu! We are the most intelligent life on this planet and should act as such!", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("Ximara, you are hereby removed from the Tribunal and shall be sentenced to prison for the remainder of your lifetime.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("I am truly appalled that someone I worked so closely with to form laws for the preservation of Calcharan beings would so easily betray them.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Guards, take her away. I believe I know someone who is much more deserving of her place on the Tribunal", MARALAN_PORTRAITS.NEUTRAL), //fade to black, credits roll, game ends
+	];
+
+// 70%+ collectibles gathered (good ending)
+	this.goodendinglines = [
+		new DialogueLine("Look at all of this! Conclusive proof that Ximara is the owner of that horrific workshop, not me, and that she is behind everything happening in Calchara!", LARAYA_PORTRAITS.ANGRY),
+		new DialogueLine("Very impressive, Laraya. The other Tribunal members and I agree that this is conclusive proof. Ximara, what do you have to say for yourself?", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Foolish girl! My research was going so well before you messed everything up!", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("We are Asu, the most intelligent life on the planet, and we should act as such!", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("Well then. Ximara, you are hereby removed from the Tribunal. Guards, take her away.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Thank you, Laraya, for uncovering the truth. Your banishment is lifted and you will find your room unchanged. Welcome home.", MARALAN_PORTRAITS.NEUTRAL), //fade to black, credits roll, game ends
+	];
+
+// 40%+ collectibles gathered (mediocre ending)
+	this.okayendinglines = [
+		new DialogueLine("Look at this! Solid proof that Ximara is the owner of that horrific workshop, not me! It's all her fault!", LARAYA_PORTRAITS.ANGRY),
+		new DialogueLine("There is a lot here, Laraya, but unfortunately this Tribunal cannot determine who is at fault right now.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("To ensure fairness for all parties, you shall both be imprisoned until our investigation uncovers a definite culprit. Ximara, do you have anything to say", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("I think this is a pitiful last-ditch attempt at Laraya's salvation, but I will play along.", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("I have no idea what she is talking about, and you will find nothing in your search.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Then it is decided. Guards, take them away.", MARALAN_PORTRAITS.NEUTRAL), //fade to black, credits roll, game ends
+	];
+
+// 0%+ collectibles gathered (bad ending)
+	this.badendinglines = [
+		new DialogueLine("Look at this! Ximara owns that workshop, not me! It's all her fault! I didn't do anything wrong!", LARAYA_PORTRAITS.ANGRY),
+		new DialogueLine("I'm sorry, Laraya, but there is not enough here to indicate that Ximara is at fault for anything you have described. This means your banishment is still in effect.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Ximara, do you have anything you want to add?", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("I am only sorry Laraya thought unfounded accusations against me would help prove her innocence.", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("However, since she seems unable to take her punishment nobly, I feel the only way to ensure no one else is falsely accused is to take her wand... permanently this time.", XIMARA_PORTRAITS.NEUTRAL),
+		new DialogueLine("Unfortunately, Ximara, I agree with you.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Laraya, Asu sorceress of Calchara, you are once again banished from Ishana and its surrounding lands from now until evermore.", MARALAN_PORTRAITS.NEUTRAL),
+		new DialogueLine("Guards, bring her wand to me and escort her to the border.", MARALAN_PORTRAITS.NEUTRAL), //fade to black, credits roll, game ends
+	];
+
+
+// EVIDENCE/ARTIFACTS/COLLECTIBLES/GLOWY ORBS POPUP DIALOGUE (JUNGLE)
+	
+	this.jungleevidence = [
+		new DialogueLine("Long, narrow footsteps lie here, likely Asu. The measured and unhurried gait conveys a sinister message."),
+	];
+
+
+// EVIDENCE/ARTIFACTS/COLLECTIBLES/GLOWY ORBS POPUP DIALOGUE (CAVE)
+	this.caveevidence = [
+		new DialogueLine("Long, narrow footsteps lie here, likely Asu. The measured and unhurried gait conveys a sinister message."),
+		new DialogueLine("A pair of scissors lie discarded in the dust, fragments of red scale scattered around the heavy, sharp Asu blades."),
+		new DialogueLine("These are drag marks from something that didn't want to leave its home.")
+		// random rotation upon getting a collectible to determine which will show
+	];
+
+
+// EVIDENCE/ARTIFACTS/COLLECTIBLES/GLOWY ORBS POPUP DIALOGUE (TREES)
+	this.treesevidence = [
+		new DialogueLine("Long, narrow footsteps lie here, likely Asu. The measured and unhurried gait conveys a sinister message."),
+		new DialogueLine("A flickow feather is suspended in the foliage. A flickow would never willingly leave a feather so close to their nest."),
+		new DialogueLine("A length of rope manufactured in Ishana is caught on a branch, roughly cut edges where the bindings were broken."),
+		new DialogueLine("A chunk of fur is caught on the branch, its mottled nature painting it as Leota fur. Leotas are sure-footed in all terrain, this was not caused by a simple misstep."),
+	];
+
+
+// EVIDENCE/ARTIFACTS/COLLECTIBLES/GLOWY ORBS POPUP DIALOGUE (SWAMP)
+	this.swampevidence = [
+		new DialogueLine("Long, narrow footsteps lie here, likely Asu. The measured and unhurried gait conveys a sinister message."),
+		new DialogueLine("Wide, stunted footsteps lie here, likely Dwargin. Large paces and scuffs in the dirt show that they were running, something a Dwargin would never do if given the option."),
+		new DialogueLine("A knife lies on the ground, its long and slender blade coated in dried blood. This design is favoured by Asu sorcerers."),
+		new DialogueLine("A flickow feather gathers dust on the ground. Flickows never leave feathers behind, meaning it had no choice."),
+		new DialogueLine("Shards of blue-green scales are strewn throughout the area. Axodiles lose whole scales at a time, and usually in the water, meaning this was a maleficent occurrence."),
+	];
+
+
+// WAND PIECE GATHERED - FIRE
+	this.fireelement = [
+		new DialogueLine("This element is fierce. The user can throw fireballs to either kill enemies or burn plant life.")
+	];
+
+
+// WAND PIECE GATHERED - FIRE
+	this.earthelement = [
+		new DialogueLine("This element is brutal. It allows the user to throw boulders for both squishing and scaling, and walls become soft so the user can grip and jump off of them.")
+	];
+
+
+// WAND PIECE GATHERED - WATER
+	this.waterelement = [
+		new DialogueLine("This element is flexible. It allows the user to breathe underwater, freeze water, and summon a wave that sweeps them forwards at fast speeds.")
+	];
+
+// WAND PIECE GATHERED - AIR
+	this.airelement = [
+		new DialogueLine("This element is temperamental. It can move objects upwards and lessen the effects of gravity with strong gusts, and allow the user to jump again in midair as if on a cloud.")
+	];
