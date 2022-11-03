@@ -8,6 +8,7 @@ SolidObject engine/instances/solid_object.js
 LevelHandler engine/instances/level_handler.js
 InvisibleWall spr=invisible_wall engine/instances/invisible_wall.js
 TechDemoHandler engine/instances/tech_demo_handler.js
+TutorialHandler engine/instances/tutorial_handler.js
 Level4Handler engine/instances/level_4_handler.js
 SemiSolid engine/instances/SemiSolid.js
 Fireball engine/instances/fireball.js
@@ -24,6 +25,7 @@ Enemy engine/instances/enemy.js
 Global engine/instances/global_variables.js
 Leaf LeafCreate engine/instances/leaf.js
 Artifact engine/instances/artifact.js
+WandPiece engine/instances/wand_piece.js
 WindSpell engine/instances/wind_spell.js
 Counter engine/instances/artifact_counter.js
 HealthBar engine/instances/healthbar.js
