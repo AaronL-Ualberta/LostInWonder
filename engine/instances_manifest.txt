@@ -25,6 +25,7 @@ Enemy engine/instances/enemy.js
 Global engine/instances/global_variables.js
 Leaf LeafCreate engine/instances/leaf.js
 Artifact engine/instances/artifact.js
+WandPiece engine/instances/wand_piece.js
 WindSpell engine/instances/wind_spell.js
 Counter engine/instances/artifact_counter.js
 HealthBar engine/instances/healthbar.js

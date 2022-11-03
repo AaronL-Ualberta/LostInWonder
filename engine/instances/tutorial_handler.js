@@ -54,6 +54,8 @@ class TutorialHandler extends LevelHandler {
 
 		this.beatLevel = false;
 		this.timer2 = 0;
+
+		new WandPiece(1752, 1704, "fire_wand")
 	}
 
 	onCreate() {
@@ -61,7 +63,7 @@ class TutorialHandler extends LevelHandler {
 
 		// do stuff
 	}
-
+	
 	onRoomStart() {
 		this.player = PlayerInstance.first;
 	}
