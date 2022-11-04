@@ -6,6 +6,10 @@ TestRoom2 engine/rooms/empty.txt
 Level1 engine/rooms/level1.txt 
 Level2 engine/rooms/level2.txt
 Level3 engine/rooms/level3.txt default
-Level4Intro engine/rooms/level4intro.txt 
 TitleScreen engine/rooms/title_screen.txt 
 Tutorial engine/rooms/tutorial.txt 
+
+TutorialIntro engine/rooms/introscenes/tutorialintro.txt 
+Level1Intro engine/rooms/introscenes/level1intro.txt 
+Level2Intro engine/rooms/introscenes/level2intro.txt 
+Level4Intro engine/rooms/introscenes/level3intro.txt 
