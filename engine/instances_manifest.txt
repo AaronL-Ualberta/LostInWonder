@@ -27,6 +27,7 @@ HealthBar engine/instances/healthbar.js
 EnemyBomb engine/instances/enemy_bomb.js
 FlyEnemy engine/instances/fly_enemy.js
 EndCondition engine/instances/end_condition.js
+Proceed engine/instances/proceed.js
 
 DustParticle engine/instances/particles/DustParticle.js
 
