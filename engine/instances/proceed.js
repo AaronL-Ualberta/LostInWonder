@@ -1,5 +1,6 @@
 class Proceed extends EngineInstance {
 	onEngineCreate() {
+		this.endGame = false
 		this.dialogue = $engine.createManagedRenderable(this, new PIXI.Container());
 		this.dialogue_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("msgbox")));
 		this.dialogue_text = $engine.createManagedRenderable(
@@ -15,19 +16,24 @@ class Proceed extends EngineInstance {
 		);
 		this.dialogue.addChild(this.dialogue_sprite);
 		this.dialogue.addChild(this.dialogue_text);
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(-10, -10, 10, 10)));
+		this.setHitbox(new Hitbox(this, new RectangleHitbox(-30, -30, 30, 30)));
 	}
 
 	step() {
-		if (IM.instanceCollision(this, this.x, this.y, PlayerInstance)) {
+		if (this.endGame) {
 			if (IN.keyCheckPressed("KeyZ")) {
 					this.destroy();
+					$engine.setRoom(RoomManager.currentRoom().name);
 				}
 		}
 	}
 
+	checkComplete(x = false) {
+		
+	}
+
 	draw(gui, camera) {
-		if (IM.instanceCollision(this, this.x, this.y, PlayerInstance)) {
+		if (this.endGame) {
 			$engine.requestRenderOnGUI(this.dialogue);
 		}
 	} 
