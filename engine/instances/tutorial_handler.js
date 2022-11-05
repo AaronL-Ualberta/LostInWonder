@@ -37,7 +37,7 @@ class TutorialHandler extends LevelHandler {
 		this.fgSprite.filters = [leafFilter];
 
 		this.spellWheel = $engine.createManagedRenderable(this, new PIXI.Container());
-		this.spellWheel_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel")));
+		this.spellWheel_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel0")));
 		this.spellWheel_sprite.scale.set(2, 2);
 		this.spellWheel_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheel_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
@@ -66,6 +66,7 @@ class TutorialHandler extends LevelHandler {
 	
 	onRoomStart() {
 		this.player = PlayerInstance.first;
+		this.player.spells_learned = 0;
 	}
 
 	step() {

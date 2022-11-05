@@ -69,6 +69,7 @@ class PlayerInstance extends EngineInstance {
 		this.facing = 1;
 		this.has_doubleJump = true;
 		this.has_waterdash = true;
+		this.spells_learned = 0;
 		this.current_spell = SPELLNAMES.FIRE;
 		this.face_direction = 1;
 
@@ -128,8 +129,8 @@ class PlayerInstance extends EngineInstance {
 
 		this.fire_cooldown_timer--;
 		this.wind_cooldown_timer--;
-		if (IN.mouseCheckPressed(0)) {
-			if (this.current_spell === SPELLNAMES.FIRE) {
+		if (IN.mouseCheckPressed(0) && this.spells_learned > 0) {
+			if (this.current_spell === SPELLNAMES.FIRE && this.spells_learned >= 1) {
 				// FIRE
 				const offset = 40;
 				if (this.fire_cooldown_timer <= 0) {
@@ -143,7 +144,7 @@ class PlayerInstance extends EngineInstance {
 				} else {
 					new DustParticle(this.x + this.face_direction * offset, this.y - offset, 0.7);
 				}
-			} else if (this.current_spell === SPELLNAMES.EARTH) {
+			} else if (this.current_spell === SPELLNAMES.EARTH && this.spells_learned >= 3) {
 				// EARTH
 				const offset = 40;
 				if (this.rock_spell_count < 2) {
@@ -155,13 +156,13 @@ class PlayerInstance extends EngineInstance {
 				} else {
 					new DustParticle(this.x + this.face_direction * offset, this.y - offset, 0.7);
 				}
-			} else if (this.current_spell === SPELLNAMES.AIR) {
+			} else if (this.current_spell === SPELLNAMES.AIR && this.spells_learned === 4) {
 				// AIR
 				if (this.wind_cooldown_timer <= 0) {
 					new WindSpell(IN.getMouseX(), IN.getMouseY());
 					this.wind_cooldown_timer = this.wind_cooldown;
 				}
-			} else if (this.current_spell === SPELLNAMES.WATER) {
+			} else if (this.current_spell === SPELLNAMES.WATER && this.spells_learned >= 2) {
 				// WATER
 				if (this.has_waterdash) {
 					this.has_waterdash = false;
@@ -215,6 +216,23 @@ class PlayerInstance extends EngineInstance {
 				new IceBlock(water_block.x, water_block.y, 300);
 				water_block.destroy();
 			}
+		}
+
+		// Check for collision with the wand piece
+		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
+		if (wand_piece !== undefined) {
+			wand_piece.destroy();
+			this.spells_learned++;
+
+			// Change the sprite
+			if (this.spells_learned === 4) {
+				this.levelHandler.spellWheel_sprite.texture = $engine.getTexture("spellwheel");
+			} else {
+				this.levelHandler.spellWheel_sprite.texture = $engine.getTexture("spellwheel" + this.spells_learned);
+			}
+
+			// Wand Piece Collection Sound Effect
+			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
 		}
 	}
 
