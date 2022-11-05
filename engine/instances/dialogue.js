@@ -90,8 +90,9 @@ class Dialogue extends EngineInstance {
 		}
 	}
 
-	onCreate(x, y, lines, pause_level = false) {
+	onCreate(x, y, lines, pause_level = false, func = null) {
 		this.onEngineCreate(lines, pause_level);
+		this.callback = func;
 		this.x = x;
 		this.y = y;
 		// do stuff
@@ -120,13 +121,19 @@ class Dialogue extends EngineInstance {
 					} else {
 						this.timer = 0;
 						this.line_on++;
-						if (this.lines[this.line_on] === DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE) {
+						if (this.lines[this.line_on].text === DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE) {
 							// Switch to the next image in the cutscene
+							var cutscene = Cutscene.first;
+							cutscene.nextImage();
 
-							this.line_on++;
+							this.dialogue.visible = false;
+							// this.line_on++;
+						} else {
+							this.dialogue.visible = true;
 						}
 						this.dialogue_portrait.texture = this.portrait_textures[this.lines[this.line_on].image];
 						this.dialogue_char_name.text = this.lines[this.line_on].name;
+						this.dialogue_text.text = "";
 					}
 				}
 			}
@@ -140,6 +147,9 @@ class Dialogue extends EngineInstance {
 	dialogueEnd() {
 		if (this.pause_level) {
 			$engine.unpauseGameSpecial();
+		}
+		if (this.callback) {
+			this.callback();
 		}
 		this.destroy();
 	}
@@ -159,6 +169,12 @@ LARAYA_PORTRAITS.ANGRY = "laraya_angry";
 LARAYA_PORTRAITS.SURPRISED = "laraya_surprised";
 LARAYA_PORTRAITS.SCARED = "laraya_scared";
 LARAYA_PORTRAITS.HURT = "laraya_hurt";
+
+class XIMARA_PORTRAITS {}
+XIMARA_PORTRAITS.NEUTRAL = "laraya_happy";
+
+class MARALAN_PORTRAITS {}
+MARALAN_PORTRAITS.NEUTRAL = "laraya_happy";
 
 class DIALOGUE_COMMANDS {}
 DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE = "COMMAND_NEXT_CUTSCENE_IMAGE";

@@ -42,9 +42,8 @@ class EngineInstance {
 		this.__alive = true;
 		this.__hasSprite = false;
 		this.__hashbuckets = [];
-		this.__collisionId = -1;
 		this.__persistent = false;
-		this.hitbox = undefined;
+		this.__hitbox = null;
 		this.oid = undefined;
 		this.id = undefined;
 		this.__runtimeId = undefined;
@@ -53,6 +52,8 @@ class EngineInstance {
 		this.__interpVars = [];
 		this.__delayedActions = []; // are you happy yevhen?
 		this.__routines = [];
+		this.__postStepRegistered = false;
+		this.__interpolateRegistered = false;
 		IM.__addToWorld(this);
 		if (args[0] === $engine.__instanceCreationSpecial) {
 			this.__runtimeId = args[1];
@@ -99,35 +100,38 @@ class EngineInstance {
 	}
 
 	/**
-	 * Sets the hitbox of this instance. This is a pure syntactic sugar method and simply sets this.hitbox = hitbox.
+	 * Sets the hitbox of this instance. If the hitbox is null, then the hitbox will be removed and the instance will not be collidable.
 	 *
 	 * The hitbox will automatically follow the instance as well as scale and rotate to match xScale, yScale, and angle.
-	 *
-	 * By default, hitboxes are undefined. Attempting to collide with an instance with no hitbox will
-	 * cause a crash.
 	 * @param {Hitbox} hitbox The hitbox to use
 	 */
 	setHitbox(hitbox) {
-		this.hitbox = hitbox;
-		this.__updateHitbox();
+		this.__hitbox = hitbox;
+		if (hitbox) {
+			this.__hitbox.update(true);
+			var bounds = this.__hitbox.getBoundingBox();
+			this.__hashbuckets = IM.__hashObjectLocationFullInvalidate(this, bounds, this.__hashbuckets);
+		} else {
+			IM.__freeBuckets(this);
+			this.__hashbuckets = [];
+		}
 	}
 
 	/**
-	 * Returns the instance's current hitbox. By default, hitboxes are undefined. Attempting to collide with an instance with no hitbox will
-	 * cause a crash.
+	 * Returns the instance's current hitbox. By default, hitboxes are null.
 	 * @returns {Hitbox} The current hitbox, or undefined if not set.
 	 */
 	getHitbox() {
-		return this.hitbox;
+		return this.__hitbox;
 	}
 
 	/**
 	 * Engine functions. Do not override.
 	 */
 	__updateHitbox(recalculate) {
-		if (this.hitbox) {
-			this.hitbox.update(recalculate);
-			const bounds = this.hitbox.getBoundingBox();
+		if (this.__hitbox !== null) {
+			this.__hitbox.update(recalculate);
+			var bounds = this.__hitbox.getBoundingBox();
 			this.__hashbuckets = IM.__hashObjectLocation(this, bounds, this.__hashbuckets);
 		}
 	}
@@ -197,11 +201,11 @@ class EngineInstance {
 	 * Engine functions. Do not override.
 	 */
 	__timescaleImplicit() {
-		this.__lx = this.x;
-		this.__ly = this.y;
-		this.__lxScale = this.xScale;
-		this.__lyScale = this.yScale;
-		this.__lalpha = this.alpha;
+		this.__lx = this._x;
+		this.__ly = this._y;
+		this.__lxScale = this._xScale;
+		this.__lyScale = this._yScale;
+		this.__lalpha = this._alpha;
 		this.__langle = this.angle;
 		for (const interpVal of this.__interpVars) {
 			interpVal.__lastValue = this[interpVal.__variableName];
@@ -241,7 +245,10 @@ class EngineInstance {
 	 * @param {...Object} [args] The arguments to pass along to the method. If undefined 'this' will be passed.
 	 */
 	delayedAction(delay, func, ...args) {
-		if (args.length === 0) args = [this];
+		IM.__registerPostStep(this);
+		if (args.length === 0) {
+			args = [this];
+		}
 		var obj = {
 			delay: delay,
 			timer: 0,
@@ -263,6 +270,7 @@ class EngineInstance {
 	 * @param {String} name The optional name given to this routine.
 	 */
 	routine(func, name = "") {
+		IM.__registerPostStep(this);
 		var obj = {
 			func: func,
 			name: name,

@@ -30,8 +30,8 @@ class V2D extends PIXI.Point {
 	}
 
 	mirror(angle) {
-		const newAngle = V2D.mirrorAngle(this.dir(), angle);
-		Vertex.prototype.rotate.call(this, this.dir() - newAngle);
+		const newAngle = V2D.mirrorAngle(this._angle, angle);
+		Vertex.prototype.rotate.call(this, this._angle - newAngle);
 	}
 
 	/**

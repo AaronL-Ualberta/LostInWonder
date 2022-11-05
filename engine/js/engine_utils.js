@@ -99,7 +99,7 @@ class EngineUtils {
 	 * @returns {Number} the random number
 	 */
 	static irandomRange(low, high) {
-		return Math.round(this.randomRange(low, high));
+		return Math.floor(this.randomRange(low, high + 1));
 	}
 
 	/**
@@ -117,7 +117,7 @@ class EngineUtils {
 	 * @returns {Number} the random number
 	 */
 	static irandom(high) {
-		return Math.round(Math.random() * high);
+		return Math.floor(Math.random() * (high + 1));
 	}
 
 	/**
@@ -131,13 +131,13 @@ class EngineUtils {
 	}
 
 	/**
-	 * Checks if the two boxes intersect or are contained within eachother.
+	 * Checks if the two boxes intersect or are contained within each other.
 	 *
 	 * The boxes are defined as x1,y1, x2,y2 representing the top left and bottom right
 	 *
 	 * @param {Object} box1 The first box
 	 * @param {Object} box2 The second box
-	 * @returns {Boolean} True if the boxes intersect or are contained within eachother, false otherwise.
+	 * @returns {Boolean} True if the boxes intersect or are contained within each other, false otherwise.
 	 */
 	static boxesIntersect(box1, box2) {
 		return box1.x1 < box2.x2 && box1.x2 > box2.x1 && box1.y1 < box2.y2 && box1.y2 > box2.y1;
@@ -403,7 +403,7 @@ class EngineDebugUtils {
 	 * @param {EngineInstance} inst The engine instance to draw the hitbox of
 	 */
 	static drawHitbox(graphics, inst) {
-		EngineDebugUtils.drawHitboxDirect(graphics, inst.hitbox);
+		EngineDebugUtils.drawHitboxDirect(graphics, inst.__hitbox);
 	}
 
 	/**
@@ -434,7 +434,7 @@ class EngineDebugUtils {
 	 * @param {EngineInstance} inst The engine instance to draw the bounding box of
 	 */
 	static drawBoundingBox(graphics, inst) {
-		var bb = inst.hitbox.getBoundingBox();
+		var bb = inst.__hitbox.getBoundingBox();
 		graphics
 			.lineStyle(1, 0xe74c3c)
 			.moveTo(bb.x1, bb.y1)

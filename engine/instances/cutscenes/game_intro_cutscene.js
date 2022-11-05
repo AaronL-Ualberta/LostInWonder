@@ -1,93 +1,61 @@
-class GameIntroCutscene extends EngineInstance {
-	// Swap Engine Instance with SoildObject if you want collision
-	onEngineCreate() {
-		this.audioSound = $engine.audioPlaySound("JungleAmbience", 0.07, true);
-
-		this.title_sprite = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture("level_4_intro_cutscene")));
-		this.title_sprite.width = $engine.getCamera().getWidth();
-		this.title_sprite.height = $engine.getCamera().getHeight();
-
-		this.camera = $engine.getCamera();
-		this.adjustFilter = new PIXI.filters.AdjustmentFilter();
-		this.adjustFilter.brightness = 0;
-		this.camera.addFilter(this.adjustFilter);
-		this.timer = 0;
-		this.timer2 = 0;
-
-		this.lines = [
-			new DialogueLine("This place doesn’t look very safe…", LARAYA_PORTRAITS.SURPRISED),
-			new DialogueLine("Ah! What was that! Who goes there! Show yourself!", LARAYA_PORTRAITS.SCARED),
-			new DialogueLine("Well you don’t sound very scary, so please don’t eat my hand!", LARAYA_PORTRAITS.SCARED),
+class GameIntroCutscene extends Cutscene {
+	onCutsceneCreate() {
+		// ----------   INTRO CUTSCENE DIALOGUE LINES   ----------
+		this.dialogue_lines = [
+			new DialogueLine("Hm hm hmm~ 🎵", LARAYA_PORTRAITS.HAPPY), //should be intro shot 1 here
+			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to intro shot 2
+			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to intro shot 3
+			new DialogueLine("And what have we here? Guards!", XIMARA_PORTRAITS.NEUTRAL, "Ximara"), //happens in intro shot 3
 			new DialogueLine(
-				"Oh! An axodile! Out of the water? And injured? What happened to you?",
-				LARAYA_PORTRAITS.SURPRISED
+				"This sorceress has been experimenting on rare species! Look at all of this! Scales and feathers and fur!",
+				XIMARA_PORTRAITS.NEUTRAL,
+				"Ximara"
+			),
+			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 4) here
+			new DialogueLine(
+				"Laraya, Asu sorceress of Calchara, for crimes against this Tribunal you are hereby banished from the city of Ishana.",
+				MARALAN_PORTRAITS.NEUTRAL,
+				"Maralan"
 			),
 			new DialogueLine(
-				"I read about your kind, buddy, and I think I know how to help! You can regenerate naturally, but you need to be in water for that.",
-				LARAYA_PORTRAITS.HAPPY
+				"From now until evermore, you shall be unwelcome in Ishana and all its surrounding lands.",
+				MARALAN_PORTRAITS.NEUTRAL,
+				"Maralan"
 			),
+			new DialogueLine("But I didn't even do anything wr-", LARAYA_PORTRAITS.SCARED),
+			new DialogueLine("Silence. Maralan, remember the rest.", XIMARA_PORTRAITS.NEUTRAL, "Ximara"),
 			new DialogueLine(
-				"So all I have to do is clean this up and get you into that pool over there, and you’ll be right as rain!",
-				LARAYA_PORTRAITS.HAPPY
+				"Of course. Furthermore, in accordance with our most sacred laws, your wand must be snapped.",
+				MARALAN_PORTRAITS.NEUTRAL,
+				"Maralan"
 			),
-			new DialogueLine(
-				"Someone did this on purpose, and tried to make it look like an accident if anyone came by! But who… Ximara.",
-				LARAYA_PORTRAITS.ANGRY
-			),
-			new DialogueLine("I saw these scales in her despicable workshop.", LARAYA_PORTRAITS.ANGRY),
+			new DialogueLine("Your banishment begins today. Give me your wand.", MARALAN_PORTRAITS.NEUTRAL, "Maralan"),
+			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 5) here
+			new DialogueLine("But I need my stuff! Everything I own is here!", LARAYA_PORTRAITS.SURPRISED),
+			new DialogueLine("Your wand, Laraya.", MARALAN_PORTRAITS.NEUTRAL, "Maralan"),
+			new DialogueLine("You're making a mistake. I didn't - oof!", LARAYA_PORTRAITS.SURPRISED),
+			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 6) here
 		];
 
-		this.startedTalking = false;
+		this.audioSound = "JungleAmbience";
+		this.cutsceneFrames = [
+			"gameintrocutsceneframe1",
+			"gameintrocutsceneframe2",
+			"gameintrocutsceneframe3",
+			"gameintrocutsceneframe4",
+			"gameintrocutsceneframe5",
+			"gameintrocutsceneframe6",
+		];
+		this.nextRoom = "TutorialIntro";
 	}
 
-	onCreate(x, y) {
-		this.onEngineCreate();
-		this.x = 0;
-		this.y = 0;
-		// do stuff
-	}
+	dialogueEnd() {}
 
 	step() {
-		this.timer++;
-
-		// Long fade in
-		const fadelength = 160;
-		if (this.timer < fadelength) {
-			this.adjustFilter.brightness = this.timer / fadelength;
-			if (this.timer === fadelength) {
-				// this.camera.removeFilter(this.adjustFilter);
-				this.adjustFilter.enabled = false;
-			}
-			return;
-		}
-
-		// Dialogue. Detect for completion
-		if (this.timer === fadelength + 80) {
-			this.startedTalking = true;
-			this.dialogue_instance = new Dialogue(0, 0, this.lines);
-			return;
-		}
-
-		// Fade out into level
-		if (!IM.exists(this.dialogue_instance) && this.startedTalking === true) {
-			this.timer2++;
-			this.adjustFilter.enabled = true;
-
-			const delay = 100;
-			if (this.timer2 > delay) {
-				if (this.timer2 - delay < fadelength) {
-					this.adjustFilter.brightness = 1 - (this.timer2 - delay) / fadelength;
-					return;
-				}
-			}
-
-			if (this.timer2 > delay + fadelength) {
-				$engine.setRoom("Level4");
-			}
-		}
+		super.step();
 	}
 
-	onDestroy() {
-		$engine.audioStopSound(this.audioSound);
+	draw() {
+		super.draw();
 	}
 }

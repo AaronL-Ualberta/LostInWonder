@@ -49,6 +49,10 @@ class Room {
 		return { ...this.__extern };
 	}
 
+	hasExtern(name) {
+		return name in this.__extern;
+	}
+
 	getExtern(name) {
 		var data = this.__extern[name];
 		if (data === undefined) {
@@ -70,14 +74,14 @@ class Room {
 	}
 
 	getRPGRoomWidth() {
-		if(!this.__rpgRoomData) {
+		if (!this.__rpgRoomData) {
 			return 0;
 		}
 		return this.__rpgRoomData.width * 48;
 	}
 
 	getRPGRoomHeight() {
-		if(!this.__rpgRoomData) {
+		if (!this.__rpgRoomData) {
 			return 0;
 		}
 		return this.__rpgRoomData.height * 48;

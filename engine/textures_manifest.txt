@@ -54,5 +54,34 @@ cutscene_2 engine/textures/cutscenes/2.png 0 0
 cutscene_3 engine/textures/cutscenes/3.png 0 0
 cutscene_4 engine/textures/cutscenes/4.png 0 0
 cutscene_5 engine/textures/cutscenes/5.png 0 0
-cutscene_5 engine/textures/cutscenes/6.jpeg 0 0
 level_4_intro_cutscene engine/textures/cutscenes/level4.jpg 0 0
+
+
+gameintrocutsceneframe1 engine/textures/cutscenes/gameintro/1.png 0 0
+gameintrocutsceneframe2 engine/textures/cutscenes/gameintro/2.png 0 0
+gameintrocutsceneframe3 engine/textures/cutscenes/gameintro/3.png 0 0
+gameintrocutsceneframe4 engine/textures/cutscenes/gameintro/4.png 0 0
+gameintrocutsceneframe5 engine/textures/cutscenes/gameintro/5.png 0 0
+gameintrocutsceneframe6 engine/textures/cutscenes/gameintro/6.jpg 0 0
+
+tutorialcutsceneframe1 engine/textures/cutscenes/introtutorial/1.png 0 0
+tutorialcutsceneframe2 engine/textures/cutscenes/introtutorial/2.png 0 0
+tutorialcutsceneframe3 engine/textures/cutscenes/introtutorial/3.png 0 0
+
+level1cutsceneframe1 engine/textures/cutscenes/introlevel1/1.png 0 0
+level1cutsceneframe2 engine/textures/cutscenes/introlevel1/2.png 0 0
+level1cutsceneframe3 engine/textures/cutscenes/introlevel1/3.png 0 0
+level1cutsceneframe4 engine/textures/cutscenes/introlevel1/4.png 0 0
+
+level2cutsceneframe1 engine/textures/cutscenes/introlevel2/1.jpg 0 0
+level2cutsceneframe2 engine/textures/cutscenes/introlevel2/2.jpg 0 0
+
+level3cutsceneframe1 engine/textures/cutscenes/introlevel3/1.png 0 0
+level3cutsceneframe2 engine/textures/cutscenes/introlevel3/2.png 0 0
+level3cutsceneframe3 engine/textures/cutscenes/introlevel3/3.png 0 0
+
+endlv3cutsceneframe1 engine/textures/cutscenes/endlevel3/1.png 0 0
+endlv3cutsceneframe2 engine/textures/cutscenes/endlevel3/2.png 0 0
+endlv3cutsceneframe2-2 engine/textures/cutscenes/endlevel3/2-2.png 0 0
+endlv3cutsceneframe3 engine/textures/cutscenes/endlevel3/3.png 0 0
+endlv3cutsceneframe4 engine/textures/cutscenes/endlevel3/4.png 0 0

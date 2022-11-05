@@ -332,21 +332,21 @@ class Camera extends PIXI.Container {
 					continue;
 				}
 				var parent = child.__parent;
-				if (child.x !== parent.x) {
-					child.x = parent.x;
-					child.x += child.dx;
+				if (child.position._x !== parent._x) {
+					child.position.x = parent._x;
+					child.position.x += child.dx;
 				}
-				if (child.y !== parent.y) {
-					child.y = parent.y;
-					child.y += child.dy;
+				if (child.position._y !== parent._y) {
+					child.position.y = parent._y;
+					child.position.y += child.dy;
 				}
-				if (child.rotation !== parent.angle) {
+				if (child.rotation !== parent._angle) {
 					child.rotation = parent.angle;
 				}
-				if (child.scale.x !== parent.xScale) {
+				if (child.scale._x !== parent._xScale) {
 					child.scale.x = parent.xScale;
 				}
-				if (child.scale.y !== parent.yScale) {
+				if (child.scale._y !== parent._yScale) {
 					child.scale.y = parent.yScale;
 				}
 				if (child.alpha !== parent.alpha) {

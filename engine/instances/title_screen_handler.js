@@ -80,7 +80,7 @@ class TitleScreenHandler extends EngineInstance {
 				0.745 + ($engine.getWindowSizeY() - this.camera.getHeight()) / $engine.getWindowSizeY() / 4;
 
 			if (this.timer == 80) {
-				$engine.setRoom("Level3Intro");
+				$engine.setRoom("GameIntro");
 			}
 		}
 	}

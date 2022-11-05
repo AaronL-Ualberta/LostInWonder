@@ -4,20 +4,28 @@ class Hitbox {
 	//static TYPE_CIRCLE = 2;
 	constructor(parent, hitbox) {
 		this.__parent = parent;
+		if (!parent) {
+			this.__parent = this.__makeMockParent();
+		}
 		this.hitbox = null;
 		this.type = null;
 		this.polygon = null;
 		this.forcePolygon = false;
-		this.setHitbox(hitbox);
-		this.x = 0;
-		this.y = 0;
-		this.rotation = 0;
-		this.sx = 1;
-		this.sy = 1;
+		this.__setHitbox(hitbox);
 		this.update(true);
 	}
 
-	setHitbox(hitbox) {
+	__makeMockParent() {
+		return {
+			_x: 0,
+			_y: 0,
+			_xScale: 1,
+			_yScale: 1,
+			_angle: 0,
+		};
+	}
+
+	__setHitbox(hitbox) {
 		this.hitbox = hitbox;
 		this.hitbox.__setParentHitbox(this);
 		this.hitbox.hitboxParent = this;
@@ -60,7 +68,7 @@ class Hitbox {
 	}
 
 	getHitbox() {
-		return this.rotation !== 0 ? this.polygon : this.hitbox;
+		return this.__parent._angle !== 0 ? this.polygon : this.hitbox;
 	}
 
 	getPolygonHitbox() {
@@ -68,27 +76,10 @@ class Hitbox {
 			return this.hitbox;
 		}
 
-		if (this.rotation === 0) {
+		if (this.__parent._angle === 0) {
 			this.polygon.__validate(this);
 		}
 		return this.polygon;
-	}
-
-	setLocation(x, y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	setScaleX(sx) {
-		this.sx = sx;
-	}
-
-	setScaleY(sy) {
-		this.sy = sy;
-	}
-
-	setRotation(theta) {
-		this.rotation = theta;
 	}
 
 	distanceToHitboxSq(hitbox) {
@@ -100,52 +91,74 @@ class Hitbox {
 		return this.getPolygonHitbox().distanceToPointSq(new EngineLightweightPoint(x, y));
 	}
 
+	/**
+	 * Performs a collision against another hitbox, first by testing the bounding box then further tests if required.
+	 *
+	 * Self collisions will always return false
+	 *
+	 * @param {Hitbox} hitbox The hitbox to collide against
+	 * @param {Number} x The x location to of the other hitbox
+	 * @param {Number} y The y location of the other hitbox
+	 * @returns {Boolean} Whether or not these two hitboxes collide
+	 */
 	doCollision(hitbox, x, y) {
-		// does collision directly, ignores bounding box
+		if (!this.checkBoundingBox(hitbox, x, y)) {
+			return false;
+		}
 		var test = this.__getApplicableTest(hitbox);
 		if (test === Hitbox.TYPE_POLYGON) {
-			return this.__testPolygon(hitbox, x, y);
+			return this.__testPolygon(hitbox, x, y) && hitbox !== this;
 		}
-		return this.__testRectangle(hitbox, x, y);
+		return hitbox !== this; // rectangle.
 	}
 
 	boundingBoxContainsPoint(x, y) {
 		var bb = this.__getBoundingBox();
-		return bb.x1 <= x - this.x && bb.y1 <= y - this.y && x - this.x <= bb.x2 && y - this.y <= bb.y2;
+		return (
+			bb.x1 <= x - this.__parent._x &&
+			bb.y1 <= y - this.__parent._y &&
+			x - this.__parent._x <= bb.x2 &&
+			y - this.__parent._y <= bb.y2
+		);
 	}
 
 	containsPoint(x, y) {
-		return this.getPolygonHitbox().containsPoint(x, y);
+		var hb = this.getHitbox();
+		if (hb.getType() === Hitbox.TYPE_RECTANGLE) {
+			return this.boundingBoxContainsPoint(x, y);
+		} else {
+			return hb.containsPoint(x, y);
+		}
 	}
 
 	update(recalculate) {
-		this.__match();
+		// this.__match();
 		if (recalculate) {
 			this.getHitbox().__validate(this);
 			this.__calculateBoundingBox();
 		}
 	}
 
-	__match() {
-		if (!this.__parent) {
-			return;
-		}
-		this.x = this.__parent.x;
-		this.y = this.__parent.y;
-		this.sx = this.__parent.xScale;
-		this.sy = this.__parent.yScale;
-		this.rotation = this.__parent.angle;
-	}
+	// __match() {
+	// 	if (!this.__parent) {
+	// 		return;
+	// 	}
+	// 	this.x = this.__parent._x;
+	// 	this.y = this.__parent._y;
+	// 	this.sx = this.__parent.xScale;
+	// 	this.sy = this.__parent.yScale;
+	// 	this.rotation = this.__parent.angle;
+	// }
 
 	// https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
 	checkBoundingBox(hitbox, x, y) {
 		var bb = this.__getBoundingBox();
 		var other = hitbox.__getBoundingBox();
 		return (
-			bb.x1 + x < other.x2 + hitbox.x &&
-			bb.x2 + x > other.x1 + hitbox.x &&
-			bb.y1 + y < other.y2 + hitbox.y &&
-			bb.y2 + y > other.y1 + hitbox.y
+			bb.x1 + x < other.x2 + hitbox.__parent._x &&
+			bb.x2 + x > other.x1 + hitbox.__parent._x &&
+			bb.y1 + y < other.y2 + hitbox.__parent._y &&
+			bb.y2 + y > other.y1 + hitbox.__parent._y
 		);
 	}
 
@@ -159,27 +172,27 @@ class Hitbox {
 
 	getBoundingBox() {
 		return BaseHitbox.__makeBoundingBox(
-			this.__boundingBox.x1 + this.x,
-			this.__boundingBox.y1 + this.y,
-			this.__boundingBox.x2 + this.x,
-			this.__boundingBox.y2 + this.y
+			this.__boundingBox.x1 + this.__parent._x,
+			this.__boundingBox.y1 + this.__parent._y,
+			this.__boundingBox.x2 + this.__parent._x,
+			this.__boundingBox.y2 + this.__parent._y
 		);
 	}
 
 	getBoundingBoxLeft() {
-		return this.x + this.__boundingBox.x1;
+		return this.__parent._x + this.__boundingBox.x1;
 	}
 
 	getBoundingBoxRight() {
-		return this.x + this.__boundingBox.x2;
+		return this.__parent._x + this.__boundingBox.x2;
 	}
 
 	getBoundingBoxTop() {
-		return this.y + this.__boundingBox.y1;
+		return this.__parent._y + this.__boundingBox.y1;
 	}
 
 	getBoundingBoxBottom() {
-		return this.y + this.__boundingBox.y2;
+		return this.__parent._y + this.__boundingBox.y2;
 	}
 
 	__calculateBoundingBox() {
@@ -199,10 +212,6 @@ class Hitbox {
 		var hitbox = this.getPolygonHitbox();
 		var hitbox2 = otherHitbox.getPolygonHitbox();
 		return hitbox.doCollision(hitbox2, x, y);
-	}
-
-	__testRectangle(otherHitbox, x, y) {
-		return this.checkBoundingBox(otherHitbox, x, y);
 	}
 }
 Hitbox.TYPE_POLYGON = 0;
@@ -255,7 +264,7 @@ class PolygonHitbox extends BaseHitbox {
 		this.type = Hitbox.TYPE_POLYGON;
 		this.__srcPolygon = new PIXI.Polygon();
 		this.__polygon = null;
-		this.__bbox = null;
+		this.__boundingBox = null;
 		this.__topLeft = null;
 		this.__bottomRight = null;
 		for (const v of vertices) {
@@ -299,9 +308,9 @@ class PolygonHitbox extends BaseHitbox {
 			xMax = -99999,
 			yMin = 99999,
 			yMax = -99999;
-		var sx = hitboxParent.sx;
-		var sy = hitboxParent.sy;
-		var rot = hitboxParent.rotation;
+		var sx = hitboxParent.__parent._xScale;
+		var sy = hitboxParent.__parent._yScale;
+		var rot = hitboxParent.__parent._angle;
 		//this.__copyFromSrc(); // rebuild hitbox from ground up.
 		var c = Math.cos(rot);
 		var s = Math.sin(rot);
@@ -328,8 +337,8 @@ class PolygonHitbox extends BaseHitbox {
 	}
 
 	doCollision(otherPoly, x, y) {
-		var dx = x - otherPoly.__parentHitbox.x; // dx = x to get from us to them
-		var dy = y - otherPoly.__parentHitbox.y;
+		var dx = x - otherPoly.__parentHitbox.__parent._x; // dx = x to get from us to them
+		var dy = y - otherPoly.__parentHitbox.__parent._y;
 		var p1 = new EngineLightweightPoint(otherPoly.__polygon.points[0] - dx, otherPoly.__polygon.points[1] - dy); // translate one of their points into our coord. space
 		var p2 = new EngineLightweightPoint(this.__polygon.points[0] + dx, this.__polygon.points[1] + dy);
 		if (this.__polygon.contains(p1.x, p1.y) || otherPoly.__polygon.contains(p2.x, p2.y)) {
@@ -398,7 +407,9 @@ class PolygonHitbox extends BaseHitbox {
 	}
 
 	distanceToPointSq(v1) {
-		if (this.containsPoint(v1.x, v1.y)) return 0;
+		if (this.containsPoint(v1.x, v1.y)) {
+			return 0;
+		}
 		var len = this.__getNumPoints();
 		var min = 999999999;
 		for (var i = 0; i < len; i++) {
@@ -411,16 +422,16 @@ class PolygonHitbox extends BaseHitbox {
 	}
 
 	containsPoint(x, y) {
-		var dx = x - this.__parentHitbox.x; // point to us
-		var dy = y - this.__parentHitbox.y;
+		var dx = x - this.__parentHitbox.__parent.x; // point to us
+		var dy = y - this.__parentHitbox.__parent.y;
 		return this.__polygon.contains(dx, dy);
 	}
 
 	__getAbsolutePoint(index) {
 		var l = index << 1;
 		return new EngineLightweightPoint(
-			this.__polygon.points[l] + this.__parentHitbox.x,
-			this.__polygon.points[l + 1] + this.__parentHitbox.y
+			this.__polygon.points[l] + this.__parentHitbox.__parent._x,
+			this.__polygon.points[l + 1] + this.__parentHitbox.__parent.y
 		);
 	}
 
@@ -476,8 +487,8 @@ class RectangleHitbox extends BaseHitbox {
 	}
 
 	__validate(parentHitbox) {
-		var sx = parentHitbox.sx;
-		var sy = parentHitbox.sy;
+		var sx = parentHitbox.__parent._xScale;
+		var sy = parentHitbox.__parent._yScale;
 		// rectangles are not allowed rotation...
 		this.x1 = this.sx1 * sx;
 		this.x2 = this.sx2 * sx;

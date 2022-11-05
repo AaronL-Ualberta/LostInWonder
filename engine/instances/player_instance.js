@@ -119,7 +119,7 @@ class PlayerInstance extends EngineInstance {
 		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
 		if (wand_piece !== undefined) {
 			this.spells_learned++;
-			console.log(this.spells_learned)
+			console.log(this.spells_learned);
 
 			// Change the sprite
 			if (this.spells_learned === 4) {
@@ -364,13 +364,13 @@ class PlayerInstance extends EngineInstance {
 			this.hsp = EngineUtils.clamp(this.hsp + inp * this.ground_accel, -this.max_run_speed, this.max_run_speed);
 			// Check wall cling
 			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
-				//if (this.current_spell === 1) {
-				this.switchState(PLAYERSTATES.WALLCLING);
-				this.facing = inp;
-				// Wall Impact Sound Effect
-				$engine.audioPlaySound("WallImpactSoundEffect", 0.07, false);
-				return;
-				//}
+				if (this.current_spell === 1) {
+					this.switchState(PLAYERSTATES.WALLCLING);
+					this.facing = inp;
+					// Wall Impact Sound Effect
+					$engine.audioPlaySound("WallImpactSoundEffect", 0.07, false);
+					return;
+				}
 			}
 		}
 
@@ -384,18 +384,18 @@ class PlayerInstance extends EngineInstance {
 		this.checkUnderwater();
 
 		// Check Double Jump
-		//if (this.current_spell === 2) {
-		if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
-			this.vsp = -this.jump_height;
-			const part_from_center = 18;
-			const part_from_ground = 5;
-			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
-			new DustParticle(this.x + part_from_center, this.y - part_from_ground);
-			this.has_doubleJump = false;
-			// double jump sound effect
-			$engine.audioPlaySound("DoubleJumpSoundEffect", 0.07, false);
+		if (this.current_spell === 2) {
+			if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
+				this.vsp = -this.jump_height;
+				const part_from_center = 18;
+				const part_from_ground = 5;
+				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
+				new DustParticle(this.x + part_from_center, this.y - part_from_ground);
+				this.has_doubleJump = false;
+				// double jump sound effect
+				$engine.audioPlaySound("DoubleJumpSoundEffect", 0.07, false);
+			}
 		}
-		//}
 
 		this.moveCollide();
 	}

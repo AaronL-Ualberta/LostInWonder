@@ -1,4 +1,4 @@
-class Level2IntroCutscene extends EngineInstance {
+class Level2IntroCutscene extends Cutscene {
 	// Swap Engine Instance with SoildObject if you want collision
 	onEngineCreate() {
 		this.audioSound = $engine.audioPlaySound("JungleAmbience", 0.07, true);
