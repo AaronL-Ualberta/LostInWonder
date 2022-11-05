@@ -1,4 +1,4 @@
-class Level4Handler extends LevelHandler {
+class Level3Handler extends LevelHandler {
 	onEngineCreate() {
 		this.audioSound = $engine.audioPlaySound("Level1Background", 0.07, true);
 

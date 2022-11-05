@@ -5,11 +5,7 @@ InstanceMover engine/instances/shared/instance_mover.js
 
 PlayerInstance engine/instances/player_instance.js
 SolidObject engine/instances/solid_object.js
-LevelHandler engine/instances/level_handler.js
 InvisibleWall spr=invisible_wall engine/instances/invisible_wall.js
-TechDemoHandler engine/instances/tech_demo_handler.js
-TutorialHandler engine/instances/tutorial_handler.js
-Level4Handler engine/instances/level_4_handler.js
 SemiSolid engine/instances/SemiSolid.js
 Fireball engine/instances/fireball.js
 RockBlock engine/instances/rock_block.js
@@ -37,13 +33,18 @@ DustParticle engine/instances/particles/DustParticle.js
 WaterDashParticle engine/instances/particles/WaterDashParticle.js
 WindParticle engine/instances/particles/WindParticle.js
 
-TitleScreenHandler engine/instances/title_screen_handler.js
-
 Cutscene engine/instances/cutscenes/cutscene.js
+GameIntroCutscene engine/instances/cutscenes/game_intro_cutscene.js
 TutorialIntroCutscene engine/instances/cutscenes/tutorial_intro_cutscene.js
 Level1IntroCutscene engine/instances/cutscenes/level_1_intro_cutscene.js
 Level2IntroCutscene engine/instances/cutscenes/level_2_intro_cutscene.js
-Level4IntroCutscene engine/instances/cutscenes/level_4_intro_cutscene.js
+Level3IntroCutscene engine/instances/cutscenes/level_3_intro_cutscene.js
+
+TitleScreenHandler engine/instances/title_screen_handler.js
+LevelHandler engine/instances/level_handler.js
+TechDemoHandler engine/instances/tech_demo_handler.js
+TutorialHandler engine/instances/tutorial_handler.js
+Level3Handler engine/instances/level_3_handler.js
 
 TestInstance engine/instances/test_instance.js
 TestInstance2 engine/instances/test_instance2.js
