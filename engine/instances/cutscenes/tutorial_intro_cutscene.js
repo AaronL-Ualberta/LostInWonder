@@ -1,8 +1,6 @@
-class Cutscene extends EngineInstance {
+class TutorialIntroCutscene extends EngineInstance {
 	// Swap Engine Instance with SoildObject if you want collision
 	onEngineCreate() {
-		this.dialogue_lines = dialogue_lines;
-
 		this.audioSound = $engine.audioPlaySound("JungleAmbience", 0.07, true);
 
 		this.title_sprite = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture("level_4_intro_cutscene")));
@@ -42,7 +40,7 @@ class Cutscene extends EngineInstance {
 		this.startedTalking = false;
 	}
 
-	onCreate(x, y, dialogue_lines) {
+	onCreate(x, y) {
 		this.onEngineCreate();
 		this.x = 0;
 		this.y = 0;
@@ -66,7 +64,7 @@ class Cutscene extends EngineInstance {
 		// Dialogue. Detect for completion
 		if (this.timer === fadelength + 80) {
 			this.startedTalking = true;
-			this.dialogue_instance = new Dialogue(0, 0, this.dialogue_lines);
+			this.dialogue_instance = new Dialogue(0, 0, this.lines);
 			return;
 		}
 
