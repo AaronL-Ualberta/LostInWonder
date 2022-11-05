@@ -115,6 +115,23 @@ class PlayerInstance extends EngineInstance {
 	}
 
 	step() {
+		// Check for collision with the wand piece
+		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
+		if (wand_piece !== undefined) {
+			this.spells_learned++;
+			console.log(this.spells_learned)
+
+			// Change the sprite
+			if (this.spells_learned === 4) {
+				this.levelHandler.spellWheel_sprite.texture = $engine.getTexture("spellwheel");
+			} else {
+				this.levelHandler.spellWheel_sprite.texture = $engine.getTexture("spellwheel" + this.spells_learned);
+			}
+
+			// Wand Piece Collection Sound Effect
+			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
+		}
+
 		if (this.player_health <= 0) {
 			$engine.setRoom(RoomManager.currentRoom().name);
 		}
@@ -216,23 +233,6 @@ class PlayerInstance extends EngineInstance {
 				new IceBlock(water_block.x, water_block.y, 300);
 				water_block.destroy();
 			}
-		}
-
-		// Check for collision with the wand piece
-		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
-		if (wand_piece !== undefined) {
-			wand_piece.destroy();
-			this.spells_learned++;
-
-			// Change the sprite
-			if (this.spells_learned === 4) {
-				this.levelHandler.spellWheel_sprite.texture = $engine.getTexture("spellwheel");
-			} else {
-				this.levelHandler.spellWheel_sprite.texture = $engine.getTexture("spellwheel" + this.spells_learned);
-			}
-
-			// Wand Piece Collection Sound Effect
-			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
 		}
 	}
 
