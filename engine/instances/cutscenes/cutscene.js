@@ -1,10 +1,12 @@
 class Cutscene extends EngineInstance {
-	onEngineCreate(dialogue_lines, background, music) {
-		this.dialogue_lines = dialogue_lines;
-
-		this.audioSound = $engine.audioPlaySound(music, 0.07, true);
-
+	onEngineCreate() {
+		// These should be set in onCutsceneCreate()!! ------------
+		this.dialogue_lines = [];
+		this.audioSound = null;
 		this.title_sprite = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture(background)));
+		this.nextRoom = "???";
+		// --------------------------------------------------------
+
 		this.title_sprite.width = $engine.getCamera().getWidth();
 		this.title_sprite.height = $engine.getCamera().getHeight();
 
@@ -16,13 +18,24 @@ class Cutscene extends EngineInstance {
 		this.timer2 = 0;
 
 		this.startedTalking = false;
+		this.visibleFrame = 0;
+
+		this.onCutsceneCreate();
 	}
 
-	onCreate(x, y, dialogue_lines) {
+	onCreate(x, y) {
 		this.onEngineCreate();
 		this.x = 0;
 		this.y = 0;
 		// do stuff
+	}
+
+	onCutsceneCreate() {
+		// CUTSCENES SHOULD HAVE THIS STUFF:
+		// this.dialogue_lines = [];
+		// this.audioSound = null;
+		// this.title_sprite = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture(background)));
+		// this.nextRoom = "???";
 	}
 
 	step() {
@@ -60,14 +73,20 @@ class Cutscene extends EngineInstance {
 			}
 
 			if (this.timer2 > delay + fadelength) {
-				$engine.setRoom("Level4");
+				$engine.setRoom(this.nextRoom);
 			}
 		}
 	}
 
-	nextImage() {}
+	nextImage() {
+		this.visibleFrame += 1;
+	}
 
 	onDestroy() {
 		$engine.audioStopSound(this.audioSound);
+	}
+
+	draw(gui, camera) {
+		//$engine.requestRenderOnCamera()
 	}
 }

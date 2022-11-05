@@ -82,7 +82,7 @@ class Level3IntroCutscene extends EngineInstance {
 			}
 
 			if (this.timer2 > delay + fadelength) {
-				$engine.setRoom("Level4");
+				$engine.setRoom("Level3");
 			}
 		}
 	}
