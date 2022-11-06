@@ -208,10 +208,10 @@ class EngineRoomEditor extends EngineInstance {
 		for (const keyName of Object.keys(allExtern)) {
 			string += "block extern " + keyName + "\n";
 			for (const data of allExtern[keyName]) {
-				string += String(data);
+				string += String(data) + "\n";
 			}
 
-			string += "\nendblock\n\n";
+			string += "endblock\n\n";
 		}
 
 		return string;

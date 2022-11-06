@@ -7,14 +7,17 @@ class Proceed extends EngineInstance {
 		this.dialogue_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("msgbox")));
 		this.dialogue_text = $engine.createManagedRenderable(
 			this,
-			new PIXI.Text("Are you sure you want to proceed? Press 'z' to go ahead. Remember you can't go back!", {
-				fontFamily: "Arial",
-				fontSize: 16,
-				fill: 0xffffff,
-				align: "center",
-				wordWrap: true,
-				wordWrapWidth: 300,
-			})
+			new PIXI.Text(
+				"Are you sure you want to proceed? Press 'z' to go ahead. Be careful, once you leave you won’t be able to come back.",
+				{
+					fontFamily: "Arial",
+					fontSize: 16,
+					fill: 0xffffff,
+					align: "center",
+					wordWrap: true,
+					wordWrapWidth: 300,
+				}
+			)
 		);
 		this.dialogue.x = this.x_loc - 160;
 		this.dialogue.y = this.y_loc;

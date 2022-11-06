@@ -14,7 +14,7 @@ endblock
 
 block instances
 	TechDemoHandler 0 0 0 0 1 1
-	PlayerInstance 240 312 0 0 1 1
+	PlayerInstance 264 216 0 0 1 1
 	Artifact 168 696 0 0 1 1
 	Artifact 2232 1032 0 0 1 1
 	Artifact 936 1224 0 0 1 1
@@ -39,5 +39,18 @@ block instances
 	Enemy 840 384 0 0 1 1
 	Enemy 4248 864 0 0 1 1
 	Enemy 3960 2064 0 0 1 1
+	Global 312 408 0 0 1 1
+	ArtifactText 504 408 0 0 1 1
+	Proceed 456 408 0 0 1 1
+	Counter 408 408 0 0 1 1
+endblock
+
+block extern Music
+bg
+0.03
+endblock
+
+block extern GrassColor
+90,120,30,50,70,110
 endblock
 

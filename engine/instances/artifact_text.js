@@ -90,11 +90,11 @@ class ArtifactText extends EngineInstance {
 		if (RoomManager.currentRoom().name === "Tutorial") {
 			this.dialogue_text.text = this.jungleevidence[EngineUtils.irandomRange(0, this.jungleevidence.length - 1)].text;
 		} else if (RoomManager.currentRoom().name === "Level1") {
-			this.dialogue_text.text = this.jungleevidence[EngineUtils.irandomRange(0, this.caveevidence.length - 1)].text;
+			this.dialogue_text.text = this.caveevidence[EngineUtils.irandomRange(0, this.caveevidence.length - 1)].text;
 		} else if (RoomManager.currentRoom().name === "Level2") {
-			this.dialogue_text.text = this.jungleevidence[EngineUtils.irandomRange(0, this.treesevidence.length - 1)].text;
+			this.dialogue_text.text = this.treesevidence[EngineUtils.irandomRange(0, this.treesevidence.length - 1)].text;
 		} else if (RoomManager.currentRoom().name === "Level3") {
-			this.dialogue_text.text = this.jungleevidence[EngineUtils.irandomRange(0, this.swampevidence.length - 1)].text;
+			this.dialogue_text.text = this.swampevidence[EngineUtils.irandomRange(0, this.swampevidence.length - 1)].text;
 		} else {
 			this.dialogue_text.text = "Collected!";
 		}

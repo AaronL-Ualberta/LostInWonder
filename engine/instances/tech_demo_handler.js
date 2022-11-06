@@ -118,7 +118,9 @@ class TechDemoHandler extends LevelHandler {
 				this.spellWheel_timer / rot_time_total,
 				this.spellWheel_origAngle,
 				this.spellWheel_targetAngle,
-				EngineUtils.INTERPOLATE_OUT)
+				EngineUtils.INTERPOLATE_OUT
+			);
+		}
 		if (!this.beatLevel) {
 			var camX = this.camera.getX();
 			var camY = this.camera.getY();
@@ -176,17 +178,11 @@ class TechDemoHandler extends LevelHandler {
 			if (this.player.y >= this.room_height * 48) {
 				$engine.setRoom(RoomManager.currentRoom().name);
 			}
-
+		}
 		// Check if player beats the level
 		if (this.player.x >= (this.room_width - 3) * 48) {
 			this.proceed.endGame = true;
-		} else {
-			this.proceed.endGame = false;
-			// Check if player beats the level
-			if (this.player.x >= (this.room_width - 3) * 48) {
-				//$engine.setRoom(RoomManager.currentRoom().name);
-				this.winLevel();
-			}
+			this.winLevel();
 			this.timer2++;
 
 			const fadeTime = 220;
@@ -196,9 +192,13 @@ class TechDemoHandler extends LevelHandler {
 				this.adjustFilter2.alpha = this.timer2 / fadeTime;
 				return;
 			}
+		} else {
+			this.proceed.endGame = false;
+			// Check if player beats the level
 		}
+		//$engine.setRoom(RoomManager.currentRoom().name);
 	}
-	
+
 	onDestroy() {
 		$engine.audioStopAll();
 	}

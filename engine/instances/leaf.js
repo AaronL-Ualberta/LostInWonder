@@ -12,10 +12,20 @@ class Leaf extends EngineInstance {
 		this.xOffset = EngineUtils.randomRange(0.1, 0.3);
 		this.yOffset = EngineUtils.randomRange(0.2, 0.4);
 		this.setSprite(new PIXI.Sprite($engine.getTexture("leaf")), true);
+		var extern = RoomManager.currentRoom().getAllExtern();
+		var r = [20, 40];
+		var g = [70, 204];
+		var b = [20, 40];
+		if (extern.GrassColor) {
+			var values = extern.GrassColor[0].split(",").map((x) => Number(x));
+			var r = [values[0], values[1]];
+			var g = [values[2], values[3]];
+			var b = [values[4], values[5]];
+		}
 
-		const red = Math.round(EngineUtils.irandomRange(60, 100));
-		const green = Math.round(255 * EngineUtils.randomRange(0.3, 0.8));
-		const blue = Math.round(EngineUtils.irandomRange(60, 100));
+		const red = Math.round(EngineUtils.irandomRange(r[0], r[1]));
+		const green = Math.round(EngineUtils.irandomRange(g[0], g[1]));
+		const blue = Math.round(EngineUtils.irandomRange(b[0], b[1]));
 		this.getSprite().tint = (red << 16) | (green << 8) | blue;
 
 		this.setHitbox(new Hitbox(this, new RectangleHitbox(0, 0, 36, 36)));
@@ -76,7 +86,6 @@ class LeafCreate extends EngineInstance {
 			}
 			var intercept = EngineUtils.irandomRange(cam.y1, cam.y2);
 			new Leaf(x, intercept, this.wind_dir, this.value);
-			//}
 		}
 	}
 }
