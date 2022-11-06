@@ -15,6 +15,7 @@ class Artifact extends EngineInstance {
 	step() {
 		if (IM.instanceCollision(this, this.x, this.y, PlayerInstance)) {
 			this.global.artifact_count += 1;
+			ArtifactText.first.collected();
 			this.destroy();
 			// Artifact Collectile Sound Effect
 			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);

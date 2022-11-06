@@ -48,5 +48,12 @@ block instances
 	VineBlock 2256 1488 0 0 1 1
 	VineBlock 2256 1584 0 0 1 1
 	VineBlock 2256 1632 0 0 1 1
+	Artifact 1560 1704 0 0 1 1
+	GrassCreate 384 1752 0 0 16 1
+	GrassCreate 2040 1752 0 0 35 1
+	GrassCreate 888 1752 0 0 3 1
+	GrassCreate 1080 1752 0 0 3 1
+	ArtifactText 974 401 0 0 1 1
+	Artifact 408 216 0 0 1 1
 endblock
 
