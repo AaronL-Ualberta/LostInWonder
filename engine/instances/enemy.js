@@ -81,19 +81,7 @@ class Enemy extends EngineInstance {
 			this.gotoTurning();
 		}
 
-		if (IM.instanceCollision(this, this.x, this.y, Fireball)) {
-			IM.instancePlace(this, this.x, this.y, Fireball).destroy();
-			this.destroy();
-		}
-		//<<<<<<< HEAD
 		this.checkDying();
-		//=======
-		// 		if (IM.instanceCollision(this, this.x, this.y, Fireball)) {
-		// 			IM.instancePlace(this, this.x, this.y, Fireball).destroy();
-		// 			new EndCondition();
-		// 			this.destroy();
-		// 		}
-		// >>>>>>> 0c1727dd70d2fc38daad415467236280bf43702f
 
 		if (IM.instanceCollision(this, this.x, this.y, PlayerInstance) && !this.damage_done) {
 			var player = IM.instancePlace(this, this.x, this.y, PlayerInstance);
