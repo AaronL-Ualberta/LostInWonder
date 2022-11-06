@@ -119,7 +119,7 @@ class PlayerInstance extends EngineInstance {
 		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
 		if (wand_piece !== undefined) {
 			this.spells_learned++;
-			console.log(this.spells_learned)
+			console.log(this.spells_learned);
 
 			// Change the sprite
 			if (this.spells_learned === 4) {
@@ -720,6 +720,18 @@ class PlayerInstance extends EngineInstance {
 		var collided = IM.instanceCollision(this, this.x, this.y - 30, WaterBlock);
 		if (collided) {
 			this.switchState(PLAYERSTATES.UNDERWATER);
+		}
+	}
+
+	onRoomStart() {
+		if (RoomManager.currentRoom().name == "Tutorial") {
+			this.spells_learned = 0;
+		} else if (RoomManager.currentRoom().name == "Level1") {
+			this.spells_learned = 1;
+		} else if (RoomManager.currentRoom().name == "Level2") {
+			this.spells_learned = 2;
+		} else if (RoomManager.currentRoom().name == "Level3") {
+			this.spells_learned = 3;
 		}
 	}
 }
