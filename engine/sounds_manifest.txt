@@ -1,4 +1,5 @@
 require Level1Background engine/audio/BackgroundMusic_Level1.ogg BGM
+require JungleAmbience engine/audio/JungleAmbience.mp3 BGM
 require FireBallSoundEffect engine/audio/FireBallSoundEffect.ogg SE
 require JumpSoundEffect engine/audio/JumpSoundEffect.ogg SE
 require DoubleJumpSoundEffect engine/audio/DoubleJumpSoundEffect.ogg SE
@@ -11,3 +12,4 @@ require ArtifactCollectibleSoundEffect engine/audio/ArtifactCollectibleSoundEffe
 require BoulderDropSoundEffect engine/audio/BoulderDropSoundEffect.ogg SE
 require VineBurnSoundEffect engine/audio/VineBurnSoundEffect.ogg SE
 require bg engine/audio/NewBG.mp3 BGM
+require SuspenseSoundEffect engine/audio/SuspenseTitle.wav SE

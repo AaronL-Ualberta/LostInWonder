@@ -1,10 +1,11 @@
 EngineRoomEditor engine/rooms/room_editor.txt 
-TechDemo engine/rooms/techdemo.txt
+TechDemo engine/rooms/techdemo.txt 
 MyPlatformRoom engine/rooms/myplatformroom.txt 
 TestRoom engine/rooms/testroom.txt 
-TestRoom2 engine/rooms/empty.txt
+TestRoom2 engine/rooms/empty.txt 
 Level1 engine/rooms/level1.txt 
+Level2 engine/rooms/level2.txt default
+Level3 engine/rooms/level3.txt 
+Level4Intro engine/rooms/level4intro.txt 
 TitleScreen engine/rooms/title_screen.txt 
-Level3 engine/rooms/level3.txt
-Level2 engine/rooms/level2.txt
-Tutorial engine/rooms/tutorial.txt default
+Tutorial engine/rooms/tutorial.txt

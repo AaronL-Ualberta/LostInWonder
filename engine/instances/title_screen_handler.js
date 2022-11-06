@@ -61,6 +61,9 @@ class TitleScreenHandler extends EngineInstance {
 
 				this.camera.addFilter(this.shockwaveFilter);
 				this.camera.addFilter(this.zoomFilter);
+
+				// Play suspense sound
+				this.audioSound = $engine.audioPlaySound("SuspenseSoundEffect", 0.07, false);
 			}
 		} else {
 			// Fade out
@@ -77,7 +80,7 @@ class TitleScreenHandler extends EngineInstance {
 				0.745 + ($engine.getWindowSizeY() - this.camera.getHeight()) / $engine.getWindowSizeY() / 4;
 
 			if (this.timer == 80) {
-				$engine.setRoom("Level1");
+				$engine.setRoom("Level4Intro");
 			}
 		}
 	}
@@ -85,4 +88,8 @@ class TitleScreenHandler extends EngineInstance {
 	draw(gui, camera) {
 		// $engine.requestRenderOnGUI(this.dialogue);
 	}
+
+	// onDestroy() {
+	// 	$engine.audioStopSound(this.audioSound);
+	// }
 }
