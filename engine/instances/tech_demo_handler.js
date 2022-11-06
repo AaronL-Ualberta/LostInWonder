@@ -61,6 +61,7 @@ class TechDemoHandler extends EngineInstance {
 
 	onRoomStart() {
 		this.player = PlayerInstance.first;
+		this.proceed = Proceed.first;
 	}
 
 	step() {
@@ -123,7 +124,9 @@ class TechDemoHandler extends EngineInstance {
 
 		// Check if player beats the level
 		if (this.player.x >= (this.room_width - 3) * 48) {
-			$engine.setRoom(RoomManager.currentRoom().name);
+			this.proceed.endGame = true
+		} else {
+			this.proceed.endGame = false
 		}
 	}
 

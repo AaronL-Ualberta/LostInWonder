@@ -15,7 +15,7 @@ class GrassCreate extends EngineInstance {
 				if (RoomManager.currentRoom().name === "Level2") {
 					var temp = new Grass(start_x, this.y + 24, [90, 120], [30, 50], [70, 110]);
 				} else {
-					var temp = new Grass(start_x, this.y + 24, [20, 40], [77, 204], [20, 40]);
+					var temp = new Grass(start_x, this.y + 24, [20, 40], [70, 204], [20, 40]);
 				}
 				var grass_type = $engine.getTexturesFromSpritesheet(
 					"GrassBlade",
