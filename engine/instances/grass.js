@@ -10,13 +10,19 @@ class GrassCreate extends EngineInstance {
 		);
 		var start_x = left;
 		this.grass_array = [];
+		var extern = RoomManager.currentRoom().getAllExtern();
+		var r = [20, 40];
+		var g = [70, 204];
+		var b = [20, 40];
+		if (extern.GrassColor) {
+			var values = extern.GrassColor[0].split(",").map((x) => Number(x));
+			var r = [values[0], values[1]];
+			var g = [values[2], values[3]];
+			var b = [values[4], values[5]];
+		}
 		while (start_x <= right) {
 			if (start_x <= right) {
-				if (RoomManager.currentRoom().name === "Level2") {
-					var temp = new Grass(start_x, this.y + 24, [90, 120], [30, 50], [70, 110]);
-				} else {
-					var temp = new Grass(start_x, this.y + 24, [20, 40], [70, 204], [20, 40]);
-				}
+				var temp = new Grass(start_x, this.y + 24, r, g, b);
 				var grass_type = $engine.getTexturesFromSpritesheet(
 					"GrassBlade",
 					0,

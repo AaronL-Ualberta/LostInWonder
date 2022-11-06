@@ -10,3 +10,4 @@ require EarthSoundEffect  engine/audio/EarthSoundEffect.ogg SE
 require ArtifactCollectibleSoundEffect engine/audio/ArtifactCollectibleSoundEffect.ogg SE
 require BoulderDropSoundEffect engine/audio/BoulderDropSoundEffect.ogg SE
 require VineBurnSoundEffect engine/audio/VineBurnSoundEffect.ogg SE
+require bg engine/audio/NewBG.mp3 BGM

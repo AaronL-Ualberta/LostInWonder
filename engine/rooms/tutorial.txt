@@ -54,7 +54,14 @@ block instances
 	GrassCreate 1080 1752 0 0 3 1
 	ArtifactText 974 401 0 0 1 1
 	Artifact 408 216 0 0 1 1
-	Artifact 552 408 0 0 1 1
+	Artifact 1368 1320 0 0 1 1
 	Proceed 2760 1752 0 0 1 1
+	Counter 888 120 0 0 1 1
+	LeafCreate -72 504 0 0 1 1
+endblock
+
+block extern Music
+bg
+0.03
 endblock
 

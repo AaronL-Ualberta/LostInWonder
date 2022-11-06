@@ -70,7 +70,9 @@ class EngineRoomEditor extends EngineInstance {
 		IM.makePersistent(this);
 		this.removeLingeringInstances();
 		// cursed
-		this.delayedAction(0, () => {this.setGridScale(this.gridX, this.gridY)})
+		this.delayedAction(0, () => {
+			this.setGridScale(this.gridX, this.gridY);
+		});
 	}
 
 	onCreate() {
@@ -209,7 +211,7 @@ class EngineRoomEditor extends EngineInstance {
 				string += String(data);
 			}
 
-			string += "endblock\n\n";
+			string += "\nendblock\n\n";
 		}
 
 		return string;
@@ -607,8 +609,12 @@ class EngineRoomEditor extends EngineInstance {
 					anyMove: false,
 					startX: IN.getMouseX(),
 					startY: IN.getMouseY(),
-					centerX: this.selectedObject? this.selectedObject.x : this.selectedObjectBounds.x + this.selectedObjectBounds.width / 2,
-					centerY: this.selectedObject? this.selectedObject.y : this.selectedObjectBounds.y + this.selectedObjectBounds.height / 2,
+					centerX: this.selectedObject
+						? this.selectedObject.x
+						: this.selectedObjectBounds.x + this.selectedObjectBounds.width / 2,
+					centerY: this.selectedObject
+						? this.selectedObject.y
+						: this.selectedObjectBounds.y + this.selectedObjectBounds.height / 2,
 				};
 				this.transformData.originalAngle = V2D.calcDir(
 					this.transformData.startX - this.transformData.centerX,
@@ -875,17 +881,17 @@ class EngineRoomEditor extends EngineInstance {
 			}
 		}
 
-		if(IN.keyCheck("ArrowRight")) {
-			$engine.getCamera().translate(this.gridX,0);
+		if (IN.keyCheck("ArrowRight")) {
+			$engine.getCamera().translate(this.gridX, 0);
 		}
-		if(IN.keyCheck("ArrowUp")) {
-			$engine.getCamera().translate(0,-this.gridY);
+		if (IN.keyCheck("ArrowUp")) {
+			$engine.getCamera().translate(0, -this.gridY);
 		}
-		if(IN.keyCheck("ArrowLeft")) {
-			$engine.getCamera().translate(-this.gridX,0);
+		if (IN.keyCheck("ArrowLeft")) {
+			$engine.getCamera().translate(-this.gridX, 0);
 		}
-		if(IN.keyCheck("ArrowDown")) {
-			$engine.getCamera().translate(0,this.gridY);
+		if (IN.keyCheck("ArrowDown")) {
+			$engine.getCamera().translate(0, this.gridY);
 		}
 
 		if (IN.keyCheckPressed("KeyG")) {

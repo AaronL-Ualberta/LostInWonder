@@ -58,6 +58,7 @@ class ArtifactText extends EngineInstance {
 		this.y_loc = 700;
 		this.fade = false;
 		this.fade_time = 0.003;
+		this.fade_value = 1;
 		this.dialogue_text = $engine.createManagedRenderable(
 			this,
 			new PIXI.Text("", {
@@ -75,7 +76,8 @@ class ArtifactText extends EngineInstance {
 
 	step() {
 		if (this.fade) {
-			this.dialogue.alpha -= this.fade_time;
+			this.fade_value += this.fade_time;
+			this.dialogue.alpha = EngineUtils.interpolate(this.fade_value, 1, 0, EngineUtils.INTERPOLATE_OUT);
 			if (this.dialogue.alpha < 0) {
 				this.fade = false;
 			}
@@ -84,14 +86,14 @@ class ArtifactText extends EngineInstance {
 
 	collected() {
 		this.fade = true;
-		this.dialogue.alpha = 1;
+		this.fade_value = 0;
 		if (RoomManager.currentRoom().name === "Tutorial") {
 			this.dialogue_text.text = this.jungleevidence[EngineUtils.irandomRange(0, this.jungleevidence.length - 1)].text;
-		} else if (RoomManager.currentRoom().name === "Level2") {
+		} else if (RoomManager.currentRoom().name === "Level1") {
 			this.dialogue_text.text = this.jungleevidence[EngineUtils.irandomRange(0, this.caveevidence.length - 1)].text;
-		} else if (RoomManager.currentRoom().name === "Level3") {
+		} else if (RoomManager.currentRoom().name === "Level2") {
 			this.dialogue_text.text = this.jungleevidence[EngineUtils.irandomRange(0, this.treesevidence.length - 1)].text;
-		} else if (RoomManager.currentRoom().name === "Level4") {
+		} else if (RoomManager.currentRoom().name === "Level3") {
 			this.dialogue_text.text = this.jungleevidence[EngineUtils.irandomRange(0, this.swampevidence.length - 1)].text;
 		} else {
 			this.dialogue_text.text = "Collected!";

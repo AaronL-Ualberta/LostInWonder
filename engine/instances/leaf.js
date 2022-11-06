@@ -1,13 +1,12 @@
 class Leaf extends EngineInstance {
-	onCreate(x, intercept, value) {
+	onCreate(x, intercept, wind_dir, value) {
+		this.wind_dir = wind_dir;
 		this.global = Global.first;
 		this.x = x;
 		this.y = 0;
-		this.speed = EngineUtils.irandomRange(2 + value, 5 + value);
+		this.max_velocity = EngineUtils.irandomRange(2 + value, 5 + value);
+		this.speed = this.max_velocity * this.wind_dir;
 		this.slope = EngineUtils.randomRange(-1, 1);
-		while (!this.a) {
-			this.a = EngineUtils.randomRange(-2, 2);
-		}
 		this.intercept = intercept;
 
 		this.xOffset = EngineUtils.randomRange(0.1, 0.3);
@@ -24,14 +23,17 @@ class Leaf extends EngineInstance {
 	}
 
 	step() {
-		if (this.global.wind_direction === 1) {
-			this.x += this.speed;
+		var max = this.max_velocity;
+		if (this.global.wind_direction !== this.wind_dir) {
+			max /= 2;
 		}
-		if (this.global.wind_direction === -1) {
-			this.x -= this.speed;
+		var speed_change = 0.05;
+		if (Math.abs(this.speed) <= max) {
+			this.speed += speed_change * this.global.wind_direction;
 		} else {
-			this.x += this.speed;
+			this.speed -= speed_change * Math.sign(this.speed);
 		}
+		this.x += this.speed;
 		this.y = this.slope * this.x + this.intercept;
 		var scale = Math.sin(this.x / 50);
 		this.xScale = this.xOffset - scale / 10;
@@ -45,8 +47,9 @@ class Leaf extends EngineInstance {
 
 class LeafCreate extends EngineInstance {
 	onEngineCreate() {
+		this.wind_dir = 0;
 		this.timer = 2;
-		this.value = 0;
+		this.value = 3;
 	}
 
 	onRoomStart() {
@@ -55,27 +58,25 @@ class LeafCreate extends EngineInstance {
 
 	step() {
 		this.timer--;
-		if (this.timer == 0) {
-			for (let i = 0; i < 30; i++) {
-				var cam = $engine.getCamera().getBoundingBox();
-				if (this.global.wind_direction === 1) {
-					var x = cam.x1 - EngineUtils.irandom(200, 1000);
-					this.value = 3;
-				} else if (this.global.wind_direction === -1) {
-					var x = cam.x2 + EngineUtils.irandom(200, 1000);
-					this.value = 3;
-				} else {
-					if (this.global.prev_wind === 1) {
-						var x = cam.x1 - EngineUtils.irandom(200, 1000);
-					} else if (this.global.prev_wind === -1) {
-						var x = cam.x2 + EngineUtils.irandom(200, 1000);
-						this.value = 0;
-					}
-				}
-				var intercept = EngineUtils.irandomRange(cam.y1, cam.y2);
-				new Leaf(x, intercept, this.global.wind_direction, this.value);
+		if (this.timer === 0) {
+			this.timer = 3;
+			if (this.global.wind_direction !== 0) {
+				this.wind_dir = this.global.wind_direction;
 			}
-			this.timer = 100;
+			if (!this.wind_dir) {
+				return;
+			}
+			//for (let i = 0; i < 30; i++) {
+			var cam = $engine.getCamera().getBoundingBox();
+
+			if (this.wind_dir === 1) {
+				var x = cam.x1 - EngineUtils.irandom(200, 1000);
+			} else if (this.wind_dir === -1) {
+				var x = cam.x2 + EngineUtils.irandom(200, 1000);
+			}
+			var intercept = EngineUtils.irandomRange(cam.y1, cam.y2);
+			new Leaf(x, intercept, this.wind_dir, this.value);
+			//}
 		}
 	}
 }

@@ -1,6 +1,11 @@
 class TechDemoHandler extends EngineInstance {
 	onEngineCreate() {
-		//this.audioSound = $engine.audioPlaySound("Level1Background", 0.03, true);
+		var extern = RoomManager.currentRoom().getAllExtern();
+		if (extern.Music) {
+			var music = extern.Music;
+			music[1] = Number(music[1]);
+			this.audioSound = $engine.audioPlaySound(music[0], music[1], true);
+		}
 
 		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
 		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
@@ -51,6 +56,7 @@ class TechDemoHandler extends EngineInstance {
 		this.adjustFilter = new PIXI.filters.AdjustmentFilter();
 		this.adjustFilter.brightness = 0;
 		this.camera.addFilter(this.adjustFilter);
+		this.player_die_timer = 120;
 	}
 
 	onCreate() {
@@ -65,6 +71,15 @@ class TechDemoHandler extends EngineInstance {
 	}
 
 	step() {
+		if ($engine.isGamePausedSpecial()) {
+			this.player_die_timer--;
+			this.adjustFilter.brightness = this.player_die_timer / 120;
+			if (this.player_die_timer < 0) {
+				$engine.setRoom(RoomManager.currentRoom().name);
+				$engine.unpauseGameSpecial();
+			}
+			return;
+		}
 		var camX = this.camera.getX();
 		var camY = this.camera.getY();
 		var divVal = 5;
@@ -124,14 +139,14 @@ class TechDemoHandler extends EngineInstance {
 
 		// Check if player beats the level
 		if (this.player.x >= (this.room_width - 3) * 48) {
-			this.proceed.endGame = true
+			this.proceed.endGame = true;
 		} else {
-			this.proceed.endGame = false
+			this.proceed.endGame = false;
 		}
 	}
 
 	onDestroy() {
-		//$engine.audioStopSound(this.audioSound);
+		$engine.audioStopAll();
 	}
 
 	draw(gui, camera) {
@@ -148,5 +163,12 @@ class TechDemoHandler extends EngineInstance {
 		this.spellWheel_targetAngle =
 			this.spellWheel_origAngle + V2D.angleDiff(this.spellWheel_origAngle, -toSpellID * (Math.PI / 2));
 		this.spellWheel_timer = 0;
+	}
+
+	killPlayer() {
+		$engine.audioFadeAll(this.player_die_timer);
+		$engine.pauseGameSpecial(this);
+		this.player_died = true;
+		this.camera.addFilter(this.adjustFilter);
 	}
 }
