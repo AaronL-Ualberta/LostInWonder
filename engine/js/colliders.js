@@ -1,4 +1,3 @@
-// by convention, 'get' methods are required to check if the hitbox is valid first.
 class Hitbox {
 	// container for actual hitboxes
 	//static TYPE_CIRCLE = 2;

@@ -1,6 +1,6 @@
 // this is a central file for the engine, RPG maker overrides, and any custom code that interacts with the overworld
 
-const $ENGINE_VERSION = "1.1";
+const $ENGINE_VERSION = "1.2.0";
 const $ENGINE_NAME = "FallEngine";
 
 /** @type {Engine} */
@@ -932,14 +932,13 @@ class Engine extends Scene_Base {
 	 * @returns {Number | null} The index of the save file, or null if it does not exist and create is false
 	 */
 	findSaveFile(identifier, create = true) {
-		var globalInfo = DataManager.loadGlobalInfo(); // RPG maker stores data as an array except in an object. Very cursed.
-		for (const key in globalInfo) {
-			// traversal order is guaranteed to be numeric indices first.
-			const i = Number(key);
-			if (isNaN(i)) {
-				break;
+		var globalInfo = DataManager.loadGlobalInfo();
+		for (var i = 1; i < globalInfo.length; i++) {
+			const info = globalInfo[i];
+			if (!info) {
+				continue;
 			}
-			const info = globalInfo[key];
+
 			if (
 				StorageManager.isLocalMode() ||
 				(info.globalId === DataManager._globalId &&
@@ -975,12 +974,11 @@ class Engine extends Scene_Base {
 	findAllSaves() {
 		var saves = [];
 		var globalInfo = DataManager.loadGlobalInfo();
-		for (const key in globalInfo) {
-			const i = Number(key);
-			if (isNaN(i)) {
-				break;
+		for (var i = 1; i < globalInfo.length; i++) {
+			const info = globalInfo[i];
+			if (!info) {
+				continue;
 			}
-			const info = globalInfo[key];
 			if (
 				StorageManager.isLocalMode() ||
 				(info.globalId === DataManager._globalId && info.title === $dataSystem.gameTitle && "fallenId" in info)
@@ -992,7 +990,7 @@ class Engine extends Scene_Base {
 	}
 
 	/**
-	 * Load the specified save file into memory. This function essentially just loads the engine's save data into memory.
+	 * Load the specified save file into memory. This function only loads the data and does not do anything with the data.
 	 *
 	 * Use `$engine.findSaveFile` to find an appropriate index
 	 *
@@ -3406,7 +3404,7 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 		}
 		StorageManager.save(savefileId, json);
 		this._lastAccessedId = savefileId;
-		var globalInfo = this.loadGlobalInfo() || {};
+		var globalInfo = this.loadGlobalInfo() || [];
 		var id = undefined;
 		if (globalInfo[savefileId]) {
 			id = globalInfo[savefileId].fallenId;
@@ -3431,37 +3429,100 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 	};
 
 	// append to the save system.
-	{
-		let replaceObject = function (baseObject, newValue) {
-			for (const key in baseObject) {
-				delete baseObject[key];
+	let replaceObject = function (baseObject, newValue) {
+		for (const key in baseObject) {
+			delete baseObject[key];
+		}
+		for (const key in newValue) {
+			if (newValue.hasOwnProperty(key)) {
+				baseObject[key] = newValue[key];
 			}
-			for (const key in newValue) {
-				if (newValue.hasOwnProperty(key)) {
-					baseObject[key] = newValue[key];
+		}
+	};
+
+	let makeSaveContents1 = DataManager.makeSaveContents;
+	DataManager.makeSaveContents = function () {
+		var result = makeSaveContents1.call(this);
+		result.engineSave = $__engineSaveData;
+		return result;
+	};
+
+	let extractSaveContents1 = DataManager.extractSaveContents;
+	DataManager.extractSaveContents = function (contents) {
+		extractSaveContents1.call(this, contents);
+		replaceObject($__engineSaveData, contents.engineSave);
+	};
+
+	let setupNewGame1 = DataManager.setupNewGame;
+	DataManager.setupNewGame = function () {
+		setupNewGame1.call(this);
+		replaceObject($__engineSaveData, {});
+	};
+
+	StorageManager.backup = function (savefileId) {
+		if (this.exists(savefileId)) {
+			if (this.isLocalMode()) {
+				var data = this.loadFromLocalFile(savefileId);
+				var compressed = LZString.compressToBase64(data);
+				var fs = require("fs");
+				var dirPath = this.localFileDirectoryPath();
+				var filePath = this.localFilePath(savefileId) + ".bak";
+				if (!fs.existsSync(dirPath)) {
+					fs.mkdirSync(dirPath);
+				}
+				fs.writeFileSync(filePath, compressed);
+			} else {
+				var key = this.webStorageKey(savefileId);
+				localStorage.setItem(key + "bak", localStorage.getItem(key));
+			}
+		}
+	};
+
+	// increase performance by replacing 'for in' with Object.keys()
+	JsonEx._encode = function (value, circular, depth) {
+		depth = depth || 0;
+		if (++depth >= this.maxDepth) {
+			throw new Error("Object too deep");
+		}
+		var type = Object.prototype.toString.call(value);
+		if (type === "[object Object]" || type === "[object Array]") {
+			value["@c"] = JsonEx._generateId();
+
+			var constructorName = this._getConstructorName(value);
+			if (constructorName !== "Object" && constructorName !== "Array") {
+				value["@"] = constructorName;
+			}
+			const keys = Object.keys(value);
+			const len = keys.length;
+			for (var i = 0; i < len; i++) {
+				var key = keys[i];
+				if (value.hasOwnProperty(key) && !key.match(/^@./)) {
+					if (value[key] && typeof value[key] === "object") {
+						if (value[key]["@c"]) {
+							circular.push([key, value, value[key]]);
+							value[key] = { "@r": value[key]["@c"] };
+						} else {
+							value[key] = this._encode(value[key], circular, depth + 1);
+
+							if (value[key] instanceof Array) {
+								//wrap array
+								circular.push([key, value, value[key]]);
+
+								value[key] = {
+									"@c": value[key]["@c"],
+									"@a": value[key],
+								};
+							}
+						}
+					} else {
+						value[key] = this._encode(value[key], circular, depth + 1);
+					}
 				}
 			}
-		};
-
-		let makeSaveContents1 = DataManager.makeSaveContents;
-		DataManager.makeSaveContents = function () {
-			var result = makeSaveContents1.call(this);
-			result.engineSave = $__engineSaveData;
-			return result;
-		};
-
-		let extractSaveContents1 = DataManager.extractSaveContents;
-		DataManager.extractSaveContents = function (contents) {
-			extractSaveContents1.call(this, contents);
-			replaceObject($__engineSaveData, contents.engineSave);
-		};
-
-		let setupNewGame1 = DataManager.setupNewGame;
-		DataManager.setupNewGame = function () {
-			setupNewGame1.call(this);
-			replaceObject($__engineSaveData, {});
-		};
-	}
+		}
+		depth--;
+		return value;
+	};
 
 	SceneManager.updateMainOriginal = SceneManager.updateMain;
 	SceneManager.updateMainStable = function () {
@@ -3481,6 +3542,65 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 	};
 
 	SceneManager.useStableUpdate = true;
+
+	let processStack = function (stack) {
+		const elements = stack.split("\n").map((x) => x.replace(/\(.*\//, "("));
+		const start = elements.shift().replace(/.*: /, "");
+		return (
+			'<font style="font-weight: bold; color:#f06e00">' +
+			start +
+			"</font><br><br>" +
+			elements.map((x) => "<font>" + x + "</font>").join("<br>")
+		);
+	};
+
+	Graphics._makeErrorHtml = function (name, message) {
+		var footer =
+			'<br><br><font style="color: #8a7e75">' +
+			$ENGINE_NAME +
+			" - v" +
+			$ENGINE_VERSION +
+			"<br>RMMV - " +
+			$dataSystem.gameTitle +
+			" v" +
+			$dataSystem.versionId +
+			"</font>";
+		return (
+			'<span style="font-size:1.25em; background-color: #201b19a5;' +
+			'padding: 2em; border: 5px solid #f06e00; user-select: text">' +
+			'<font style="font-size:2em" color="#f06e00"><b>' +
+			name +
+			"</b></font><br>" +
+			'<font color="#8a7e75">' +
+			message +
+			"</font><br><br>" +
+			'<font color="#f06e00"><b>' +
+			"Press F5 to reload the game" +
+			"</b></font>" +
+			footer +
+			"</span>"
+		);
+	};
+
+	let oldUpdate = Graphics._updateErrorPrinter;
+
+	Graphics._updateErrorPrinter = function () {
+		oldUpdate.call(this);
+		this._errorPrinter.style.display = "flex";
+		this._errorPrinter.style.alignItems = "center";
+		this._errorPrinter.style.justifyContent = "center";
+	};
+
+	SceneManager.catchException = function (e) {
+		if (e instanceof Error) {
+			Graphics.printError(e.name, processStack(e.stack));
+			console.error(e.stack);
+		} else {
+			Graphics.printError("UnknownError", e);
+		}
+		AudioManager.stopAll();
+		this.stop();
+	};
 
 	// since we upgraded our PIXIJS, the way that renderers are created was changed slightly.
 	Graphics._createRenderer = function () {
