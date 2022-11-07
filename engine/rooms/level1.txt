@@ -529,3 +529,7 @@ block instances
 	Artifact 504 312 0 0 1 1
 endblock
 
+block extern Music
+BackgroundMusic_Level1
+0.03
+endblock

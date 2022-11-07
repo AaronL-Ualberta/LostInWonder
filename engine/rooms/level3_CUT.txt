@@ -429,3 +429,7 @@ block instances
 	ArtifactText 72 408 0 0 1 1
 endblock
 
+block extern Music
+BackgroundMusic_Level3CUT
+0.03
+endblock
