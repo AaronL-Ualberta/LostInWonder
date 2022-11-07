@@ -4,9 +4,9 @@ MyPlatformRoom engine/rooms/myplatformroom.txt
 TestRoom engine/rooms/testroom.txt 
 TestRoom2 engine/rooms/empty.txt 
 Level1 engine/rooms/level1.txt 
-Level2 engine/rooms/level2.txt default
+Level2 engine/rooms/level2.txt
 Level3 engine/rooms/level3.txt 
-Tutorial engine/rooms/tutorial.txt 
+Tutorial engine/rooms/tutorial.txt default
 
 TitleScreen engine/rooms/title_screen.txt 
 GameIntro engine/rooms/introscenes/gameintro.txt 

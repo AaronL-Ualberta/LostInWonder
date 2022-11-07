@@ -13,7 +13,7 @@ block room_data
 endblock
 
 block instances
-	TechDemoHandler 0 0 0 0 1 1
+	TutorialHandler 0 0 0 0 1 1
 	PlayerInstance 168 120 0 0 1 1
 	Global -72 -72 0 0 1 1
 	SemiSolid 288 216 0 0 12 1
@@ -47,14 +47,12 @@ block instances
 	VineBlock 2256 1488 0 0 1 1
 	VineBlock 2256 1584 0 0 1 1
 	VineBlock 2256 1632 0 0 1 1
-	Artifact 1560 1704 0 0 1 1
+	Artifact 1560 1656 0 0 1 1
 	GrassCreate 384 1752 0 0 16 1
 	GrassCreate 2040 1752 0 0 35 1
 	GrassCreate 888 1752 0 0 3 1
 	GrassCreate 1080 1752 0 0 3 1
 	ArtifactText 974 401 0 0 1 1
-	Artifact 408 216 0 0 1 1
-	Artifact 1368 1320 0 0 1 1
 	Proceed 2760 1752 0 0 1 1
 	Counter 888 120 0 0 1 1
 	LeafCreate -72 504 0 0 1 1

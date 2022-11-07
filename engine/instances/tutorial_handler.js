@@ -52,6 +52,8 @@ class TutorialHandler extends LevelHandler {
 		this.adjustFilter.brightness = 0;
 		this.camera.addFilter(this.adjustFilter);
 
+		this.see_artifact_trigger = false;
+		this.get_artifact_trigger = false;
 		this.beatLevel = false;
 		this.timer2 = 0;
 
@@ -74,12 +76,31 @@ class TutorialHandler extends LevelHandler {
 			new DialogueLine("Alright then. Now all I need to do is find the pieces of my wand and portal back home! Once I know how to prove my innocence, I suppose…", LARAYA_PORTRAITS.HAPPY),
 			new DialogueLine("I didn't even break that law, the Tribunal knows that! Why would they do this?", LARAYA_PORTRAITS.ANGRY),
 			new DialogueLine("I've lived at the Spire my whole life, the Tribunal knows I didn't do it!", LARAYA_PORTRAITS.ANGRY),
-			new DialogueLine("Hang on, what's over there? Something's glowing!", LARAYA_PORTRAITS.HAPPY), //fire wand piece is on the ground, nowhere else to go but interact with it. Lore appears on screen (see WAND PIECE GATHERED section of dialogue) when clicked
+			new DialogueLine("Use WASD to move around the map.", LARAYA_PORTRAITS.HAPPY),
+			new DialogueLine("Some platforms, such as tree leaves, can be passed through by holding S.", LARAYA_PORTRAITS.HAPPY),
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.junglelines);
 	}
 	
 	step() {
+		// Dialogue trigger for seeing the artifact
+		if (!this.see_artifact_trigger && 24 * 48 <= this.player.x && this.player.x <= 25 * 48) {
+			this.see_artifact_trigger = true
+			this.artifactline = [
+				new DialogueLine("Hang on, what's over there? Something's glowing!", LARAYA_PORTRAITS.HAPPY), //fire wand piece is on the ground, nowhere else to go but interact with it. Lore appears on screen (see WAND PIECE GATHERED section of dialogue) when clicked
+			];
+			this.dialogue_instance = new Dialogue(0, 0, this.artifactline, true);
+		}
+		
+		// Dialogue trigger for collecting the artifact
+		if (!this.get_artifact_trigger && 31 * 48 <= this.player.x && this.player.x <= 32 * 48) {
+			this.get_artifact_trigger = true
+			this.artifactline = [
+				new DialogueLine("This is a piece of evidence! I need to collect as many of these as possible to prove my innocence!", LARAYA_PORTRAITS.SURPRISED),
+			];
+			this.dialogue_instance = new Dialogue(0, 0, this.artifactline, true);
+		}
+
 		if (!this.beatLevel) {
 			var camX = this.camera.getX();
 			var camY = this.camera.getY();
