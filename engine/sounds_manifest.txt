@@ -15,3 +15,4 @@ require BackgroundMusic_Level2 engine/audio/BackgroundMusic_Level2.mp3 BGM
 require SuspenseSoundEffect engine/audio/SuspenseTitle.wav SE
 require BackgroundMusic_CutScene engine/audio/BackgroundMusic_CutScene.mp3 BGM
 require BackgroundMusic_Tutorial engine/audio/BackgroundMusic_Tutorial.mp3 BGM
+require DinosaurDeathSoundEffect engine/audio/DinosaurDeathSoundEffect.mp3 SE
