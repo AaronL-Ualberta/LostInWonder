@@ -29,6 +29,7 @@ require artifact engine/textures/artifact.png 0.5 0.5
 require health engine/textures/Health.png 0 0.5
 require flying_enemy engine/textures/fly_enemy.png 0.5 0.5
 require bomb engine/textures/fireball3.png 0.5 0.5
+require msgbox engine/textures/msgbox.png 0 0
 require fire_wand engine/textures/firewand.png 0.5 0.5
 invisible_wall engine/textures/invisiblewall.png 0 0
 
