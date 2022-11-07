@@ -21,7 +21,7 @@ class PlayerInstance extends EngineInstance {
 		this.underwater_time = 0;
 
 		// Player vars
-
+		this.inside_water = false;
 		this.player_health = 100;
 		this.spr_width = 50;
 		this.spr_height = 80;
@@ -229,7 +229,7 @@ class PlayerInstance extends EngineInstance {
 			this.setHitbox(this.iceHitbox);
 			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp + 5, WaterBlock);
 			this.setHitbox(this.mainHitbox);
-			if (water_block !== undefined) {
+			if (water_block !== undefined && !this.inside_water) {
 				new IceBlock(water_block.x, water_block.y, 300);
 				water_block.destroy();
 			}
@@ -448,6 +448,8 @@ class PlayerInstance extends EngineInstance {
 		this.moveCollide();
 	}
 	stepUnderwater() {
+		//this.player_health -= 5;
+		this.inside_water = true;
 		this.underwater_time += 1;
 		if (this.underwater_time % 60 === 0) {
 			this.player_health -= 5;
@@ -542,6 +544,7 @@ class PlayerInstance extends EngineInstance {
 	exitWallCling() {}
 	exitWaterDash() {}
 	exitUnderwater() {
+		this.inside_water = false;
 		// this.gravity = this.default_gravity;
 	}
 
@@ -720,6 +723,18 @@ class PlayerInstance extends EngineInstance {
 		var collided = IM.instanceCollision(this, this.x, this.y - 30, WaterBlock);
 		if (collided) {
 			this.switchState(PLAYERSTATES.UNDERWATER);
+		}
+	}
+
+	onRoomStart() {
+		if (RoomManager.currentRoom().name == "Tutorial") {
+			this.spells_learned = 0;
+		} else if (RoomManager.currentRoom().name == "Level1") {
+			this.spells_learned = 1;
+		} else if (RoomManager.currentRoom().name == "Level2") {
+			this.spells_learned = 2;
+		} else if (RoomManager.currentRoom().name == "Level3") {
+			this.spells_learned = 3;
 		}
 	}
 }

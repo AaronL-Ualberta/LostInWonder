@@ -14,7 +14,7 @@ require spellwheel0 engine/textures/spell_wheel0.png 0.5 0.5
 spellwheel1 engine/textures/spell_wheel1.png 0.5 0.5
 spellwheel2 engine/textures/spell_wheel2.png 0.5 0.5
 spellwheel3 engine/textures/spell_wheel3.png 0.5 0.5
-spellwheel engine/textures/spell_wheel.png 0.5 0.5
+require spellwheel engine/textures/spell_wheel.png 0.5 0.5
 require fireball engine/textures/fireball.png 0.5 0.5
 require ice_block engine/textures/iceblock.png 0 0
 require water_block engine/textures/waterblock.png 0 0
@@ -29,6 +29,7 @@ require artifact engine/textures/artifact.png 0.5 0.5
 require health engine/textures/Health.png 0 0.5
 require flying_enemy engine/textures/fly_enemy.png 0.5 0.5
 require bomb engine/textures/fireball3.png 0.5 0.5
+require msgbox engine/textures/msgbox.png 0 0
 require fire_wand engine/textures/firewand.png 0.5 0.5
 invisible_wall engine/textures/invisiblewall.png 0 0
 
