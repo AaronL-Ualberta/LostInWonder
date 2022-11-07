@@ -59,7 +59,7 @@ block instances
 endblock
 
 block extern Music
-bg
+BackgroundMusic_Tutorial
 0.03
 endblock
 

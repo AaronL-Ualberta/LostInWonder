@@ -3,7 +3,7 @@ TechDemo engine/rooms/techdemo.txt
 MyPlatformRoom engine/rooms/myplatformroom.txt 
 TestRoom engine/rooms/testroom.txt 
 TestRoom2 engine/rooms/empty.txt 
-Level1 engine/rooms/level1.txt 
+Level1 engine/rooms/level1.txt
 Level2 engine/rooms/level2.txt
 Level3 engine/rooms/level3.txt 
 Tutorial engine/rooms/tutorial.txt default
