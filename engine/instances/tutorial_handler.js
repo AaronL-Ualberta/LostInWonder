@@ -1,6 +1,11 @@
 class TutorialHandler extends LevelHandler {
 	onEngineCreate() {
-		//this.audioSound = $engine.audioPlaySound("Level1Background", 0.03, true);
+		var extern = RoomManager.currentRoom().getAllExtern();
+		if (extern.Music) {
+			var music = extern.Music;
+			music[1] = Number(music[1]);
+			this.audioSound = $engine.audioPlaySound(music[0], music[1], true);
+		}
 
 		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
 		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
@@ -57,7 +62,7 @@ class TutorialHandler extends LevelHandler {
 		this.beatLevel = false;
 		this.timer2 = 0;
 
-		this.wand_piece = new WandPiece(1752, 1704, "fire_wand")
+		this.wand_piece = new WandPiece(1752, 1704, "fire_wand");
 	}
 
 	onCreate() {
@@ -65,7 +70,7 @@ class TutorialHandler extends LevelHandler {
 
 		// do stuff
 	}
-	
+
 	onRoomStart() {
 		this.player = PlayerInstance.first;
 		this.player.spells_learned = 0;
@@ -73,30 +78,45 @@ class TutorialHandler extends LevelHandler {
 		this.junglelines = [
 			new DialogueLine("Aaaaaaaaaaaaaahhh!", LARAYA_PORTRAITS.SCARED), //happens in jungle shot 1, then cutscene ends
 			new DialogueLine("Ouch! That hurt.", LARAYA_PORTRAITS.HURT), //tutorial info appears on screen (different black dialogue box?), keys to move left, right, jump, and talk to NPC's
-			new DialogueLine("Alright then. Now all I need to do is find the pieces of my wand and portal back home! Once I know how to prove my innocence, I suppose…", LARAYA_PORTRAITS.HAPPY),
-			new DialogueLine("I didn't even break that law, the Tribunal knows that! Why would they do this?", LARAYA_PORTRAITS.ANGRY),
-			new DialogueLine("I've lived at the Spire my whole life, the Tribunal knows I didn't do it!", LARAYA_PORTRAITS.ANGRY),
+			new DialogueLine(
+				"Alright then. Now all I need to do is find the pieces of my wand and portal back home! Once I know how to prove my innocence, I suppose…",
+				LARAYA_PORTRAITS.HAPPY
+			),
+			new DialogueLine(
+				"I didn't even break that law, the Tribunal knows that! Why would they do this?",
+				LARAYA_PORTRAITS.ANGRY
+			),
+			new DialogueLine(
+				"I've lived at the Spire my whole life, the Tribunal knows I didn't do it!",
+				LARAYA_PORTRAITS.ANGRY
+			),
 			new DialogueLine("Use WASD to move around the map.", LARAYA_PORTRAITS.HAPPY),
-			new DialogueLine("Some platforms, such as tree leaves, can be passed through by holding S.", LARAYA_PORTRAITS.HAPPY),
+			new DialogueLine(
+				"Some platforms, such as tree leaves, can be passed through by holding S.",
+				LARAYA_PORTRAITS.HAPPY
+			),
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.junglelines);
 	}
-	
+
 	step() {
 		// Dialogue trigger for seeing the artifact
 		if (!this.see_artifact_trigger && 24 * 48 <= this.player.x && this.player.x <= 25 * 48) {
-			this.see_artifact_trigger = true
+			this.see_artifact_trigger = true;
 			this.artifactline = [
 				new DialogueLine("Hang on, what's over there? Something's glowing!", LARAYA_PORTRAITS.HAPPY), //fire wand piece is on the ground, nowhere else to go but interact with it. Lore appears on screen (see WAND PIECE GATHERED section of dialogue) when clicked
 			];
 			this.dialogue_instance = new Dialogue(0, 0, this.artifactline, true);
 		}
-		
+
 		// Dialogue trigger for collecting the artifact
 		if (!this.get_artifact_trigger && 31 * 48 <= this.player.x && this.player.x <= 32 * 48) {
-			this.get_artifact_trigger = true
+			this.get_artifact_trigger = true;
 			this.artifactline = [
-				new DialogueLine("This is a piece of evidence! I need to collect as many of these as possible to prove my innocence!", LARAYA_PORTRAITS.SURPRISED),
+				new DialogueLine(
+					"This is a piece of evidence! I need to collect as many of these as possible to prove my innocence!",
+					LARAYA_PORTRAITS.SURPRISED
+				),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, this.artifactline, true);
 		}
@@ -110,86 +130,91 @@ class TutorialHandler extends LevelHandler {
 					camX - (camX - (this.player.x - this.camera_dimensions[0] / 2)) / divVal,
 					0,
 					this.room_width * 48 - this.camera_dimensions[0]
-					)
-					);
-					this.camera.setY(
-						EngineUtils.clamp(
-							camY - (camY - (this.player.y - this.camera_dimensions[1] / 2)) / divVal,
-							0,
-							this.room_height * 48 - this.camera_dimensions[1]
-							)
-							);
-							
-							// This is responsible for moving the background
-							this.background.tilePosition.x = -this.camera.getX() / 5;
-							
-							this.fgSprite.skew.x = Math.sin($engine.getGameTimer() / 60) / 20;
-							this.fgSprite.tilePosition.x = -this.camera.getX() / 1.75;
-							this.fgSprite.tilePosition.y = -this.camera.getY() / 1.75;
-							
-							this.rayFilter.time = this.camera.getX() / 300 + $engine.getGameTimer() / 200 + this.rayFilter_offset;
-							// this.rayFilter.time = $engine.getGameTimer() / 200;
-							
-							// Spell wheel rotation
-							if (this.spellWheel_rotating) {
-								const rot_time_total = 20;
-								this.spellWheel_sprite.rotation = EngineUtils.interpolate(
-									this.spellWheel_timer / rot_time_total,
-									this.spellWheel_origAngle,
-									this.spellWheel_targetAngle,
-									EngineUtils.INTERPOLATE_OUT
-									);
-									this.spellWheel_timer++;
-									if (this.spellWheel_timer >= rot_time_total) {
-										this.spellWheel_rotating = false;
-									}
-								}
-				
-								// Fade in
-								if (this.timer < 60) {
-					this.adjustFilter.brightness = this.timer / 60;
-					this.timer++;
-					if (this.timer === 60) {
-						this.camera.removeFilter(this.adjustFilter);
-					}
-				}
-				
-				// Check for falling out of the map
-				if (this.player.y >= this.room_height * 48) {
-					$engine.setRoom(RoomManager.currentRoom().name);
-				}
-				
-				// Check if player beats the level
-				if (this.player.x >= (this.room_width - 3) * 48) {
-					//$engine.setRoom(RoomManager.currentRoom().name);
-					this.winLevel();
-				}
-			} else {
-				this.timer2++;
-				
-				const fadeTime = 220;
-				
-				if (this.timer2 < fadeTime) {
-					this.adjustFilter.brightness = 1 - this.timer2 / fadeTime;
-					this.adjustFilter2.alpha = this.timer2 / fadeTime;
-					return;
+				)
+			);
+			this.camera.setY(
+				EngineUtils.clamp(
+					camY - (camY - (this.player.y - this.camera_dimensions[1] / 2)) / divVal,
+					0,
+					this.room_height * 48 - this.camera_dimensions[1]
+				)
+			);
+
+			// This is responsible for moving the background
+			this.background.tilePosition.x = -this.camera.getX() / 5;
+
+			this.fgSprite.skew.x = Math.sin($engine.getGameTimer() / 60) / 20;
+			this.fgSprite.tilePosition.x = -this.camera.getX() / 1.75;
+			this.fgSprite.tilePosition.y = -this.camera.getY() / 1.75;
+
+			this.rayFilter.time = this.camera.getX() / 300 + $engine.getGameTimer() / 200 + this.rayFilter_offset;
+			// this.rayFilter.time = $engine.getGameTimer() / 200;
+
+			// Spell wheel rotation
+			if (this.spellWheel_rotating) {
+				const rot_time_total = 20;
+				this.spellWheel_sprite.rotation = EngineUtils.interpolate(
+					this.spellWheel_timer / rot_time_total,
+					this.spellWheel_origAngle,
+					this.spellWheel_targetAngle,
+					EngineUtils.INTERPOLATE_OUT
+				);
+				this.spellWheel_timer++;
+				if (this.spellWheel_timer >= rot_time_total) {
+					this.spellWheel_rotating = false;
 				}
 			}
-		
+
+			// Fade in
+			if (this.timer < 60) {
+				this.adjustFilter.brightness = this.timer / 60;
+				this.timer++;
+				if (this.timer === 60) {
+					this.camera.removeFilter(this.adjustFilter);
+				}
+			}
+
+			// Check for falling out of the map
+			if (this.player.y >= this.room_height * 48) {
+				$engine.setRoom(RoomManager.currentRoom().name);
+			}
+
+			// Check if player beats the level
+			if (this.player.x >= (this.room_width - 3) * 48) {
+				//$engine.setRoom(RoomManager.currentRoom().name);
+				this.winLevel();
+			}
+		} else {
+			this.timer2++;
+
+			const fadeTime = 220;
+
+			if (this.timer2 < fadeTime) {
+				this.adjustFilter.brightness = 1 - this.timer2 / fadeTime;
+				this.adjustFilter2.alpha = this.timer2 / fadeTime;
+				return;
+			}
+		}
+
 		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
 			let collection_line = [
-				new DialogueLine("One step closer to getting home! Once my wand is complete, I can make a portal and go back!", LARAYA_PORTRAITS.HAPPY), //tutorial obstacle, then she goes in the cave
-				new DialogueLine("This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life."),
-			]
+				new DialogueLine(
+					"One step closer to getting home! Once my wand is complete, I can make a portal and go back!",
+					LARAYA_PORTRAITS.HAPPY
+				), //tutorial obstacle, then she goes in the cave
+				new DialogueLine(
+					"This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life."
+				),
+			];
 			this.dialogue_instance = new Dialogue(0, 0, collection_line);
 			this.wand_piece.destroy();
 		}
 	}
-	
+
 	onDestroy() {
 		//$engine.audioStopSound(this.audioSound);
 	}
-	
+
 	draw(gui, camera) {
 		// EngineDebugUtils.drawHitbox(camera, this);
 		if (!this.beatLevel) {
@@ -206,7 +231,7 @@ class TutorialHandler extends LevelHandler {
 		this.winScreenSprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("cutscene_1")));
 		this.winScreenSprite.width = $engine.getCamera().getWidth();
 		this.winScreenSprite.height = $engine.getCamera().getHeight();
-		
+
 		this.winMessage = $engine.createManagedRenderable(
 			this,
 			new PIXI.Text("You Win! Thank you for playing the Vertical Slice", { ...$engine.getDefaultTextStyle() })
