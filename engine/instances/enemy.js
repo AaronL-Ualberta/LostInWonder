@@ -104,7 +104,8 @@ class Enemy extends EngineInstance {
 			const fireball = IM.instancePlace(this, this.x, this.y, Fireball);
 			this.dhsp = 8 * Math.sign(this.x - fireball.x);
 			fireball.destroy();
-
+			// Gater Death Sound Effect
+			$engine.audioPlaySound("DinosaurDeathSoundEffect", 0.07, false);
 			this.dying = true;
 			EngineUtils.setAnimation(this.animation, this.gaterhurt);
 			// this.destroy();
