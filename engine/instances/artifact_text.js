@@ -57,7 +57,7 @@ class ArtifactText extends EngineInstance {
 		this.x_loc = 500;
 		this.y_loc = 700;
 		this.fade = false;
-		this.fade_time = 0.003;
+		this.fade_time = 0.004;
 		this.fade_value = 1;
 		this.dialogue_text = $engine.createManagedRenderable(
 			this,
@@ -77,7 +77,7 @@ class ArtifactText extends EngineInstance {
 	step() {
 		if (this.fade) {
 			this.fade_value += this.fade_time;
-			this.dialogue.alpha = EngineUtils.interpolate(this.fade_value, 1, 0, EngineUtils.INTERPOLATE_OUT);
+			this.dialogue.alpha = EngineUtils.interpolate(this.fade_value, 1, 0, EngineUtils.INTERPOLATE_IN);
 			if (this.dialogue.alpha < 0) {
 				this.fade = false;
 			}

@@ -34,6 +34,7 @@ FlyEnemy engine/instances/fly_enemy.js
 EndCondition engine/instances/end_condition.js
 ArtifactText engine/instances/artifact_text.js
 Proceed engine/instances/proceed.js
+EnemyText engine/instances/enemy_intro_text.js
 
 DustParticle engine/instances/particles/DustParticle.js
 WaterDashParticle engine/instances/particles/WaterDashParticle.js

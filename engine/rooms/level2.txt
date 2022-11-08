@@ -89,6 +89,12 @@ block instances
 	GrassCreate 4512 1992 0 0 4 1
 	GrassCreate 3864 2040 0 0 11 1
 	GrassCreate 4584 2328 0 0 9 1
+	EnemyText 552 216 0 0 1 5
+	EnemyText 936 264 0 0 1 5
+endblock
+
+block extern Enemy
+GREEN_COMPRIMIA,LEOTA
 endblock
 
 block extern Music

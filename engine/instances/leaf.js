@@ -50,7 +50,10 @@ class Leaf extends EngineInstance {
 		this.yScale = this.yOffset - scale / 10;
 		this.timer--;
 		if (this.timer === 0) {
-			this.destroy();
+			this.alpha -= 1;
+			if (this.alpha === 0) {
+				this.destroy();
+			}
 		}
 	}
 }

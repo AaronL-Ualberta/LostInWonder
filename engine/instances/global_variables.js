@@ -7,6 +7,12 @@ class Global extends EngineInstance {
                             (7 for wind, 20 for no wind)
         grass_movement_span >> 5 ideal for now
          */
+		var extern = RoomManager.currentRoom().getAllExtern();
+		this.values = [];
+		if (extern.Enemy) {
+			this.values = extern.Enemy[0].split(",");
+		}
+
 		this.wind_direction = 1;
 		this.timer = 300;
 		this.clock = this.timer;
