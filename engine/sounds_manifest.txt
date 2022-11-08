@@ -1,5 +1,3 @@
-require BackgroundMusic_Level1 engine/audio/BackgroundMusic_Level1.ogg BGM
-require JungleAmbience engine/audio/JungleAmbience.mp3 BGM
 require FireBallSoundEffect engine/audio/FireBallSoundEffect.ogg SE
 require JumpSoundEffect engine/audio/JumpSoundEffect.ogg SE
 require DoubleJumpSoundEffect engine/audio/DoubleJumpSoundEffect.ogg SE
@@ -11,10 +9,13 @@ require EarthSoundEffect  engine/audio/EarthSoundEffect.ogg SE
 require ArtifactCollectibleSoundEffect engine/audio/ArtifactCollectibleSoundEffect2.mp3 SE
 require BoulderDropSoundEffect engine/audio/BoulderDropSoundEffect.ogg SE
 require VineBurnSoundEffect engine/audio/VineBurnSoundEffect.ogg SE
-require BackgroundMusic_Level2 engine/audio/BackgroundMusic_Level2.mp3 BGM
+require DinosaurDeathSoundEffect engine/audio/DinosaurDeathSoundEffect.mp3 SE
 require SuspenseSoundEffect engine/audio/SuspenseTitle.wav SE
+
+require JungleAmbience engine/audio/JungleAmbience.mp3 BGM
+require BackgroundMusic_Level1 engine/audio/BackgroundMusic_Level1.ogg BGM
 require BackgroundMusic_CutScene engine/audio/BackgroundMusic_CutScene.mp3 BGM
 require BackgroundMusic_Tutorial engine/audio/BackgroundMusic_Tutorial.mp3 BGM
-require DinosaurDeathSoundEffect engine/audio/DinosaurDeathSoundEffect.mp3 SE
+require BackgroundMusic_Level2 engine/audio/BackgroundMusic_Level2.mp3 BGM
 require BackgroundMusic_Level3CUT engine/audio/BackgroundMusic_Level3CUT.mp3 BGM
 require BackgroundMusic_Level3 engine/audio/BackgroundMusic_Level3.mp3 BGM

@@ -1,4 +1,5 @@
 EngineRoomEditor engine/rooms/room_editor.txt 
+
 TechDemo engine/rooms/techdemo.txt 
 MyPlatformRoom engine/rooms/myplatformroom.txt 
 TestRoom engine/rooms/testroom.txt 
@@ -7,11 +8,14 @@ Level1 engine/rooms/level1.txt
 Level2 engine/rooms/level2.txt 
 Level3 engine/rooms/level3.txt 
 Tutorial engine/rooms/tutorial.txt 
-Level3_CUT engine/rooms/level3_CUT.txt default
+Level3_CUT engine/rooms/level3_CUT.txt 
 
-TitleScreen engine/rooms/title_screen.txt 
-GameIntro engine/rooms/introscenes/gameintro.txt 
-TutorialIntro engine/rooms/introscenes/tutorialintro.txt 
-Level1Intro engine/rooms/introscenes/level1intro.txt 
-Level2Intro engine/rooms/introscenes/level2intro.txt 
-Level3Intro engine/rooms/introscenes/level3intro.txt 
+TitleScreen engine/rooms/title_screen.txt default
+GameIntro engine/rooms/cutscenes/gameintro.txt 
+TutorialIntro engine/rooms/cutscenes/tutorialintro.txt 
+Level1Intro engine/rooms/cutscenes/level1intro.txt 
+Level2Intro engine/rooms/cutscenes/level2intro.txt 
+Level3Intro engine/rooms/cutscenes/level3intro.txt 
+Level3End engine/rooms/cutscenes/level3end.txt 
+EndingScene engine/rooms/cutscenes/endingscene.txt 
+Credits engine/rooms/cutscenes/credits.txt 

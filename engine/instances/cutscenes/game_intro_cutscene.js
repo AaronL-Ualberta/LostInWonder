@@ -37,7 +37,7 @@ class GameIntroCutscene extends Cutscene {
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 6) here
 		];
 
-		this.audioSound = "JungleAmbience";
+		this.audioSound = "BackgroundMusic_CutScene";
 		this.cutsceneFrames = [
 			"gameintrocutsceneframe1",
 			"gameintrocutsceneframe2",

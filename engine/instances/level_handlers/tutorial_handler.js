@@ -59,10 +59,14 @@ class TutorialHandler extends LevelHandler {
 
 		this.see_artifact_trigger = false;
 		this.get_artifact_trigger = false;
-		this.beatLevel = false;
-		this.timer2 = 0;
 
 		this.wand_piece = new WandPiece(1752, 1704, "fire_wand");
+
+		this.nextRoom = "Level1Intro";
+
+		super.onEngineCreate();
+		// this.beatLevel = false;
+		// this.timer2 = 0;
 	}
 
 	onCreate() {
@@ -185,15 +189,26 @@ class TutorialHandler extends LevelHandler {
 				this.winLevel();
 			}
 		} else {
-			this.timer2++;
+			// this.timer2++;
+			// const fadeTime = 220;
+			// if (this.timer2 < fadeTime) {
+			// 	this.adjustFilter.brightness = 1 - this.timer2 / fadeTime;
+			// 	this.adjustFilter2.alpha = this.timer2 / fadeTime;
+			// 	return;
+			// }
+			this.winLevelStep();
+			// this.timer2++;
 
-			const fadeTime = 220;
+			// const fadeTime = 220;
 
-			if (this.timer2 < fadeTime) {
-				this.adjustFilter.brightness = 1 - this.timer2 / fadeTime;
-				this.adjustFilter2.alpha = this.timer2 / fadeTime;
-				return;
-			}
+			// if (this.timer2 < fadeTime) {
+			// 	this.adjustFilter.brightness = 1 - this.timer2 / fadeTime;
+			// 	//return;
+			// } else {
+			// 	this.camera.removeFilter(this.adjustFilter);
+			// 	$engine.setRoom(this.nextRoom);
+			// }
+			// // console.log("why");
 		}
 
 		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
@@ -212,7 +227,7 @@ class TutorialHandler extends LevelHandler {
 	}
 
 	onDestroy() {
-		//$engine.audioStopSound(this.audioSound);
+		$engine.audioStopSound(this.audioSound);
 	}
 
 	draw(gui, camera) {
@@ -220,33 +235,33 @@ class TutorialHandler extends LevelHandler {
 		if (!this.beatLevel) {
 			$engine.requestRenderOnGUI(this.spellWheel);
 		} else {
-			$engine.requestRenderOnGUI(this.winScreenSprite);
-			$engine.requestRenderOnGUI(this.winMessage);
+			// $engine.requestRenderOnGUI(this.winScreenSprite);
+			// $engine.requestRenderOnGUI(this.winMessage);
 		}
 	}
 
-	winLevel() {
-		$engine.pauseGameSpecial(this);
-		this.beatLevel = true;
-		this.winScreenSprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("cutscene_1")));
-		this.winScreenSprite.width = $engine.getCamera().getWidth();
-		this.winScreenSprite.height = $engine.getCamera().getHeight();
+	// winLevel() {
+	// 	$engine.pauseGameSpecial(this);
+	// 	this.beatLevel = true;
+	// 	this.winScreenSprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("cutscene_1")));
+	// 	this.winScreenSprite.width = $engine.getCamera().getWidth();
+	// 	this.winScreenSprite.height = $engine.getCamera().getHeight();
 
-		this.winMessage = $engine.createManagedRenderable(
-			this,
-			new PIXI.Text("You Win! Thank you for playing the Vertical Slice", { ...$engine.getDefaultTextStyle() })
-		);
-		this.winMessage.x = 200;
-		this.winMessage.y = 100;
+	// 	this.winMessage = $engine.createManagedRenderable(
+	// 		this,
+	// 		new PIXI.Text("You Win! Thank you for playing the Vertical Slice", { ...$engine.getDefaultTextStyle() })
+	// 	);
+	// 	this.winMessage.x = 200;
+	// 	this.winMessage.y = 100;
 
-		this.camera = $engine.getCamera();
-		this.adjustFilter = new PIXI.filters.AdjustmentFilter();
-		this.adjustFilter.brightness = 1;
-		this.camera.addFilter(this.adjustFilter);
+	// 	this.camera = $engine.getCamera();
+	// 	this.adjustFilter = new PIXI.filters.AdjustmentFilter();
+	// 	this.adjustFilter.brightness = 1;
+	// 	this.camera.addFilter(this.adjustFilter);
 
-		this.adjustFilter2 = new PIXI.filters.AdjustmentFilter();
-		this.adjustFilter2.alpha = 0;
-		this.winScreenSprite.filters = [this.adjustFilter2];
-		this.winMessage.filters = [this.adjustFilter2];
-	}
+	// 	this.adjustFilter2 = new PIXI.filters.AdjustmentFilter();
+	// 	this.adjustFilter2.alpha = 0;
+	// 	this.winScreenSprite.filters = [this.adjustFilter2];
+	// 	this.winMessage.filters = [this.adjustFilter2];
+	// }
 }

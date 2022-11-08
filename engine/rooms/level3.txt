@@ -13,7 +13,7 @@ block room_data
 endblock
 
 block instances
-	TechDemoHandler 0 0 0 0 1 1
+	Level3Handler 0 0 0 0 1 1
 	PlayerInstance 312 3144 0 0 1 1
 	WaterBlock 336 3216 0 0 1 1
 	WaterBlock 384 3216 0 0 1 1

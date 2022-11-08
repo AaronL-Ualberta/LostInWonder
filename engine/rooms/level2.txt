@@ -13,7 +13,7 @@ block room_data
 endblock
 
 block instances
-	TechDemoHandler 0 0 0 0 1 1
+	Level2Handler 0 0 0 0 1 1
 	PlayerInstance 264 216 0 0 1 1
 	Artifact 168 696 0 0 1 1
 	Artifact 2232 1032 0 0 1 1
