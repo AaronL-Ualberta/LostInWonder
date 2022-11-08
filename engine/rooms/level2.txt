@@ -98,8 +98,8 @@ GREEN_COMPRIMIA,LEOTA
 endblock
 
 block extern Music
-bg
-0.03
+BackgroundMusic_Level2
+0.02
 endblock
 
 block extern GrassColor

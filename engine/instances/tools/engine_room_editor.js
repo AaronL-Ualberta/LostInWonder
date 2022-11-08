@@ -11,6 +11,8 @@
 // ` pulls up asset browser / type to change map
 // shift + s to save
 // shift + q / ins to live play
+// ctrl + z to undo
+// ctrl + y to redo
 
 class EngineRoomEditor extends EngineInstance {
 	onEngineCreate() {
@@ -63,6 +65,8 @@ class EngineRoomEditor extends EngineInstance {
 		this.roomEditorRoomName = RoomManager.currentRoom().name;
 		this.assetSource = null;
 		this.lastCameraData = {};
+		this.saveBuffer = [];
+		this.saveBufferOffset = -1;
 		this.loadSelectedRoom();
 		this.setupAssetBrowser();
 		this.depth = -99999999;
@@ -73,6 +77,11 @@ class EngineRoomEditor extends EngineInstance {
 		this.delayedAction(0, () => {
 			this.setGridScale(this.gridX, this.gridY);
 		});
+	}
+
+	clearSaveBuffer() {
+		this.saveBuffer = [];
+		this.saveBufferOffset = -1;
 	}
 
 	onCreate() {
@@ -152,6 +161,16 @@ class EngineRoomEditor extends EngineInstance {
 		$engine.getCamera().setTilemapBackground(null);
 	}
 
+	loadSelectedRoomFromData(roomData) {
+		const oldRef = this.roomRef;
+		this.roomRef = roomData;
+		this.setupCamera();
+		this.labelItem(this.selectionGraphics, "Selection");
+		this.setupInstances();
+		this.setupBackground();
+		this.roomRef = oldRef;
+	}
+
 	loadSelectedRoom(roomName) {
 		this.deloadRoom();
 		if (roomName) {
@@ -164,11 +183,7 @@ class EngineRoomEditor extends EngineInstance {
 			RoomManager.addRoom(this.roomRef);
 			this.assetSource = null;
 		}
-
-		this.setupCamera();
-		this.labelItem(this.selectionGraphics, "Selection");
-		this.setupInstances();
-		this.setupBackground();
+		this.loadSelectedRoomFromData(this.roomRef);
 	}
 
 	getRoomString() {
@@ -193,9 +208,9 @@ class EngineRoomEditor extends EngineInstance {
 				" " +
 				String(inst.y) +
 				" " +
-				String(inst.angle) +
-				" " +
 				String(inst.depth) +
+				" " +
+				String(inst.angle) +
 				" " +
 				String(inst.xScale) +
 				" " +
@@ -219,7 +234,6 @@ class EngineRoomEditor extends EngineInstance {
 
 	saveRoom() {
 		const str = this.getRoomString();
-		const source = $engine.getAssetSource(this.roomRef);
 		if (!this.assetSource) {
 			console.log(str);
 			OwO.addTooltip("New room: Room contents output to console.");
@@ -234,6 +248,58 @@ class EngineRoomEditor extends EngineInstance {
 				OwO.addTooltip("Saved.");
 			}
 		}
+	}
+
+	saveRoomToBuffer() {
+		const str = this.getRoomString();
+		var extern = "block extern __selected\n";
+		var counter = 0;
+		var selected = [];
+		for (const inst of this.instances) {
+			if (inst.selected) {
+				selected.push(counter);
+			}
+
+			counter++;
+		}
+		if (selected.length) {
+			extern += selected.join(" ");
+			extern += "\n";
+		}
+		extern += "endblock";
+		const room = str + extern;
+		// check if it's the same as the last
+		if (this.saveBufferOffset >= 0 && this.saveBuffer[this.saveBufferOffset] === room) {
+			return;
+		}
+		this.saveBufferOffset++;
+		this.saveBuffer.length = this.saveBufferOffset + 1;
+		this.saveBuffer[this.saveBufferOffset] = room;
+	}
+
+	loadRoomFromBuffer(offset) {
+		const newIdx = this.saveBufferOffset + offset;
+		if (newIdx < 0 || newIdx >= this.saveBuffer.length) {
+			return;
+		}
+		this.saveBufferOffset = newIdx;
+		const roomData = this.saveBuffer[newIdx];
+		Room.parseRoomFile("Temp", roomData, (room) => {
+			this.deloadRoom();
+			this.loadSelectedRoomFromData(room);
+			if (!room.hasExtern("__selected")) {
+				return;
+			}
+			const extern = room.getExtern("__selected");
+			if (extern.length !== 1) {
+				return;
+			}
+			const selected = extern[0].split(" ");
+			for (const idx of selected) {
+				this.instances[idx].selected = true;
+			}
+			this.recalculateSelectonInfo();
+		});
 	}
 
 	setupBackground() {
@@ -267,7 +333,7 @@ class EngineRoomEditor extends EngineInstance {
 				renderable.anchor.x = 0.5;
 				renderable.anchor.y = 0.5;
 			} else {
-				renderable = this.generateRandomDefaultSprite();
+				renderable = this.generateRandomDefaultSprite(cls.name);
 			}
 			const maxDimension = Math.max(renderable.width, renderable.height);
 			const fac = size / maxDimension;
@@ -354,10 +420,19 @@ class EngineRoomEditor extends EngineInstance {
 		return { w: t.width, h: t.height };
 	}
 
-	generateRandomDefaultSprite() {
+	hashString(str) {
+		var hash = 0;
+		for (var i = 0; i < str.length; i++) {
+			hash = str.charCodeAt(i) + ((hash << 5) - hash);
+		}
+		return hash;
+	}
+
+	generateRandomDefaultSprite(inString) {
+		const r = inString ? Math.abs(this.hashString(inString) / 4294967295) : Math.random();
 		const g = new PIXI.Graphics();
 		g.lineStyle(1, 0xffffff);
-		g.beginFill(Math.round(Math.random() * 0xffffff), 1);
+		g.beginFill(Math.round(r * 0xffffff), 1);
 		g.drawRect(-24, -24, 48, 48); // default size...
 		return g;
 	}
@@ -376,7 +451,7 @@ class EngineRoomEditor extends EngineInstance {
 				new Hitbox(inst, new RectangleHitbox(-w * center.x, -h * center.y, w * (1 - center.x), h * (1 - center.y)))
 			);
 		} else {
-			inst.setSprite(this.generateRandomDefaultSprite());
+			inst.setSprite(this.generateRandomDefaultSprite(name));
 			inst.setHitbox(new Hitbox(inst, new RectangleHitbox(-24, -24, 24, 24)));
 		}
 		inst.selected = false;
@@ -442,9 +517,9 @@ class EngineRoomEditor extends EngineInstance {
 		if (this.actionType !== EngineRoomEditor.ET_LIVE_PLAY) {
 			this.handleAssetBrowser();
 			this.handleMouseCameraControls();
-			this.handleTranslateObject();
 			this.handleScale();
 			this.handleRotate();
+			this.handleTranslateObject();
 			this.handleSelection();
 			this.selectedObjectBounds = this.calculateMaxSelectedBounds();
 			this.drawSelectedBounds();
@@ -478,6 +553,9 @@ class EngineRoomEditor extends EngineInstance {
 		this.gridGraphics.visible = true;
 		this.cameraOutlineGraphics.visible = true;
 		this.selectedObjectGraphics.visible = true;
+		this.delayedAction(0, () => {
+			this.setGridScale(this.gridX, this.gridY);
+		});
 	}
 
 	handleLivePlay() {
@@ -544,6 +622,7 @@ class EngineRoomEditor extends EngineInstance {
 			if (IN.keyCheckPressed("Enter") && RoomManager.roomExists(this.assetBrowserLevelTextAutocomplete)) {
 				this.closeAssetBrowser();
 				this.loadSelectedRoom(this.assetBrowserLevelTextAutocomplete);
+				this.clearSaveBuffer();
 			}
 
 			const mx = IN.getMouseXGUI();
@@ -568,6 +647,7 @@ class EngineRoomEditor extends EngineInstance {
 				const yy = camera.getY() + camera.getHeight() / 2;
 				this.createObject(selected.tex, xx, yy, selected.cls.name);
 				this.closeAssetBrowser();
+				this.saveRoomToBuffer();
 			}
 
 			$engine.requestRenderOnGUI(this.assetBrowserContainer);
@@ -588,7 +668,7 @@ class EngineRoomEditor extends EngineInstance {
 			if (this.selectionHandleData.length === 0) {
 				return;
 			}
-			const tolerance = 24;
+			const tolerance = 12 / Math.min(Math.sqrt($engine.getCamera().getScaleX()), 1);
 			const closest = { dist: 100000, idx: -1 };
 			const mx = IN.getMouseX();
 			const my = IN.getMouseY();
@@ -668,6 +748,7 @@ class EngineRoomEditor extends EngineInstance {
 			}
 
 			if (IN.mouseCheckReleased(0)) {
+				this.saveRoomToBuffer();
 				this.actionType = EngineRoomEditor.ET_NONE;
 			}
 		}
@@ -678,7 +759,7 @@ class EngineRoomEditor extends EngineInstance {
 			if (this.selectionHandleData.length === 0) {
 				return;
 			}
-			const tolerance = 24;
+			const tolerance = 12 / Math.min(Math.sqrt($engine.getCamera().getScaleX()), 1);
 			const closest = { dist: 100000, idx: -1 };
 			const mx = IN.getMouseX();
 			const my = IN.getMouseY();
@@ -823,8 +904,20 @@ class EngineRoomEditor extends EngineInstance {
 						if (inst.selected) {
 							const v = new Vertex(facX, facY * (Math.sign(((inst.angle + Math.PI / 2) % Math.PI) - Math.PI / 2) || 1));
 							v.rotate(-(((inst.angle + Math.PI / 2) % Math.PI) - Math.PI / 2));
-							inst.x = inst.transformData.x + diffX * inst.transformData.xFraction * (idx === 2 || idx === 4 ? 1 : -1);
-							inst.y = inst.transformData.y + diffY * inst.transformData.yFraction * (idx === 4 || idx === 6 ? 1 : -1);
+							if (this.selectedObject) {
+								inst.x =
+									inst.transformData.x +
+									diffX * inst.transformData.xFraction * (idx === 2 || idx === 4 ? 1 : -1) * Math.sign(inst.xScale);
+								inst.y =
+									inst.transformData.y +
+									diffY * inst.transformData.yFraction * (idx === 4 || idx === 6 ? 1 : -1) * Math.sign(inst.yScale);
+							} else {
+								inst.x =
+									inst.transformData.x + diffX * inst.transformData.xFraction * (idx === 2 || idx === 4 ? 1 : -1);
+								inst.y =
+									inst.transformData.y + diffY * inst.transformData.yFraction * (idx === 4 || idx === 6 ? 1 : -1);
+							}
+
 							inst.xScale = inst.transformData.xScale + inst.transformData.xScale * v.x;
 							inst.yScale = inst.transformData.yScale + inst.transformData.yScale * v.y;
 							if (inst.xScale === 0) {
@@ -839,6 +932,7 @@ class EngineRoomEditor extends EngineInstance {
 			}
 
 			if (IN.mouseCheckReleased(0)) {
+				this.saveRoomToBuffer();
 				this.actionType = EngineRoomEditor.ET_NONE;
 			}
 		}
@@ -871,6 +965,7 @@ class EngineRoomEditor extends EngineInstance {
 			for (const o of newObj) {
 				o.selected = true;
 			}
+			this.saveRoomToBuffer();
 			this.recalculateSelectonInfo();
 		}
 
@@ -918,6 +1013,7 @@ class EngineRoomEditor extends EngineInstance {
 					obj.y = this.toGrid(obj.y + v.y, this.gridY) - v.y;
 				}
 			}
+			this.saveRoomToBuffer();
 		}
 
 		if (IN.keyCheckPressed("KeyR")) {
@@ -926,6 +1022,7 @@ class EngineRoomEditor extends EngineInstance {
 					obj.angle = 0;
 				}
 			}
+			this.saveRoomToBuffer();
 		}
 
 		if (IN.keyCheckPressed("Delete")) {
@@ -935,7 +1032,16 @@ class EngineRoomEditor extends EngineInstance {
 				}
 			}
 			this.actionType = EngineRoomEditor.ET_NONE;
+			this.saveRoomToBuffer();
 			this.recalculateSelectonInfo();
+		}
+
+		if (IN.keyCheck("Control") && IN.keyCheckPressed("KeyZ")) {
+			this.loadRoomFromBuffer(-1);
+		}
+
+		if (IN.keyCheck("Control") && IN.keyCheckPressed("KeyY")) {
+			this.loadRoomFromBuffer(1);
 		}
 
 		if (IN.keyCheck("Shift") && IN.keyCheckPressed("KeyS")) {
@@ -951,7 +1057,7 @@ class EngineRoomEditor extends EngineInstance {
 		if (this.selectionPolygon === null || !this.selectedObjectBounds) {
 			return;
 		}
-		if (IN.mouseCheckPressed(0)) {
+		if (IN.mouseCheckPressed(0) && this.actionType === EngineRoomEditor.ET_NONE) {
 			if (!this.selectionPolygon.contains(IN.getMouseX(), IN.getMouseY())) {
 				this.actionType = EngineRoomEditor.ET_NONE;
 			} else {
@@ -989,6 +1095,7 @@ class EngineRoomEditor extends EngineInstance {
 			}
 
 			if (IN.mouseCheckReleased(0)) {
+				this.saveRoomToBuffer();
 				this.actionType = EngineRoomEditor.ET_NONE;
 			}
 		}
@@ -1156,6 +1263,7 @@ class EngineRoomEditor extends EngineInstance {
 
 			if (IN.mouseCheckReleased(0)) {
 				graphics.clear();
+				this.saveRoomToBuffer();
 				this.actionType = EngineRoomEditor.ET_NONE;
 			}
 		}

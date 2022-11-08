@@ -12,16 +12,21 @@ class IM {
 	static __initializeVariables() {
 		IM.__objects = [];
 		IM.__stepList = [];
+		IM.__pauseList = [];
 		IM.__drawList = [];
 		IM.__preDrawList = [];
 		IM.__implicitList = [];
 		IM.__interpolationList = [];
-		for (var i = 0; i < IM.__numRegisteredClasses; i++) {
-			IM.__accessMap[i + 1] = []; // +1 because Instance is given an entry, but isn't counted in the class count.
+		IM.__postStepList = [];
+		for (var i = 0; i <= IM.__numRegisteredClasses; i++) {
+			IM.__accessMap[i + 1] = []; // OID starts at 1
 		}
 		IM.__alteredLists[i] = false;
 		IM.ind = 100000;
-		IM.__spatialLookup = new Map();
+		IM.__spatialLookup = new Array(256 * 256);
+		for (var i = 0; i < 256 * 256; i++) {
+			IM.__spatialLookup[i] = new Array();
+		}
 		for (const instance of IM.__persistentObjects) {
 			IM.__add(instance);
 			instance.__updateHitbox();
@@ -31,9 +36,8 @@ class IM {
 	static __init(instances) {
 		// assumed instances is a list of classes.
 		IM.__numRegisteredClasses = instances.length; // DOES NOT INCLUDE ENGINEINSTANCE!
-		IM.__accessMap = [[]];
+		IM.__accessMap = [null, []]; // 0th index is unused because OID starts at 1
 		IM.__oidToClass = [null, EngineInstance];
-		IM.__accessMap.push([]);
 		EngineInstance.__oid = 1;
 		IM.__childMap = [undefined];
 		IM.__childMap[1] = IM.__childTree;
@@ -117,14 +121,40 @@ class IM {
 		for (const x of instances) {
 			IM.__getFunctions(x);
 		}
+
+		var flatRecurse = function (array, data) {
+			array.push(data.__oid);
+			if (data.__children) {
+				for (const d of data.__children) {
+					flatRecurse(array, d);
+				}
+			}
+			return array;
+		};
+
+		IM.__flatChildMap = new Array(instances.length + 2);
+		IM.__flatChildMap[0] = null;
+		for (var i = 1; i < IM.__flatChildMap.length; i++) {
+			IM.__flatChildMap[i] = flatRecurse([], IM.__childMap[i]);
+		}
+	}
+
+	static __checkHasUserFunc(inst, name) {
+		if (inst === EngineInstance) {
+			return false;
+		}
+		if (inst.prototype.hasOwnProperty(name)) {
+			return true;
+		}
+		return IM.__checkHasUserFunc(Object.getPrototypeOf(inst), name);
 	}
 
 	static __getFunctions(inst) {
-		const proto = inst.prototype;
-		inst.__userStep = proto.hasOwnProperty("step");
-		inst.__userPreDraw = proto.hasOwnProperty("preDraw");
-		inst.__userDraw = proto.hasOwnProperty("draw");
-		inst.__userImplicit = proto.hasOwnProperty("__implicit");
+		inst.__userStep = IM.__checkHasUserFunc(inst, "step");
+		inst.__userPause = IM.__checkHasUserFunc(inst, "pause");
+		inst.__userPreDraw = IM.__checkHasUserFunc(inst, "preDraw");
+		inst.__userDraw = IM.__checkHasUserFunc(inst, "draw");
+		inst.__userImplicit = IM.__checkHasUserFunc(inst, "__implicit");
 	}
 
 	static __fastDeleteDead(arr) {
@@ -143,31 +173,36 @@ class IM {
 	static __doSimTick(lastFrame) {
 		var mode = $engine.__getPauseMode();
 		if (lastFrame) {
+			$engine.__logPerformance($__enginePerformanceOptions.TIMESCALE, IM.__timescaleImplicit, IM);
 			if (mode === 0) {
 				// normal mode
-				IM.__deleteFromObjects();
-				IM.__cleanup();
-				IM.__implicit();
-				IM.__step();
-				IM.__postStep();
-				IM.__preDraw();
-				IM.__interpolate();
-				IM.__draw();
+				$engine.__logPerformance($__enginePerformanceOptions.ENGINE_FUNCTIONS, IM.__deleteFromObjects, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.ENGINE_FUNCTIONS, IM.__cleanup, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.ENGINE_FUNCTIONS, IM.__implicit, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.STEP, IM.__step, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.POST_STEP, IM.__postStep, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.PRE_DRAW, IM.__preDraw, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.ENGINE_FUNCTIONS, IM.__interpolate, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.DRAW, IM.__draw, IM);
 			} else if (mode === 1) {
 				// pause
-				IM.__pause();
-				IM.__draw();
+				$engine.__logPerformance($__enginePerformanceOptions.PAUSE, IM.__pause, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.DRAW, IM.__draw, IM);
 			} else {
 				// special pause (mode===2)
-				IM.__pause();
-				$engine.__pauseSpecialInstance.step(); // run the special instance's step.
-				IM.__draw();
+				$engine.__logPerformance($__enginePerformanceOptions.PAUSE, IM.__pause, IM);
+				$engine.__logPerformance(
+					$__enginePerformanceOptions.STEP,
+					$engine.__pauseSpecialInstance.step,
+					$engine.__pauseSpecialInstance
+				); // run the special instance's step.
+				$engine.__logPerformance($__enginePerformanceOptions.DRAW, IM.__draw, IM);
 			}
 		} else {
 			if (mode === 0) {
-				IM.__deleteFromObjects();
-				IM.__cleanup();
-				IM.__step();
+				$engine.__logPerformance($__enginePerformanceOptions.ENGINE_FUNCTIONS, IM.__deleteFromObjects, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.ENGINE_FUNCTIONS, IM.__cleanup, IM);
+				$engine.__logPerformance($__enginePerformanceOptions.STEP, IM.__step, IM);
 			}
 		}
 	}
@@ -190,10 +225,12 @@ class IM {
 			// don't waste CPU if there's nothing to update...
 			IM.__objects = IM.__fastDeleteDead(IM.__objects);
 			IM.__stepList = IM.__fastDeleteDead(IM.__stepList);
+			IM.__pauseList = IM.__fastDeleteDead(IM.__pauseList);
 			IM.__preDrawList = IM.__fastDeleteDead(IM.__preDrawList);
 			IM.__drawList = IM.__fastDeleteDead(IM.__drawList);
 			IM.__implicitList = IM.__fastDeleteDead(IM.__implicitList);
 			IM.__interpolationList = IM.__fastDeleteDead(IM.__interpolationList);
+			IM.__postStepList = IM.__fastDeleteDead(IM.__postStepList);
 			for (var i = 1; i <= IM.__numRegisteredClasses + 1; i++) {
 				// only filter lists that were changed
 				if (IM.__alteredLists[i]) {
@@ -217,8 +254,8 @@ class IM {
 	}
 
 	static __postStep() {
-		for (var i = 0; i < IM.__objects.length; i++) {
-			IM.__objects[i].__postStep();
+		for (var i = 0; i < IM.__postStepList.length; i++) {
+			IM.__postStepList[i].__postStep();
 		}
 	}
 
@@ -230,8 +267,8 @@ class IM {
 	}
 
 	static __pause() {
-		for (var i = 0; i < IM.__objects.length; i++) {
-			IM.__objects[i].pause();
+		for (var i = 0; i < IM.__pauseList.length; i++) {
+			IM.__pauseList[i].pause();
 		}
 	}
 
@@ -265,7 +302,7 @@ class IM {
 		// called once per frame, no matter what
 		var frac = $engine.isTimeScaled() ? $engine.getTimescaleFraction() : 1.0;
 		for (var i = 0; i < IM.__interpolationList.length; i++) {
-			IM.__objects[i].__applyInterpolations(frac);
+			IM.__interpolationList[i].__applyInterpolations(frac);
 		}
 	}
 
@@ -281,10 +318,22 @@ class IM {
 		return result;
 	}
 
-	static __findById(id) {
-		for (const inst of IM.__objects) {
-			if (inst.id === id) {
-				return inst;
+	static __findById(wantedId) {
+		var left = 0;
+		var right = IM.__objects.length;
+		var c = 0;
+		while (left <= right) {
+			c = Math.floor((right + left) / 2);
+			var obj = IM.__objects[c];
+			var centerId = obj.id;
+			if (centerId === wantedId) {
+				return obj;
+			}
+
+			if (wantedId > centerId) {
+				left = c + 1;
+			} else {
+				right = c - 1;
 			}
 		}
 		return null;
@@ -313,8 +362,18 @@ class IM {
 	}
 
 	static __registerInterpolator(inst) {
-		if (inst.__interpVars.length === 0) {
+		if (!inst.__interpolateRegistered) {
+			inst.__interpolateRegistered = true;
 			IM.__interpolationList.push(inst);
+			IM.__interpolationList.sort((a, b) => a.id - b.id);
+		}
+	}
+
+	static __registerPostStep(inst) {
+		if (!inst.__postStepRegistered) {
+			inst.__postStepRegistered = true;
+			IM.__postStepList.push(inst);
+			IM.__postStepList.sort((a, b) => a.id - b.id);
 		}
 	}
 
@@ -323,12 +382,14 @@ class IM {
 		if (inst.constructor.__ENGINE_ORDER_FIRST) {
 			IM.__objects.unshift(inst);
 			if (cons.__userStep) IM.__stepList.unshift(inst);
+			if (cons.__userPause) IM.__pauseList.unshift(inst);
 			if (cons.__userPreDraw) IM.__preDrawList.unshift(inst);
 			if (cons.__userDraw) IM.__drawList.unshift(inst);
 			if (cons.__userImplicit) IM.__implicitList.unshift(inst);
 		} else {
 			IM.__objects.push(inst);
 			if (cons.__userStep) IM.__stepList.push(inst);
+			if (cons.__userPause) IM.__pauseList.push(inst);
 			if (cons.__userPreDraw) IM.__preDrawList.push(inst);
 			if (cons.__userDraw) IM.__drawList.push(inst);
 			if (cons.__userImplicit) IM.__implicitList.push(inst);
@@ -362,11 +423,9 @@ class IM {
 			obj.onGameEnd();
 		}
 		for (const obj of IM.__objects) {
-			obj.onDestroy();
+			IM.destroy(obj);
 		}
-		for (const obj of IM.__objects) {
-			IM.__fullClean(obj);
-		}
+		IM.__cleanup();
 	}
 
 	static __startRoom() {
@@ -384,81 +443,80 @@ class IM {
 		}
 		for (const obj of IM.__objects) {
 			if (!obj.__persistent) {
-				obj.onDestroy();
+				IM.destroy(obj);
 			}
 		}
-		for (const obj of IM.__objects) {
-			if (!obj.__persistent) {
-				IM.__fullClean(obj);
-			}
-		}
+		IM.__cleanup();
 		IM.__initializeVariables(); // clear IM
 	}
 
-	static __queryObjects(val) {
-		// returns an array containing the object requested, if the request is invalid the return is an empty array.
-		var type = typeof val;
-		if (type === "function") {
-			return IM.__findAll(IM.__oidFrom(val));
-		} else if (type === "object") {
-			return [val];
+	static __queryObjects(target) {
+		// returns an array containing the objects requested, if the request is invalid the return is an empty array.
+		if (target.__oid) {
+			return IM.__findAll(IM.__oidFrom(target));
+		} else if (target.id) {
+			return [target];
 		} else {
-			if (val < 100000) {
-				return IM.__findAll(val); // oid
+			if (target < 100000) {
+				return IM.__findAll(target); // oid
 			}
-			var v = IM.__findById(val); // id
-			if (v) return [v];
+			var v = IM.__findById(target); // id
+			if (v) {
+				return [v];
+			}
 			return [];
 		}
 	}
 
-	static __queryOid(val) {
-		var type = typeof val;
-		if (type === "function") {
-			// an object
-			return IM.__oidFrom(val);
-		} else if (type === "object") {
-			return val.oid;
+	static __queryLookupData(target) {
+		if (target.__oid) {
+			return { checkLow: target.__childLow, checkHigh: target.__childHigh, checkId: 0 };
+		}
+		if (target.id) {
+			return { checkLow: 0, checkHigh: 0, checkId: target.id };
 		} else {
 			// we have an OID
-			if (val < 100000) {
-				return val;
+			if (target < 100000) {
+				const cls = IM.__oidToClass[target];
+				return { checkLow: cls.__childLow, checkHigh: cls.__childHigh, checkId: 0 };
+			} else {
+				return { checkLow: 0, checkHigh: 0, checkId: target };
 			}
-			//otherwise, it's an id.
-			var v = IM.__findById(val);
-			if (v) {
-				return v.oid;
-			}
-			return null;
 		}
 	}
 
-	static __queryCollisionValue(val) {
-		var type = typeof val;
-		if (type === "function") {
-			return { checkLow: val.__childLow, checkHigh: val.__childHigh, checkId: 0 };
+	static __queryCollider(target) {
+		if (target.__oid) {
+			// class (instances do not have __oid)
+			return { oid: target.__oid, targetInstance: null };
 		}
-		if (type === "object") {
-			return { checkLow: 0, checkHigh: 0, checkId: val.id };
+		if (target.id) {
+			// instance
+			return { oid: null, targetInstance: target };
+		}
+		if (target < 100000) {
+			return { oid: target, targetInstance: null };
 		} else {
-			// we have an OID
-			if (val < 100000) {
-				const cls = IM.__oidToClass[val];
-				return { checkLow: cls.__childLow, checkHigh: cls.__childHigh, checkId: 0 };
-			} else {
-				return { checkLow: 0, checkHigh: 0, checkId: val };
-			}
+			return { oid: null, targetInstance: IM.__findById(target) };
 		}
 	}
 
 	static __getOrMakeBucket(x, y) {
-		const loc = x + " " + y;
-		var bucket = IM.__spatialLookup.get(loc);
-		if (bucket === undefined) {
-			bucket = new Set();
-			IM.__spatialLookup.set(loc, bucket);
+		var loc = ((x & 0xff) << 8) | (y & 0xff);
+		var data = IM.__spatialLookup[loc];
+		for (var i = 0; i < data.length; i++) {
+			var d = data[i];
+			if (d.x === x && d.y === y) {
+				return d.map;
+			}
 		}
-		return bucket;
+		var newData = {
+			x: x,
+			y: y,
+			map: new FastIterationCollisionSet(),
+		};
+		data.push(newData);
+		return newData.map;
 	}
 
 	static __freeBuckets(obj) {
@@ -467,38 +525,71 @@ class IM {
 		}
 	}
 
-	static __hashObjectLocation(obj, bounds, oldBuckets) {
-		for (const entry of oldBuckets) {
-			entry.delete(obj);
+	static __hashObjectLocationFullInvalidate(obj, bounds, oldBuckets) {
+		for (var i = 0; i < oldBuckets.length; i++) {
+			oldBuckets[i].delete(obj);
 		}
-		const buckets = IM.__getBucketsForBounds(bounds);
-		for (const b of buckets) {
-			b.add(obj);
+		var buckets = IM.__getBucketsForBounds(bounds);
+		for (var i = 0; i < buckets.length; i++) {
+			buckets[i].add(obj);
+		}
+		return buckets;
+	}
+
+	static __hashObjectLocation(obj, bounds, oldBuckets) {
+		for (var i = 0; i < oldBuckets.length; i++) {
+			oldBuckets[i].__deleteTarget = obj;
+		}
+		var buckets = IM.__getBucketsForBounds(bounds);
+		for (var i = 0; i < buckets.length; i++) {
+			// only add if we are not marked for deletion (not in the bucket already)
+			var b = buckets[i];
+			if (b.__deleteTarget === null) {
+				b.add(obj);
+			} else {
+				// marked for deletion, but already deleted
+				b.__deleteTarget = null;
+			}
+		}
+		for (var i = 0; i < oldBuckets.length; i++) {
+			var b = oldBuckets[i];
+			if (b.__deleteTarget === obj) {
+				b.delete(obj);
+				b.__deleteTarget = null;
+			}
 		}
 		return buckets;
 	}
 
 	static __getBucketsForObject(obj, x, y) {
-		const dx = x - obj.x;
-		const dy = y - obj.y;
-		const bounds = obj.hitbox.getBoundingBox();
-		bounds.x1 += dx;
-		bounds.x2 += dx;
-		bounds.y1 += dy;
-		bounds.y2 += dy;
+		var dx = x - obj._x;
+		var dy = y - obj._y;
+		var bounds = obj.__hitbox.getBoundingBox();
+		if (dy || dx) {
+			bounds.x1 += dx;
+			bounds.x2 += dx;
+			bounds.y1 += dy;
+			bounds.y2 += dy;
+		}
+
 		return IM.__getBucketsForBounds(bounds);
 	}
 
+	static getCollisionHashFactor() {
+		// mirrors below value, but hard coded for speed.
+		return 128;
+	}
+
 	static __getBucketsForBounds(bounds) {
-		const x1 = Math.floor(bounds.x1 / 128);
-		const y1 = Math.floor(bounds.y1 / 128);
-		const x2 = Math.floor(bounds.x2 / 128);
-		const y2 = Math.floor(bounds.y2 / 128);
-		const newBuckets = [];
+		var x1 = Math.floor(bounds.x1) >> 7;
+		var y1 = Math.floor(bounds.y1) >> 7;
+		var x2 = Math.floor(bounds.x2) >> 7;
+		var y2 = Math.floor(bounds.y2) >> 7;
+		var newBuckets = new Array((x2 - x1 + 1) * (y2 - y1 + 1));
+		var idx = 0;
 		for (var xx = x1; xx <= x2; xx++) {
 			for (var yy = y1; yy <= y2; yy++) {
-				const bucket = IM.__getOrMakeBucket(xx, yy);
-				newBuckets.push(bucket);
+				newBuckets[idx++] = IM.__getOrMakeBucket(xx, yy);
 			}
 		}
 		return newBuckets;
@@ -585,22 +676,27 @@ class IM {
 
 	// returns the first target instance that was collided with, or undefined if there were none.
 	static __performCollision(source, x, y, targets) {
-		var hitbox = source.hitbox;
-		const lst = IM.__getBucketsForObject(source, x, y);
+		var hitbox = source.__hitbox;
+		const buckets = IM.__getBucketsForObject(source, x, y);
 		for (var i = 0; i < targets.length; i++) {
-			const cid = IM.__newCollisionIdFor(source);
-			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
-			for (const b of lst) {
-				for (var target of b) {
-					if (
-						target.__collisionId !== cid &&
-						((target.__childLow >= checkLow && target.__childHigh <= checkHigh) || target.id === checkId) &&
-						hitbox.checkBoundingBox(target.hitbox, x, y) &&
-						hitbox.doCollision(target.hitbox, x, y)
-					) {
-						return target;
+			var { oid, targetInstance } = IM.__queryCollider(targets[i]);
+
+			if (targetInstance) {
+				if (targetInstance.__alive && hitbox.doCollision(targetInstance.__hitbox, x, y)) {
+					return targetInstance.ref;
+				}
+			} else {
+				var oids = IM.__flatChildMap[oid];
+				for (var k = 0; k < buckets.length; k++) {
+					var data = buckets[k];
+					for (var j = 0; j < oids.length; j++) {
+						var arr = data.getArrayForOid(oids[j]);
+						for (var l = 0; l < arr.length; l++) {
+							if (hitbox.doCollision(arr[l].__hitbox, x, y)) {
+								return arr[l].ref;
+							}
+						}
 					}
-					target.__collisionId = cid;
 				}
 			}
 		}
@@ -645,22 +741,27 @@ class IM {
 	 */
 	static instanceCollisionList(source, x, y, ...targets) {
 		var results = [];
-		var hitbox = source.hitbox;
-		const lst = IM.__getBucketsForObject(source, x, y);
+		var hitbox = source.__hitbox;
+		const buckets = IM.__getBucketsForObject(source, x, y);
 		for (var i = 0; i < targets.length; i++) {
-			const cid = IM.__newCollisionIdFor(source);
-			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
-			for (const b of lst) {
-				for (var target of b) {
-					if (
-						target.__collisionId !== cid &&
-						((target.__childLow >= checkLow && target.__childHigh <= checkHigh) || target.id === checkId) &&
-						hitbox.checkBoundingBox(target.hitbox, x, y) &&
-						hitbox.doCollision(target.hitbox, x, y)
-					) {
-						results.push(target);
+			var { oid, targetInstance } = IM.__queryCollider(targets[i]);
+
+			if (targetInstance) {
+				if (targetInstance.__alive && hitbox.doCollision(targetInstance.__hitbox, x, y)) {
+					results.push(targetInstance);
+				}
+			} else {
+				var oids = IM.__flatChildMap[oid];
+				for (var k = 0; k < buckets.length; k++) {
+					var data = buckets[k];
+					for (var j = 0; j < oids.length; j++) {
+						var arr = data.getArrayForOid(oids[j]);
+						for (var l = 0; l < arr.length; l++) {
+							if (hitbox.doCollision(arr[l].__hitbox, x, y)) {
+								results.push(arr[l].ref);
+							}
+						}
 					}
-					target.__collisionId = cid;
 				}
 			}
 		}
@@ -675,18 +776,24 @@ class IM {
 	 * @returns {EngineInstance} The first EngineInstance that is collided with, or undefined if there is none.
 	 */
 	static instancePosition(x, y, ...targets) {
-		const lst = IM.__getBucketsForBounds({ x1: x, y1: y, x2: x, y2: y });
+		const bucket = IM.__getBucketsForBounds({ x1: x, y1: y, x2: x, y2: y })[0];
 		for (var i = 0; i < targets.length; i++) {
-			const cid = IM.__newCollisionIdFor(null);
-			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
-			for (var target of lst[0]) {
-				if (
-					((target.__childLow >= checkLow && target.__childHigh <= checkHigh) || target.id === checkId) &&
-					target.hitbox.containsPoint(x, y)
-				) {
-					return target;
+			var { oid, targetInstance } = IM.__queryCollider(targets[i]);
+
+			if (targetInstance) {
+				if (targetInstance.__alive && targetInstance.__hitbox.containsPoint(x, y)) {
+					return targetInstance.ref;
 				}
-				target.__collisionId = cid;
+			} else {
+				var oids = IM.__flatChildMap[oid];
+				for (var j = 0; j < oids.length; j++) {
+					var arr = bucket.getArrayForOid(oids[j]);
+					for (var l = 0; l < arr.length; l++) {
+						if (arr[l].__hitbox.containsPoint(x, y)) {
+							return arr[l].ref;
+						}
+					}
+				}
 			}
 		}
 		return undefined;
@@ -712,15 +819,23 @@ class IM {
 	 */
 	static instanceCollisionPointList(x, y, ...targets) {
 		var result = [];
-		const lst = IM.__getBucketsForBounds({ x1: x, y1: y, x2: x, y2: y });
+		const bucket = IM.__getBucketsForBounds({ x1: x, y1: y, x2: x, y2: y })[0];
 		for (var i = 0; i < targets.length; i++) {
-			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
-			for (var target of lst[0]) {
-				if (
-					((target.__childLow >= checkLow && target.__childHigh <= checkHigh) || target.id === checkId) &&
-					target.hitbox.containsPoint(x, y)
-				) {
-					result.push(target);
+			var { oid, targetInstance } = IM.__queryCollider(targets[i]);
+
+			if (targetInstance) {
+				if (targetInstance.__alive && targetInstance.__hitbox.containsPoint(x, y)) {
+					result.push(targetInstance.ref);
+				}
+			} else {
+				var oids = IM.__flatChildMap[oid];
+				for (var j = 0; j < oids.length; j++) {
+					var arr = bucket.getArrayForOid(oids[j]);
+					for (var l = 0; l < arr.length; l++) {
+						if (arr[l].__hitbox.containsPoint(x, y)) {
+							result.push(arr[l].ref);
+						}
+					}
 				}
 			}
 		}
@@ -738,29 +853,41 @@ class IM {
 	 * @returns {EngineInstance} The nearest instance of targets, or undefined if no targets exist.
 	 */
 	static instanceNearest(source, x, y, ...targets) {
-		var ox = source.x;
-		var oy = source.y;
-		source.x = x;
+		var ox = source._x;
+		var oy = source._y;
+		source._x = x;
 		source.y = y;
 
 		var nearest = undefined;
 		var dst = 99999999;
-		for (const i of targets) {
-			var lst = IM.__queryObjects(i);
-			for (const inst of lst) {
-				var nDst = source.hitbox.distanceToHitboxSq(inst.hitbox);
+		var listTargets = [];
+		for (var i = 0; i < targets.length; i++) {
+			var { oid, targetInstance } = IM.__queryCollider(targets[i]);
+			if (targetInstance) {
+				if (targetInstance.__alive) {
+					listTargets.push([targetInstance]);
+				}
+			} else {
+				listTargets.push(IM.__accessMap[oid]);
+			}
+		}
+		for (var i = 0; i < listTargets.length; i++) {
+			var lst = listTargets[i];
+			for (var k = 0; k < lst.length; k++) {
+				var inst = lst[k];
+				var nDst = source.__hitbox.distanceToHitboxSq(inst.__hitbox);
 				if (nDst < dst) {
 					dst = nDst;
 					nearest = inst;
 					if (nDst === 0) {
-						source.x = ox;
+						source._x = ox;
 						source.y = oy;
 						return nearest;
 					}
 				}
 			}
 		}
-		source.x = ox;
+		source._x = ox;
 		source.y = oy;
 		return nearest;
 	}
@@ -775,12 +902,24 @@ class IM {
 	 * @returns {EngineInstance} The nearest instance of targets, or undefined if no targets exist.
 	 */
 	static instanceNearestPoint(x, y, ...targets) {
-		var nearest = null;
+		var nearest = undefined;
 		var dst = 99999999;
-		for (const i of targets) {
-			var lst = IM.__queryObjects(i);
-			for (const inst of lst) {
-				var nDst = inst.hitbox.distanceToPointSq(x, y);
+		var listTargets = [];
+		for (var i = 0; i < targets.length; i++) {
+			var { oid, targetInstance } = IM.__queryCollider(targets[i]);
+			if (targetInstance) {
+				if (targetInstance.__alive) {
+					listTargets.push([targetInstance]);
+				}
+			} else {
+				listTargets.push(IM.__accessMap[oid]);
+			}
+		}
+		for (var i = 0; i < listTargets.length; i++) {
+			var lst = listTargets[i];
+			for (var k = 0; k < lst.length; k++) {
+				var inst = lst[k];
+				var nDst = inst.__hitbox.distanceToPointSq(x, y);
 				if (nDst < dst) {
 					dst = nDst;
 					nearest = inst;
@@ -790,7 +929,6 @@ class IM {
 				}
 			}
 		}
-		return nearest;
 	}
 
 	/**
@@ -805,25 +943,29 @@ class IM {
 	static instanceCollisionLine(x1, y1, x2, y2, ...targets) {
 		var p1 = new EngineLightweightPoint(x1, y1);
 		var p2 = new EngineLightweightPoint(x2, y2);
-		const lst = IM.__getBucketsForBounds({
+		// slow
+		const buckets = IM.__getBucketsForBounds({
 			x1: Math.min(x1, x2),
 			y1: Math.min(y1, y2),
 			x2: Math.max(x1, x2),
 			y2: Math.max(y1, y2),
 		});
 		for (var i = 0; i < targets.length; i++) {
-			const cid = IM.__newCollisionIdFor(null);
-			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
-			for (const b of lst) {
-				for (var target of b) {
-					if (
-						target.__collisionId !== cid &&
-						((target.__childLow >= checkLow && target.__childHigh <= checkHigh) || target.id === checkId) &&
-						target.hitbox.checkLineCollision(p1, p2)
-					) {
-						return target;
+			var { oid, targetInstance } = IM.__queryCollider(targets[i]);
+			if (targetInstance) {
+				return targetInstance.__alive && targetInstance.__hitbox.checkLineCollision(p1, p2);
+			} else {
+				var oids = IM.__flatChildMap[oid];
+				for (var k = 0; k < buckets.length; k++) {
+					var data = buckets[k];
+					for (var j = 0; j < oids.length; j++) {
+						var arr = data.getArrayForOid(oids[j]);
+						for (var l = 0; l < arr.length; l++) {
+							if (arr[l].__hitbox.checkLineCollision(p1, p2)) {
+								return arr[l].ref;
+							}
+						}
 					}
-					target.__collisionId = cid;
 				}
 			}
 		}
@@ -845,20 +987,31 @@ class IM {
 		var result = [];
 		var p1 = new EngineLightweightPoint(x1, y1);
 		var p2 = new EngineLightweightPoint(x2, y2);
+		// slow
+		const buckets = IM.__getBucketsForBounds({
+			x1: Math.min(x1, x2),
+			y1: Math.min(y1, y2),
+			x2: Math.max(x1, x2),
+			y2: Math.max(y1, y2),
+		});
 		for (var i = 0; i < targets.length; i++) {
-			const cid = IM.__newCollisionIdFor(null);
-			const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(targets[i]);
-			const lst = IM.__getBucketsForBounds({ x1: x1, y1: y1, x2: x2, y2: y2 });
-			for (const b of lst) {
-				for (var target of b) {
-					if (
-						target.__collisionId !== cid &&
-						((target.__childLow >= checkLow && target.__childHigh <= checkHigh) || target.id === checkId) &&
-						target.hitbox.checkLineCollision(p1, p2)
-					) {
-						result.push(target);
+			var { oid, targetInstance } = IM.__queryCollider(targets[i]);
+			if (targetInstance) {
+				if (targetInstance.__alive && targetInstance.__hitbox.checkLineCollision(p1, p2)) {
+					result.push(targetInstance);
+				}
+			} else {
+				var oids = IM.__flatChildMap[oid];
+				for (var k = 0; k < buckets.length; k++) {
+					var data = buckets[k];
+					for (var j = 0; j < oids.length; j++) {
+						var arr = data.getArrayForOid(oids[j]);
+						for (var l = 0; l < arr.length; l++) {
+							if (arr[l].__hitbox.checkLineCollision(p1, p2)) {
+								result.push(arr[l].ref);
+							}
+						}
 					}
-					target.__collisionId = cid;
 				}
 			}
 		}
@@ -871,11 +1024,11 @@ class IM {
 	 * This is a constant time operation.
 	 * @param {EngineInstance} obj  the class to query
 	 * @param {Number} [ind=0] the nth instance to find.
-	 * @returns {EngineInstance} The requested instance, or null if unvailable.
+	 * @returns {EngineInstance} The requested instance, or undefined if unvailable.
 	 */
 	static findExact(obj, ind = 0) {
 		var oid = IM.__oidFrom(obj);
-		return IM.__accessMap[oid][ind] || null;
+		return IM.__accessMap[oid][ind];
 	}
 
 	/**
@@ -888,7 +1041,7 @@ class IM {
 	 * @returns {EngineInstance} The requested instance, or undefined if unvailable.
 	 */
 	static find(obj, ind = 0) {
-		const { checkLow, checkHigh, checkId } = IM.__queryCollisionValue(obj);
+		const { checkLow, checkHigh, checkId } = IM.__queryLookupData(obj);
 		var current = 0;
 		var len = IM.__objects.length;
 		for (var i = 0; i < len; i++) {
@@ -900,7 +1053,7 @@ class IM {
 				current++;
 			}
 		}
-		return null;
+		return undefined;
 	}
 
 	/**
@@ -940,6 +1093,48 @@ class IM {
 	}
 }
 
+class FastIterationCollisionSet {
+	constructor() {
+		this.__map = new WeakMap();
+		this.__arr = new Array(IM.__numRegisteredClasses + 2); // + null + EngineInstance;
+		this.__arr[0] = null;
+		for (var i = 0; i <= IM.__numRegisteredClasses; i++) {
+			this.__arr[i + 1] = [];
+		}
+		this.__deleteTarget = null;
+	}
+
+	getArrayForOid(idx) {
+		return this.__arr[idx];
+	}
+
+	add(instance) {
+		// This code prevents a deoptimization from occuring and results in a massive performance gain.
+		// It took me 3 hours to figure this out.
+		var p = {
+			__collisionId: 0,
+			__childLow: instance.__childLow,
+			__childHigh: instance.__childHigh,
+			id: instance.id,
+			__hitbox: instance.__hitbox, // requires a full remove / add on hitbox change
+			ref: instance,
+		};
+		var arr = this.__arr[instance.oid];
+		this.__map.set(instance, arr.length);
+		arr.push(p);
+	}
+
+	delete(instance) {
+		var arr = this.__arr[instance.oid];
+		var idx = this.__map.get(instance);
+		var obj = arr.pop();
+		if (obj.ref !== instance) {
+			arr[idx] = obj;
+			this.__map.set(obj.ref, idx);
+		}
+	}
+}
+
 IM.__accessMap = []; // indexes every single instance with oid being the key and an array of all those instances being the value
 IM.__alteredLists = []; // whether or not this specific OID has had instances removed (lets us skip filtering objects which haven't been touched)
 IM.__childMap = []; // maps each oid to a tree containting all children oid
@@ -947,6 +1142,7 @@ IM.__childTree = {
 	__oid: EngineInstance,
 	__children: undefined,
 };
+IM.__flatChildMap = [];
 IM.__numRegisteredClasses = -1;
 IM.__oidToClass = undefined;
 IM.__cleanupList = [];

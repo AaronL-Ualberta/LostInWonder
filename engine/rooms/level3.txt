@@ -396,3 +396,8 @@ block instances
 	HealthBar -264 1896 0 0 1 1
 endblock
 
+block extern Music
+BackgroundMusic_Level3
+0.03
+endblock
+
