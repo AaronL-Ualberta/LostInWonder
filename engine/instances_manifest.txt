@@ -9,6 +9,7 @@ InvisibleWall spr=invisible_wall engine/instances/invisible_wall.js
 SemiSolid engine/instances/SemiSolid.js
 Fireball engine/instances/fireball.js
 RockBlock engine/instances/rock_block.js
+Spikes engine/instances/spikes.js
 BoulderBlock engine/instances/boulder_block.js
 IceBlock spr=ice_block engine/instances/ice_block.js
 WaterBlock spr=water_block engine/instances/water_block.js

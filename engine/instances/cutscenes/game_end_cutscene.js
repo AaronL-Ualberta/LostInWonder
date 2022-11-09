@@ -156,7 +156,8 @@ class GameEndCutscene extends Cutscene {
 
 		var data = $engine.getEngineGlobalData();
 
-		if (data.myVar > 30) {
+		// if (data.myVar > 30) {
+		if (true) {
 			this.dialogue_lines = this.dialogue_lines.concat(this.hundredpercentlines);
 		} else if (data.myVar > 20) {
 			this.dialogue_lines = this.dialogue_lines.concat(this.goodendinglines);

@@ -60,7 +60,7 @@ class Level3Handler extends LevelHandler {
 		this.see_artifact_trigger = false;
 		this.get_artifact_trigger = false;
 
-		this.wand_piece = new WandPiece(400, 400, "air_wand");
+		this.wand_piece = new WandPiece(624, 3024, "air_wand");
 
 		this.nextRoom = "Level3End";
 

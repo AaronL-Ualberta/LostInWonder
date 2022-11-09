@@ -138,13 +138,13 @@ class PlayerInstance extends EngineInstance {
 			$engine.setRoom(RoomManager.currentRoom().name);
 		}
 		// DEVMODE
-		if (IN.keyCheckPressed("Slash")) {
-			if (this.state === PLAYERSTATES.DEVMODE) {
-				this.switchState(PLAYERSTATES.AIRBORNE);
-			} else {
-				this.switchState(PLAYERSTATES.DEVMODE);
-			}
-		}
+		// if (IN.keyCheckPressed("Slash")) {
+		// 	if (this.state === PLAYERSTATES.DEVMODE) {
+		// 		this.switchState(PLAYERSTATES.AIRBORNE);
+		// 	} else {
+		// 		this.switchState(PLAYERSTATES.DEVMODE);
+		// 	}
+		// }
 
 		this.fire_cooldown_timer--;
 		this.wind_cooldown_timer--;
@@ -393,7 +393,7 @@ class PlayerInstance extends EngineInstance {
 		this.checkUnderwater();
 
 		// Check Double Jump
-		if (this.current_spell === 2) {
+		if (this.current_spell === SPELLNAMES.AIR) {
 			if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
 				this.vsp = -this.jump_height;
 				const part_from_center = 18;
@@ -545,6 +545,7 @@ class PlayerInstance extends EngineInstance {
 		// this.gravity = this.water_gravity;
 		this.has_waterdash = true;
 		this.has_doubleJump = true;
+		this.wall_jumped_times = 0;
 	}
 
 	exitGrounded() {}

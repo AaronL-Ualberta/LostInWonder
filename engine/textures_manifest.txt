@@ -16,6 +16,7 @@ require spellwheel2 engine/textures/spell_wheel2.png 0.5 0.5
 require spellwheel3 engine/textures/spell_wheel3.png 0.5 0.5
 require spellwheel engine/textures/spell_wheel.png 0.5 0.5
 require fireball engine/textures/fireball.png 0.5 0.5
+require spikes engine/textures/spikes.png 0.5 0.5
 require ice_block engine/textures/iceblock.png 0 0
 require water_block engine/textures/waterblock.png 0 0
 require rock_block engine/textures/rock_spell.png 0.5 0.5
@@ -100,3 +101,14 @@ endlv3cutsceneframe6 engine/textures/cutscenes/endlevel3/6.jpg 0 0
 gameendcutsceneframe1 engine/textures/cutscenes/endingscene/1.jpg 0 0
 gameendcutsceneframe2 engine/textures/cutscenes/endingscene/2.jpg 0 0
 gameendcutsceneframe3 engine/textures/cutscenes/endingscene/3.jpg 0 0
+
+creditsframe1 engine/textures/cutscenes/credits/1.jpg 0 0
+creditsframe2 engine/textures/cutscenes/credits/2.jpg 0 0
+creditsframe3 engine/textures/cutscenes/credits/3.jpg 0 0
+creditsframe4 engine/textures/cutscenes/credits/4.jpg 0 0
+creditsframe5 engine/textures/cutscenes/credits/5.jpg 0 0
+creditsframe6 engine/textures/cutscenes/credits/6.jpg 0 0
+creditsframe7 engine/textures/cutscenes/credits/7.jpg 0 0
+creditsframe8 engine/textures/cutscenes/credits/8.jpg 0 0
+creditsframe9 engine/textures/cutscenes/credits/9.jpg 0 0
+creditsframe10 engine/textures/cutscenes/credits/10.jpg 0 0

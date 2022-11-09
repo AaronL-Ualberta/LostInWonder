@@ -4,6 +4,7 @@ class BoulderBlock extends SolidObject {
 		this.setHitbox(new Hitbox(this, new RectangleHitbox(-24, -24, 24, 24)));
 		this.sprite = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture("boulder_block")), true);
 		this.isFalling = false;
+		this.vsp = 0;
 	}
 
 	onCreate(x, y) {
@@ -16,14 +17,19 @@ class BoulderBlock extends SolidObject {
 		var vineBlock = IM.instancePlace(this, this.x, this.y - 48, VineBlock);
 		// Start falling
 		if (vineBlock === undefined) {
+			this.vsp += 0.4;
 			if (!this.isFalling) {
 				// Boulder Drop Sound Effect
 				$engine.audioPlaySound("BoulderDropSoundEffect", 0.3, false);
 				this.isFalling = true;
 			}
-			var belowBlock = IM.instancePlace(this, this.x, this.y + 3, SolidObject);
+			var belowBlock = IM.instancePlace(this, this.x, this.y + Math.floor(this.vsp), SolidObject);
 			if (belowBlock === undefined) {
-				this.y += 3;
+				this.y += Math.floor(this.vsp);
+			} else {
+				while (IM.instancePlace(this, this.x, this.y + 1, SolidObject) === undefined) {
+					this.y++;
+				}
 			}
 		}
 	}
