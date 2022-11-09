@@ -115,9 +115,11 @@ class Dialogue extends EngineInstance {
 				this.dialogue_text.text = this.lines[this.line_on].text.substr(0, this.timer / this.time_per_char);
 				if (IN.keyCheckPressed("KeyZ")) {
 					this.timer = -1;
+					$engine.audioStopSound("DialogueSoundEffect");
 				}
 				if (this.timer / this.time_per_char > this.lines[this.line_on].text.length) {
 					this.timer = -1;
+					$engine.audioStopSound("DialogueSoundEffect");
 				}
 			} else {
 				this.dialogue_text.text = this.lines[this.line_on].text;
@@ -138,6 +140,7 @@ class Dialogue extends EngineInstance {
 							// this.line_on++;
 						} else {
 							this.dialogue.visible = true;
+							$engine.audioPlaySound("DialogueSoundEffect", 0.07, true);
 						}
 						this.dialogue_portrait.texture = this.portrait_textures[this.lines[this.line_on].image];
 						this.dialogue_char_name.text = this.lines[this.line_on].name;

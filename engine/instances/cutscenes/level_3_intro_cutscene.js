@@ -36,7 +36,7 @@ class Level3IntroCutscene extends Cutscene {
 			new DialogueLine("Grrrr… I saw these scales in her despicable workshop.", LARAYA_PORTRAITS.ANGRY),
 		];
 
-		this.audioSound = "BackgroundMusic_CutScene";
+		this.audioSound = "Level3IntroCutScene";
 		this.cutsceneFrames = ["level3cutsceneframe1", "level3cutsceneframe2", "level3cutsceneframe3"];
 		this.nextRoom = "Level3";
 	}
