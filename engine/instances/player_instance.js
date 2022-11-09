@@ -227,7 +227,7 @@ class PlayerInstance extends EngineInstance {
 		//  this.filter.blur = this.x / 120;
 
 		// Check for water freezing
-		if (this.current_spell === 3) {
+		if (this.current_spell === SPELLNAMES.WATER) {
 			this.setHitbox(this.iceHitbox);
 			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp + 5, WaterBlock);
 			this.setHitbox(this.mainHitbox);
@@ -764,5 +764,5 @@ PLAYERSTATES.UNDERWATER = 5;
 class SPELLNAMES {}
 SPELLNAMES.FIRE = 0;
 SPELLNAMES.EARTH = 1;
-SPELLNAMES.AIR = 2;
-SPELLNAMES.WATER = 3;
+SPELLNAMES.WATER = 2;
+SPELLNAMES.AIR = 3;
