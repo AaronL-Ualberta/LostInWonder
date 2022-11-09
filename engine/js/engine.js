@@ -3541,7 +3541,7 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 		}
 	};
 
-	SceneManager.useStableUpdate = true;
+	SceneManager.useStableUpdate = false;
 
 	let processStack = function (stack) {
 		const elements = stack.split("\n").map((x) => x.replace(/\(.*\//, "("));
