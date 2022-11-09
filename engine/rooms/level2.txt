@@ -93,7 +93,7 @@ endblock
 
 block extern Music
 BackgroundMusic_Level2
-0.02
+0.03
 endblock
 
 block extern GrassColor

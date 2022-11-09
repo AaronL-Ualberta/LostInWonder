@@ -38,7 +38,7 @@ class Cutscene extends EngineInstance {
 			this.renderableFrames[i].height = $engine.getCamera().getHeight();
 		}
 
-		$engine.audioPlaySound(this.audioSound, 0.07, true);
+		$engine.audioPlaySound(this.audioSound, 0.08, true);
 	}
 
 	onCreate(x, y) {

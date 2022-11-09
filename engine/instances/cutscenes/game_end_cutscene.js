@@ -167,7 +167,7 @@ class GameEndCutscene extends Cutscene {
 			this.dialogue_lines = this.dialogue_lines.concat(this.badendinglines);
 		}
 
-		this.audioSound = "BackgroundMusic_CutScene";
+		this.audioSound = "GameEndCutScene";
 		this.cutsceneFrames = ["gameendcutsceneframe1", "gameendcutsceneframe2", "gameendcutsceneframe3"];
 		this.nextRoom = "Credits";
 	}

@@ -16,7 +16,7 @@ class Level1IntroCutscene extends Cutscene {
 			new DialogueLine("Which, in this case, would be me…", LARAYA_PORTRAITS.SCARED),
 		];
 
-		this.audioSound = "BackgroundMusic_CutScene";
+		this.audioSound = "Level1CutScene";
 		this.cutsceneFrames = [
 			"level1cutsceneframe1",
 			"level1cutsceneframe2",
