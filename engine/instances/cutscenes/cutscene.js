@@ -60,6 +60,11 @@ class Cutscene extends EngineInstance {
 	step() {
 		this.timer++;
 
+		// Skip cutscene
+		if (IN.keyCheckPressed("Slash")) {
+			$engine.setRoom(this.nextRoom);
+		}
+
 		// Cutscene frame fading
 		if (this.frameFadeTimer > 0) {
 			this.renderableFrames[this.visibleFrame].alpha = EngineUtils.interpolate(

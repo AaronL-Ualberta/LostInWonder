@@ -154,17 +154,19 @@ class GameEndCutscene extends Cutscene {
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to ending shot 3 and segue into appropriate ending
 		];
 
-		if (true) {
+		var data = $engine.getEngineGlobalData();
+
+		if (data.myVar > 30) {
 			this.dialogue_lines = this.dialogue_lines.concat(this.hundredpercentlines);
-		} else if (true) {
+		} else if (data.myVar > 20) {
 			this.dialogue_lines = this.dialogue_lines.concat(this.goodendinglines);
-		} else if (true) {
+		} else if (data.myVar > 10) {
 			this.dialogue_lines = this.dialogue_lines.concat(this.okayendinglines);
 		} else {
 			this.dialogue_lines = this.dialogue_lines.concat(this.badendinglines);
 		}
 
-		this.audioSound = "BackgroundMusic_CutScene";
+		this.audioSound = "GameEndCutScene";
 		this.cutsceneFrames = ["gameendcutsceneframe1", "gameendcutsceneframe2", "gameendcutsceneframe3"];
 		this.nextRoom = "Credits";
 	}

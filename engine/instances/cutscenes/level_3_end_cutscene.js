@@ -40,7 +40,7 @@ class Level3EndCutscene extends Cutscene {
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to village shot 6
 		];
 
-		this.audioSound = "JungleAmbience";
+		this.audioSound = "Level3EndCutScene";
 		this.cutsceneFrames = [
 			"endlv3cutsceneframe1",
 			"endlv3cutsceneframe2",

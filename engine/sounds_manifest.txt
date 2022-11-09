@@ -18,6 +18,8 @@ require BackgroundMusic_Level1 engine/audio/BackgroundMusic_Level1.ogg BGM
 require GameIntroCutScene engine/audio/BackgroundMusicCutScene.mp3 BGM
 require Level1CutScene engine/audio/Level1CutScene.mp3 BGM
 require Level3IntroCutScene engine/audio/Level3IntroCutScene.mp3 BGM
+require Level3EndCutScene engine/audio/Level3EndCutScene.mp3 BGM
+require GameEndCutScene engine/audio/GameEndCutScene.mp3 BGM
 require BackgroundMusic_Tutorial engine/audio/BackgroundMusic_Tutorial.mp3 BGM
 require BackgroundMusic_Level2 engine/audio/BackgroundMusic_Level2.mp3 BGM
 require BackgroundMusic_Level3CUT engine/audio/BackgroundMusic_Level3CUT.mp3 BGM
