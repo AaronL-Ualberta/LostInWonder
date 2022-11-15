@@ -448,6 +448,8 @@ class DialogueLine {
 	this.axodile = [
 		new DialogueLine("Friendly, midsize reptiles that can survive on land for a time, but prefer long periods underwater")
 	];
+
+
 class LARAYA_PORTRAITS {}
 LARAYA_PORTRAITS.HAPPY = "laraya_happy";
 LARAYA_PORTRAITS.ANGRY = "laraya_angry";

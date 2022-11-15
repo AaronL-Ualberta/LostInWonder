@@ -80,24 +80,18 @@ class TutorialHandler extends LevelHandler {
 		this.player.spells_learned = 0;
 		// ----------   JUNGLE/TUTORIAL/LEVEL 1 DIALOGUE LINES   ----------
 		this.junglelines = [
-			new DialogueLine("Aaaaaaaaaaaaaahhh!", LARAYA_PORTRAITS.SCARED), //happens in jungle shot 1, then cutscene ends
 			new DialogueLine("Ouch! That hurt.", LARAYA_PORTRAITS.HURT), //tutorial info appears on screen (different black dialogue box?), keys to move left, right, jump, and talk to NPC's
+			new DialogueLine("Use A and D to move left and right, SPACE to jump, and Z to continue dialogue and cutscenes."),
 			new DialogueLine(
-				"Alright then. Now all I need to do is find the pieces of my wand and portal back home! Once I know how to prove my innocence, I suppose…",
+				"Some platforms, such as tree leaves or thin branches, can be passed through by holding S.",
+			),
+			new DialogueLine(
+				"Alright then. Now all I need to do is find the pieces of my wand so I can portal back home! Once I know how to prove my innocence, I suppose…",
 				LARAYA_PORTRAITS.HAPPY
 			),
 			new DialogueLine(
-				"I didn't even break that law, the Tribunal knows that! Why would they do this?",
+				"That workshop isn't mine, the Tribunal knows that! Why would they do this?",
 				LARAYA_PORTRAITS.ANGRY
-			),
-			new DialogueLine(
-				"I've lived at the Spire my whole life, the Tribunal knows I didn't do it!",
-				LARAYA_PORTRAITS.ANGRY
-			),
-			new DialogueLine("Use WASD to move around the map.", LARAYA_PORTRAITS.HAPPY),
-			new DialogueLine(
-				"Some platforms, such as tree leaves, can be passed through by holding S.",
-				LARAYA_PORTRAITS.HAPPY
 			),
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.junglelines);
@@ -118,9 +112,12 @@ class TutorialHandler extends LevelHandler {
 			this.get_artifact_trigger = true;
 			this.artifactline = [
 				new DialogueLine(
-					"This is a piece of evidence! I need to collect as many of these as possible to prove my innocence!",
+					"Oh! Magically preserved footsteps! Evidence that an Asu sorcerer was here before me!",
 					LARAYA_PORTRAITS.SURPRISED
 				),
+				new DialogueLine("If I can find more, maybe I can prove that it was Ximara behind everything!", LARAYA_PORTRAITS.HAPPY),
+				new DialogueLine("I'll need a lot of evidence to have my banishment lifted, though I'm sure if I only get some the Tribunal will start investigating.", LARAYA_PORTRAITS.HAPPY),
+				new DialogueLine("But if I go back with close to nothing, they'll just throw me out again", LARAYA_PORTRAITS.SCARED),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, this.artifactline, true);
 		}

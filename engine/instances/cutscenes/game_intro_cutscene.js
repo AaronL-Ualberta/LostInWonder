@@ -11,9 +11,10 @@ class GameIntroCutscene extends Cutscene {
 				XIMARA_PORTRAITS.NEUTRAL,
 				"Ximara"
 			),
+			new DialogueLine("No! This is your workshop and you know it!", LARAYA_PORTRAITS.ANGRY),
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 4) here
 			new DialogueLine(
-				"Laraya, Asu sorceress of Calchara, for crimes against this Tribunal you are hereby banished from the city of Ishana.",
+				"Laraya, Asu sorceress of Calchara, for the crime of harming critically endangered species you are hereby banished from the city of Ishana.",
 				MARALAN_PORTRAITS.NEUTRAL,
 				"Maralan"
 			),
@@ -25,15 +26,15 @@ class GameIntroCutscene extends Cutscene {
 			new DialogueLine("But I didn't even do anything wr-", LARAYA_PORTRAITS.SCARED),
 			new DialogueLine("Silence. Maralan, remember the rest.", XIMARA_PORTRAITS.NEUTRAL, "Ximara"),
 			new DialogueLine(
-				"Of course. Furthermore, in accordance with our most sacred laws, your wand must be snapped.",
+				"Of course. Furthermore, in accordance with the consequences for breaking our most sacred laws, your wand must be snapped.",
 				MARALAN_PORTRAITS.NEUTRAL,
 				"Maralan"
 			),
 			new DialogueLine("Your banishment begins today. Give me your wand.", MARALAN_PORTRAITS.NEUTRAL, "Maralan"),
-			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 5) here
 			new DialogueLine("But I need my stuff! Everything I own is here!", LARAYA_PORTRAITS.SURPRISED),
+			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 5) here
 			new DialogueLine("Your wand, Laraya.", MARALAN_PORTRAITS.NEUTRAL, "Maralan"),
-			new DialogueLine("You're making a mistake. I didn't - oof!", LARAYA_PORTRAITS.SURPRISED),
+			new DialogueLine("You're making a mistake. The room is Xi- oof!", LARAYA_PORTRAITS.SURPRISED),
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 6) here
 		];
 
