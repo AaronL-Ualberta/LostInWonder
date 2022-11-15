@@ -45,7 +45,7 @@ class VineBlock extends SolidObject {
 			} else {
 				this.sprite.texture = $engine.getTexture("burning_vine_block_top");
 			}
-			this.burnTimer = 60;
+			this.burnTimer = 7;
 		}
 	}
 

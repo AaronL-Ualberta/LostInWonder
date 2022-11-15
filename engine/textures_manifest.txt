@@ -10,11 +10,16 @@ require player_wallcling engine/textures/player/wallcling.png 0.1 0
 require bgfar engine/textures/bg/bg_far.png 0 0
 require bgswamp engine/textures/bg/bg_swamp.png 0 0
 require bgleaves engine/textures/bg/bg_leaves.png 0 0
+require spellwheel0 engine/textures/spell_wheel0.png 0.5 0.5
+require spellwheel1 engine/textures/spell_wheel1.png 0.5 0.5
+require spellwheel2 engine/textures/spell_wheel2.png 0.5 0.5
+require spellwheel3 engine/textures/spell_wheel3.png 0.5 0.5
 require spellwheel engine/textures/spell_wheel.png 0.5 0.5
 require fireball engine/textures/fireball.png 0.5 0.5
+require spikes engine/textures/spikes.png 0.5 0.5
 require ice_block engine/textures/iceblock.png 0 0
 require water_block engine/textures/waterblock.png 0 0
-require rock_block engine/textures/rock_block.png 0.5 0.5
+require rock_block engine/textures/rock_spell.png 0.5 0.5
 require sign_down engine/textures/Down_Sign.png 0 0
 require leaf engine/textures/leaf.png 0 0
 require vine_block engine/textures/vineblock.png 0 0
@@ -25,6 +30,11 @@ require artifact engine/textures/artifact.png 0.5 0.5
 require health engine/textures/Health.png 0 0.5
 require flying_enemy engine/textures/fly_enemy.png 0.5 0.5
 require bomb engine/textures/fireball3.png 0.5 0.5
+require msgbox engine/textures/msgbox.png 0 0
+require fire_wand engine/textures/firewand.png 0.5 0.5
+require earth_wand engine/textures/earthwand.png 0.5 0.5
+require water_wand engine/textures/waterwand.png 0.5 0.5
+require air_wand engine/textures/airwand.png 0.5 0.5
 invisible_wall engine/textures/invisiblewall.png 0 0
 
 dial_laraya_angry engine/textures/dialogue/angy.png 0 0
@@ -33,10 +43,22 @@ dial_laraya_scared engine/textures/dialogue/scared.png 0 0
 dial_laraya_surprised engine/textures/dialogue/surprised.png 0 0
 dial_laraya_happy engine/textures/dialogue/happy.png 0 0
 dial_box engine/textures/dialogue/text_box.png 0 0
+dial_ximara engine/textures/dialogue/ximara.png 0 0
+dial_maralan engine/textures/dialogue/maralan.png 0 0
+dial_elder engine/textures/dialogue/elder.png 0 0
+dial_flickow engine/textures/dialogue/flickow.png 0 0
+dial_elder engine/textures/dialogue/elder.png 0 0
+dial_axodile_happy engine/textures/dialogue/axodile_happy.png 0 0
+dial_axodile_hurt engine/textures/dialogue/axodile_hurt.png 0 0
 
 require spritesheet dimensions 150 50 3 1 dustparticle engine/textures/particles/dust_particle.png 0.5 0.5
 require spritesheet dimensions 186 36 6 1 animate player_runanimation 6 0 1 2 3 4 5 playerrun engine/textures/animations/running.png 0.55 0
+spritesheet dimensions 2080 44 10 1 animate waterdashparticle_animation 10 0 1 2 3 4 5 6 7 8 9 waterdashparticle engine/textures/animations/waterdash.png 0 0.5
 require spritesheet dimensions 18 48 3 1 GrassBlade engine/textures/grass.png 0.5 1
+require spritesheet dimensions 180 33 6 1 animate gaterwalk_animation 6 0 1 2 3 4 5 gaterwalk engine/textures/animations/gater.png 0.5 1
+require spritesheet dimensions 128 33 4 1 animate gaterturn_animation 4 0 1 2 3 gaterturn engine/textures/animations/gater_turn.png 0.5 1
+require gaterhurt engine/textures/animations/gater_hurt.png 0.5 1
+spritesheet dimensions 132 98 6 1 animate windspell_animation 6 0 1 2 3 4 5 windspell engine/textures/animations/wind.png 0.5 0
 
 title_screen engine/textures/cutscenes/title.png 0 0
 cutscene_1 engine/textures/cutscenes/1.png 0 0
@@ -44,3 +66,49 @@ cutscene_2 engine/textures/cutscenes/2.png 0 0
 cutscene_3 engine/textures/cutscenes/3.png 0 0
 cutscene_4 engine/textures/cutscenes/4.png 0 0
 cutscene_5 engine/textures/cutscenes/5.png 0 0
+level_4_intro_cutscene engine/textures/cutscenes/level4.jpg 0 0
+
+gameintrocutsceneframe1 engine/textures/cutscenes/gameintro/1.jpg 0 0
+gameintrocutsceneframe2 engine/textures/cutscenes/gameintro/2.jpg 0 0
+gameintrocutsceneframe3 engine/textures/cutscenes/gameintro/3.jpg 0 0
+gameintrocutsceneframe4 engine/textures/cutscenes/gameintro/4.jpg 0 0
+gameintrocutsceneframe5 engine/textures/cutscenes/gameintro/5.jpg 0 0
+gameintrocutsceneframe6 engine/textures/cutscenes/gameintro/6.jpg 0 0
+
+tutorialcutsceneframe1 engine/textures/cutscenes/introtutorial/1.png 0 0
+tutorialcutsceneframe2 engine/textures/cutscenes/introtutorial/2.png 0 0
+tutorialcutsceneframe3 engine/textures/cutscenes/introtutorial/3.png 0 0
+
+level1cutsceneframe1 engine/textures/cutscenes/introlevel1/1.png 0 0
+level1cutsceneframe2 engine/textures/cutscenes/introlevel1/2.png 0 0
+level1cutsceneframe3 engine/textures/cutscenes/introlevel1/3.png 0 0
+level1cutsceneframe4 engine/textures/cutscenes/introlevel1/4.png 0 0
+
+level2cutsceneframe1 engine/textures/cutscenes/introlevel2/1.jpg 0 0
+level2cutsceneframe2 engine/textures/cutscenes/introlevel2/2.jpg 0 0
+
+level3cutsceneframe1 engine/textures/cutscenes/introlevel3/1.png 0 0
+level3cutsceneframe2 engine/textures/cutscenes/introlevel3/2.png 0 0
+level3cutsceneframe3 engine/textures/cutscenes/introlevel3/3.png 0 0
+
+endlv3cutsceneframe1 engine/textures/cutscenes/endlevel3/1.png 0 0
+endlv3cutsceneframe2 engine/textures/cutscenes/endlevel3/2.png 0 0
+endlv3cutsceneframe3 engine/textures/cutscenes/endlevel3/3.png 0 0
+endlv3cutsceneframe4 engine/textures/cutscenes/endlevel3/4.png 0 0
+endlv3cutsceneframe5 engine/textures/cutscenes/endlevel3/5.png 0 0
+endlv3cutsceneframe6 engine/textures/cutscenes/endlevel3/6.jpg 0 0
+
+gameendcutsceneframe1 engine/textures/cutscenes/endingscene/1.jpg 0 0
+gameendcutsceneframe2 engine/textures/cutscenes/endingscene/2.jpg 0 0
+gameendcutsceneframe3 engine/textures/cutscenes/endingscene/3.jpg 0 0
+
+creditsframe1 engine/textures/cutscenes/credits/1.jpg 0 0
+creditsframe2 engine/textures/cutscenes/credits/2.jpg 0 0
+creditsframe3 engine/textures/cutscenes/credits/3.jpg 0 0
+creditsframe4 engine/textures/cutscenes/credits/4.jpg 0 0
+creditsframe5 engine/textures/cutscenes/credits/5.jpg 0 0
+creditsframe6 engine/textures/cutscenes/credits/6.jpg 0 0
+creditsframe7 engine/textures/cutscenes/credits/7.jpg 0 0
+creditsframe8 engine/textures/cutscenes/credits/8.jpg 0 0
+creditsframe9 engine/textures/cutscenes/credits/9.jpg 0 0
+creditsframe10 engine/textures/cutscenes/credits/10.jpg 0 0

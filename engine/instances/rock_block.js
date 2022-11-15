@@ -5,26 +5,55 @@ class RockBlock extends SemiSolid {
 		this.spd = 10;
 		this.x = x;
 		this.y = y;
-		this.xScale = 1;
-		this.yScale = 1;
+		this.xScale = 2;
+		this.yScale = 2;
 		this.grav = 0.5;
+		this.grounded = false;
+		this.player = PlayerInstance.first;
+		this.player.rock_spell_count++;
+		this.depth = 1000000;
 
 		this.hsp = Math.cos(angle) * this.spd;
 		this.vsp = (Math.sin(angle) * this.spd - 5) * 1.1;
 
 		this.animation = [$engine.getTexture("rock_block")];
 		this.sprite = $engine.createRenderable(this, new PIXI.extras.AnimatedSprite(this.animation), true);
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(-24, -24, 24, 24)));
+		this.timer = 0;
+		//this.animation.scale.set(2, 2);
+		this.setHitbox(new Hitbox(this, new RectangleHitbox(-23, -24, 23, 24)));
+
+		if (this.collisionCheck(this.x, this.y)) {
+			this.blockDestroy();
+		}
 	}
 
 	step() {
 		this.sprite.update(1);
+		this.timer++;
+		if (this.timer > 300) {
+			this.blockDestroy();
+		}
 
-		this.vsp += this.grav;
-		this.collision();
+		if (this.grounded) {
+			if (!this.collisionCheck(this.x, this.y + 1)) {
+				this.grounded = false;
+			}
+		} else {
+			this.vsp += this.grav;
+			this.collision();
 
-		if (this.collisionCheck(this.x, this.y + 1)) {
-			this.hsp = 0;
+			if (this.collisionCheck(this.x, this.y + 1)) {
+				//console.log("works");
+				// Become Grounded
+				this.hsp = 0;
+				this.vsp = 0;
+				this.grounded = true;
+
+				const num = 4;
+				for (var i = 0; i < num; i++) {
+					new DustParticle(this.x - 44 + i * (100 / num), this.y + 48, 1);
+				}
+			}
 		}
 	}
 
@@ -78,7 +107,7 @@ class RockBlock extends SemiSolid {
 			return true;
 		}
 
-		if (this.vsp > 0) {
+		if (this.vsp >= 0) {
 			// Only collide if the semisolid is below you
 			var collided_list = IM.instanceCollisionList(this, x, y, SemiSolid);
 			for (const obj of collided_list) {
@@ -87,5 +116,20 @@ class RockBlock extends SemiSolid {
 				}
 			}
 		}
+	}
+
+	blockDestroy() {
+		const num = 3;
+		const start = 44;
+		const total = 88;
+
+		for (var i = 0; i < num; i++) {
+			for (var j = 0; j < num; j++) {
+				new DustParticle(this.x - start + i * (total / (num - 1)), this.y - start + j * (total / (num - 1)), 1.5);
+			}
+		}
+		this.player.rock_spell_count--;
+
+		this.destroy();
 	}
 }

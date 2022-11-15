@@ -5,7 +5,7 @@ class PlayerInstance extends EngineInstance {
 		this.jump_height = 13;
 		this.gravity = 0.8;
 		this.default_gravity = this.gravity;
-		this.water_gravity = 0.15;
+		this.water_gravity = 0.12;
 		this.max_run_speed = 5;
 		this.decel_coeff = 0.8;
 		this.decel_coeff_air = 0.98;
@@ -21,7 +21,7 @@ class PlayerInstance extends EngineInstance {
 		this.underwater_time = 0;
 
 		// Player vars
-
+		this.inside_water = false;
 		this.player_health = 100;
 		this.spr_width = 50;
 		this.spr_height = 80;
@@ -69,10 +69,11 @@ class PlayerInstance extends EngineInstance {
 		this.facing = 1;
 		this.has_doubleJump = true;
 		this.has_waterdash = true;
+		this.spells_learned = 0;
 		this.current_spell = SPELLNAMES.FIRE;
 		this.face_direction = 1;
 
-		this.levelHandler = TechDemoHandler.first;
+		this.levelHandler = LevelHandler.first;
 
 		this.animation_running = $engine.getAnimation("player_runanimation");
 		this.animation_standing = [$engine.getTexture("baby2")];
@@ -93,6 +94,16 @@ class PlayerInstance extends EngineInstance {
 		this.animation.anchor.y = 1;
 		this.animation.animationSpeed = 0.1;
 
+		this.fire_cooldown = 60;
+		this.fire_cooldown_timer = 0;
+
+		this.wind_cooldown = 300;
+		this.wind_cooldown_timer = 0;
+
+		this.rock_spell_count = 0;
+
+		this.wall_jumped_times = 0;
+
 		// Marcus cool code!!!!!!!!!!!!!!!!!!!!!!!!!
 		// this.filter = new PIXI.filters.BlurFilter();
 		// this.spr.filters = [this.filter];
@@ -106,38 +117,71 @@ class PlayerInstance extends EngineInstance {
 	}
 
 	step() {
+		// Check for collision with the wand piece
+		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
+		if (wand_piece !== undefined) {
+			this.spells_learned++;
+			console.log(this.spells_learned);
+
+			// Change the sprite
+			if (this.spells_learned === 4) {
+				this.levelHandler.spellWheel_sprite.texture = $engine.getTexture("spellwheel");
+			} else {
+				this.levelHandler.spellWheel_sprite.texture = $engine.getTexture("spellwheel" + this.spells_learned);
+			}
+
+			// Wand Piece Collection Sound Effect
+			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
+		}
+
 		if (this.player_health <= 0) {
 			$engine.setRoom(RoomManager.currentRoom().name);
 		}
 		// DEVMODE
-		if (IN.keyCheckPressed("Slash")) {
-			if (this.state === PLAYERSTATES.DEVMODE) {
-				this.switchState(PLAYERSTATES.AIRBORNE);
-			} else {
-				this.switchState(PLAYERSTATES.DEVMODE);
-			}
-		}
+		// if (IN.keyCheckPressed("Slash")) {
+		// 	if (this.state === PLAYERSTATES.DEVMODE) {
+		// 		this.switchState(PLAYERSTATES.AIRBORNE);
+		// 	} else {
+		// 		this.switchState(PLAYERSTATES.DEVMODE);
+		// 	}
+		// }
 
-		if (IN.mouseCheckPressed(0)) {
-			if (this.current_spell === SPELLNAMES.FIRE) {
+		this.fire_cooldown_timer--;
+		this.wind_cooldown_timer--;
+		if (IN.mouseCheckPressed(0) && this.spells_learned > 0) {
+			if (this.current_spell === SPELLNAMES.FIRE && this.spells_learned >= 1) {
 				// FIRE
 				const offset = 40;
-				const angle = V2D.calcDir(
-					IN.getMouseX() - (this.x + this.face_direction * offset),
-					IN.getMouseY() - (this.y - offset)
-				);
-				new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
-			} else if (this.current_spell === SPELLNAMES.EARTH) {
+				if (this.fire_cooldown_timer <= 0) {
+					const angle = V2D.calcDir(
+						IN.getMouseX() - (this.x + this.face_direction * offset),
+						IN.getMouseY() - (this.y - offset)
+					);
+					new Fireball(this.x + this.face_direction * offset, this.y - offset, angle);
+
+					this.fire_cooldown_timer = this.fire_cooldown;
+				} else {
+					new DustParticle(this.x + this.face_direction * offset, this.y - offset, 0.7);
+				}
+			} else if (this.current_spell === SPELLNAMES.EARTH && this.spells_learned >= 2) {
 				// EARTH
 				const offset = 40;
-				const angle = V2D.calcDir(
-					IN.getMouseX() - (this.x + this.face_direction * offset),
-					IN.getMouseY() - (this.y - offset)
-				);
-				new RockBlock(this.x + this.face_direction * offset, this.y - offset, angle);
-			} else if (this.current_spell === SPELLNAMES.AIR) {
+				if (this.rock_spell_count < 2) {
+					const angle = V2D.calcDir(
+						IN.getMouseX() - (this.x + this.face_direction * offset),
+						IN.getMouseY() - (this.y - offset)
+					);
+					new RockBlock(this.x + this.face_direction * offset, this.y - offset - 20, angle);
+				} else {
+					new DustParticle(this.x + this.face_direction * offset, this.y - offset, 0.7);
+				}
+			} else if (this.current_spell === SPELLNAMES.AIR && this.spells_learned === 4) {
 				// AIR
-			} else if (this.current_spell === SPELLNAMES.WATER) {
+				if (this.wind_cooldown_timer <= 0) {
+					new WindSpell(IN.getMouseX(), IN.getMouseY());
+					this.wind_cooldown_timer = this.wind_cooldown;
+				}
+			} else if (this.current_spell === SPELLNAMES.WATER && this.spells_learned >= 3) {
 				// WATER
 				if (this.has_waterdash) {
 					this.has_waterdash = false;
@@ -158,6 +202,9 @@ class PlayerInstance extends EngineInstance {
 					// }
 					// Water Dash Sound Effect
 					$engine.audioPlaySound("WaterDashSoundEffect", 0.08, false);
+
+					// Spawn water particle
+					new WaterDashParticle(this.x - this.facing * 20, this.y + 1, 0.5, angle);
 				}
 			}
 		}
@@ -168,23 +215,23 @@ class PlayerInstance extends EngineInstance {
 
 		// You can always switch between spells (for now)
 		const spell_inp = IN.keyCheckPressed("KeyE") - IN.keyCheckPressed("KeyQ");
-		if (spell_inp != 0) {
+		if (spell_inp != 0 && this.spells_learned > 1) {
 			this.current_spell += spell_inp;
-			// if (this.current_spell < 0) {
-			// 	this.current_spell = 4 + this.current_spell;
-			// }
-			this.current_spell &= 3;
+			if (this.current_spell < 0) {
+				this.current_spell = this.spells_learned + this.current_spell;
+			}
+			this.current_spell = this.current_spell % this.spells_learned;
 			this.levelHandler.spellWheelRotate(this.current_spell);
 		}
 
 		//  this.filter.blur = this.x / 120;
 
 		// Check for water freezing
-		if (this.current_spell === 3) {
+		if (this.current_spell === SPELLNAMES.WATER) {
 			this.setHitbox(this.iceHitbox);
 			var water_block = IM.instancePlace(this, this.x + this.hsp, this.y + this.vsp + 5, WaterBlock);
 			this.setHitbox(this.mainHitbox);
-			if (water_block !== undefined) {
+			if (water_block !== undefined && !this.inside_water) {
 				new IceBlock(water_block.x, water_block.y, 300);
 				water_block.destroy();
 			}
@@ -212,7 +259,6 @@ class PlayerInstance extends EngineInstance {
 		this.getStateGroup().exit(this.state);
 		this.state = _state;
 		this.state_timer = 0;
-		console.log("works");
 		this.getStateGroup().enter(this.state);
 	}
 
@@ -300,8 +346,15 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		// Apply gravity
-		this.vsp += this.gravity;
-		if (this.vsp > -0.5 && this.vsp < 1.5) this.vsp -= this.gravity / 1.4;
+		this.grav_real = this.gravity;
+		if (IM.instanceCollision(this, this.x, this.y, WindSpell)) {
+			// In the wind spell
+			this.grav_real /= 2;
+			this.vsp = Math.min(this.vsp, 5);
+		} else {
+			if (this.vsp > -0.5 && this.vsp < 1.5) this.vsp -= this.gravity / 1.4;
+		}
+		this.vsp += this.grav_real;
 
 		// Decel
 		this.hsp *= this.decel_coeff_air;
@@ -310,7 +363,14 @@ class PlayerInstance extends EngineInstance {
 		// INP
 		const inp = IN.keyCheck("KeyD") - IN.keyCheck("KeyA");
 		if (inp !== 0) {
-			this.hsp = EngineUtils.clamp(this.hsp + inp * this.ground_accel, -this.max_run_speed, this.max_run_speed);
+			if (this.hsp > this.max_run_speed) {
+				this.hsp = Math.min(this.hsp + inp * this.ground_accel, this.hsp);
+			} else if (this.hsp < -this.max_run_speed) {
+				this.hsp = Math.max(this.hsp + inp * this.ground_accel, this.hsp);
+			} else {
+				this.hsp = EngineUtils.clamp(this.hsp + inp * this.ground_accel, -this.max_run_speed, this.max_run_speed);
+			}
+
 			// Check wall cling
 			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
 				if (this.current_spell === 1) {
@@ -333,7 +393,7 @@ class PlayerInstance extends EngineInstance {
 		this.checkUnderwater();
 
 		// Check Double Jump
-		if (this.current_spell === 2) {
+		if (this.current_spell === SPELLNAMES.AIR) {
 			if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
 				this.vsp = -this.jump_height;
 				const part_from_center = 18;
@@ -351,8 +411,9 @@ class PlayerInstance extends EngineInstance {
 	stepInactive() {}
 	stepWallCling() {
 		if (IN.keyCheckPressed("KeyW")) {
-			this.vsp = -this.jump_height / 1.1;
+			this.vsp = -this.jump_height / (1.1 + this.wall_jumped_times * 0.15);
 			this.hsp = 6 * -this.facing;
+			this.wall_jumped_times++;
 			this.switchState(PLAYERSTATES.AIRBORNE);
 			return;
 		}
@@ -392,11 +453,13 @@ class PlayerInstance extends EngineInstance {
 			this.switchState(PLAYERSTATES.AIRBORNE);
 		}
 
-		if (this.state_timer % 2 === 0) new DustParticle(this.x, this.y);
+		// if (this.state_timer % 2 === 0) new DustParticle(this.x, this.y);
 
 		this.moveCollide();
 	}
 	stepUnderwater() {
+		//this.player_health -= 5;
+		this.inside_water = true;
 		this.underwater_time += 1;
 		if (this.underwater_time % 60 === 0) {
 			this.player_health -= 5;
@@ -439,7 +502,7 @@ class PlayerInstance extends EngineInstance {
 		if (this.state_timer > 8) {
 			// "Jump" infinitely
 			if (IN.keyCheckPressed("KeyW")) {
-				this.vsp = -this.jump_height / 4;
+				this.vsp += -this.jump_height / 6;
 				const part_from_center = 18;
 				const part_from_ground = 5;
 				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
@@ -462,6 +525,7 @@ class PlayerInstance extends EngineInstance {
 	enterGrounded() {
 		this.has_doubleJump = true;
 		this.has_waterdash = true;
+		this.wall_jumped_times = 0;
 	}
 	enterAirborne() {}
 	enterInactive() {}
@@ -470,6 +534,8 @@ class PlayerInstance extends EngineInstance {
 		this.vsp = 0;
 		this.has_doubleJump = true;
 		EngineUtils.setAnimation(this.animation, this.animation_wallcling);
+		new DustParticle(this.x + this.facing * 18, this.y - 64);
+		new DustParticle(this.x + this.facing * 18, this.y - 4);
 	}
 	enterWaterDash() {
 		EngineUtils.setAnimation(this.animation, this.animation_running);
@@ -479,6 +545,7 @@ class PlayerInstance extends EngineInstance {
 		// this.gravity = this.water_gravity;
 		this.has_waterdash = true;
 		this.has_doubleJump = true;
+		this.wall_jumped_times = 0;
 	}
 
 	exitGrounded() {}
@@ -489,6 +556,7 @@ class PlayerInstance extends EngineInstance {
 	exitWallCling() {}
 	exitWaterDash() {}
 	exitUnderwater() {
+		this.inside_water = false;
 		// this.gravity = this.default_gravity;
 	}
 
@@ -669,6 +737,20 @@ class PlayerInstance extends EngineInstance {
 			this.switchState(PLAYERSTATES.UNDERWATER);
 		}
 	}
+
+	onRoomStart() {
+		if (RoomManager.currentRoom().name == "Tutorial") {
+			this.spells_learned = 0;
+		} else if (RoomManager.currentRoom().name == "Level1") {
+			this.spells_learned = 1;
+		} else if (RoomManager.currentRoom().name == "Level2") {
+			this.spells_learned = 2;
+		} else if (RoomManager.currentRoom().name == "Level3") {
+			this.spells_learned = 3;
+		} else if (RoomManager.currentRoom().name == "Level3_CUT") {
+			this.spells_learned = 4;
+		}
+	}
 }
 
 class PLAYERSTATES {}
@@ -683,5 +765,5 @@ PLAYERSTATES.UNDERWATER = 5;
 class SPELLNAMES {}
 SPELLNAMES.FIRE = 0;
 SPELLNAMES.EARTH = 1;
-SPELLNAMES.AIR = 2;
-SPELLNAMES.WATER = 3;
+SPELLNAMES.WATER = 2;
+SPELLNAMES.AIR = 3;

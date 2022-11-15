@@ -194,9 +194,9 @@ class Camera extends PIXI.Container {
 		var dx = this.getWidth() / 2;
 		var dy = this.getHeight() / 2;
 
-		var off = new Vertex(dx, dy);
+		var off = new Vertex(dx + this.engineX, dy + this.engineY);
 		off.rotate(this.angle);
-		off.translate(-dx, -dy);
+		off.translate(-dx - this.engineX, -dy - this.engineY);
 
 		this.__cameraRenderContainer.rotation = this.angle;
 		this.__cameraRenderContainer.x = (-this.engineX - off.x) * this.__cameraRenderContainer.scale.x;
@@ -332,21 +332,21 @@ class Camera extends PIXI.Container {
 					continue;
 				}
 				var parent = child.__parent;
-				if (child.x !== parent.x) {
-					child.x = parent.x;
-					child.x += child.dx;
+				if (child.position._x !== parent._x) {
+					child.position.x = parent._x;
+					child.position.x += child.dx;
 				}
-				if (child.y !== parent.y) {
-					child.y = parent.y;
-					child.y += child.dy;
+				if (child.position._y !== parent._y) {
+					child.position.y = parent._y;
+					child.position.y += child.dy;
 				}
-				if (child.rotation !== parent.angle) {
+				if (child.rotation !== parent._angle) {
 					child.rotation = parent.angle;
 				}
-				if (child.scale.x !== parent.xScale) {
+				if (child.scale._x !== parent._xScale) {
 					child.scale.x = parent.xScale;
 				}
-				if (child.scale.y !== parent.yScale) {
+				if (child.scale._y !== parent._yScale) {
 					child.scale.y = parent.yScale;
 				}
 				if (child.alpha !== parent.alpha) {
@@ -397,17 +397,24 @@ class Camera extends PIXI.Container {
 		const maxX = bb.x2;
 		const maxY = bb.y2;
 
-		const maxW = maxX - minX;
-		const maxH = maxY - minY;
+		const bbWidth = maxX - minX;
+		const bbHeight = maxY - minY;
 
-		const offX = -w / 2 - minX;
-		const offY = -h / 2 - minY;
+		const offX = bbWidth * 1.41 - w;
+		const offY = bbHeight * 1.41 - h;
 
-		this.__cameraTilemapContainer.rotation = this.angle;
-		this.__tilemap.width = maxW + 64;
-		this.__tilemap.height = maxH + 64;
-		this.__tilemap.origin.x = this.engineX;
-		this.__tilemap.origin.y = this.engineY;
+		const dx = (w + offX) / 2;
+		const dy = (h + offY) / 2;
+		const off = new Vertex(dx, dy).rotate(this.angle).translate(-dx, -dy);
+
+		this.__tilemap.rotation = this.angle;
+		this.__tilemap.width = bbWidth * 1.41;
+		this.__tilemap.height = bbHeight * 1.41;
+		this.__tilemap.x = (-off.x - offX / 2) * this.__cameraRenderContainer.scale.x;
+		this.__tilemap.y = (-off.y - offY / 2) * this.__cameraRenderContainer.scale.y;
+		this.__tilemap.origin.x = this.engineX - offX / 2;
+		this.__tilemap.origin.y = this.engineY - offY / 2;
+
 		this.__tilemap.scale.x = this.__cameraRenderContainer.scale.x;
 		this.__tilemap.scale.y = this.__cameraRenderContainer.scale.y;
 	}

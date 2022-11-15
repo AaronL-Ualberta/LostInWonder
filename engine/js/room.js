@@ -5,8 +5,6 @@ class Room {
 	constructor(name) {
 		this.name = name || "DEFAULT_ROOM_NAME";
 		this.__instances = [];
-		// although technically supported, everything below basically got replaced by
-		// the onCreate() event in the minigameController.
 		this.__extern = {};
 		this.__settings = {
 			cameraX: 0,
@@ -27,6 +25,9 @@ class Room {
 		this.__initialized = false;
 	}
 
+	/**
+	 * Loads the assets of this room into the game. Calling this method does not change rooms, use ``$engine.setRoom()`` for that.
+	 */
 	loadRoom() {
 		const camera = $engine.getCamera();
 		const settings = this.__settings;
@@ -45,44 +46,97 @@ class Room {
 		}
 	}
 
+	/**
+	 * Gets all known external data from this room
+	 * @returns {Object} The external data, where the keys are the names of the external data
+	 */
 	getAllExtern() {
 		return { ...this.__extern };
 	}
 
-	getExtern(name) {
+	/**
+	 * Check if this room has the specified external data
+	 * @param {String} name The name of the external data
+	 * @returns {Boolean} Whether or not the room has the external data
+	 */
+	hasExtern(name) {
+		return name in this.__extern;
+	}
+
+	/**
+	 * Find and load some external data of this room
+	 *
+	 * @param {String} name The name of the external data to load
+	 * @param {Boolean | false} oneLine Is the data a single line?
+	 * @param {Boolean | false} safe Throw an error if not found?
+	 * @returns {Array | String} The external data, or a sring if oneLine is true
+	 */
+	getExtern(name, oneLine = false, safe = false) {
 		var data = this.__extern[name];
 		if (data === undefined) {
-			throw new Error("External data " + name + " not found");
+			if (safe) {
+				throw new Error("External data " + name + " not found");
+			} else {
+				return null;
+			}
+		}
+		if (oneLine) {
+			return data[0];
 		}
 		return [...data];
 	}
 
+	/**
+	 * Gets the room settings
+	 * @returns {Object} The room settings
+	 */
 	getSettings() {
 		return { ...this.__settings };
 	}
 
+	/**
+	 * Gets the RPG maker room data associated with this room, if rpgroom is set.
+	 * @returns {Object} The raw data or null if rpgRoom is not set
+	 */
 	getRpgRoom() {
 		return this.__rpgRoomData;
 	}
-
+	/**
+	 * Gets the RPG maker tileset data associated with this room
+	 * @returns {Object} The RPG tilemap object, or null if rpgRoom is not set
+	 */
 	getRpgTilemap() {
 		return this.__rpgTilemap;
 	}
 
+	/**
+	 * Gets the width of the RPG maker map associated with this room.
+	 *
+	 * @returns {Number} The size (in pixels) of the room.
+	 */
 	getRPGRoomWidth() {
-		if(!this.__rpgRoomData) {
+		if (!this.__rpgRoomData) {
 			return 0;
 		}
 		return this.__rpgRoomData.width * 48;
 	}
 
+	/**
+	 * Gets the height of the RPG maker map associated with this room.
+	 *
+	 * @returns {Number} The size (in pixels) of the room.
+	 */
 	getRPGRoomHeight() {
-		if(!this.__rpgRoomData) {
+		if (!this.__rpgRoomData) {
 			return 0;
 		}
 		return this.__rpgRoomData.height * 48;
 	}
 
+	/**
+	 * Gets the raw data this room uses to populate the world when it is loaded
+	 * @returns {Array} A list of ``RoomInstance``
+	 */
 	getInstanceData() {
 		return [...this.__instances];
 	}

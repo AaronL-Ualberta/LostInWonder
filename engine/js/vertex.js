@@ -17,16 +17,29 @@ class Vertex extends PIXI.Point {
 		var srcx = this.x;
 		this.x = srcx * c - this.y * s;
 		this.y = srcx * s + this.y * c;
+		return this;
 	}
 
 	scale(sx, sy) {
 		this.x *= sx;
 		this.y *= sy;
+		return this;
 	}
 
 	translate(dx, dy) {
 		this.x += dx;
 		this.y += dy;
+		return this;
+	}
+
+	abs() {
+		this.x = Math.abs(this.x);
+		this.y = Math.abs(this.y);
+		return this;
+	}
+
+	copy() {
+		return new Vertex(this.x, this.y);
 	}
 
 	static transform(x, y, rot, sx, sy, dx, dy) {

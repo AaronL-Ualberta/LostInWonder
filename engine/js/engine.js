@@ -1,6 +1,6 @@
 // this is a central file for the engine, RPG maker overrides, and any custom code that interacts with the overworld
 
-const $ENGINE_VERSION = "1.1";
+const $ENGINE_VERSION = "1.2.0";
 const $ENGINE_NAME = "FallEngine";
 
 /** @type {Engine} */
@@ -14,6 +14,7 @@ $__engineData.__soundCache = {};
 $__engineData.__spritesheets = {};
 $__engineData.__defaultSprites = {};
 $__engineData.__classLookup = {};
+$__engineData.__performanceData = { frameTimes: [] };
 $__engineData.__assetSources = new WeakMap();
 $__engineData.__haltAndReturn = false;
 $__engineData.__ready = false;
@@ -23,6 +24,8 @@ $__engineData.__overrideRoomChange = undefined;
 $__engineData.__readyOverride = true;
 $__engineData.__deferredAssets = -1;
 $__engineData.__loadedDeferredAssets = -1;
+$__engineData.__assetCount = 0;
+$__engineData.__loadedAssetCount = 0;
 $__engineData.__loadRoom = null;
 
 $__engineData.__debugRequireTextures = false;
@@ -33,10 +36,23 @@ $__engineData.__debugRequireAllTextures = false;
 $__engineData.__debugRequireAllSounds = false;
 $__engineData.__debugDrawAllHitboxes = false;
 $__engineData.__debugDrawAllBoundingBoxes = false;
+$__engineData.__debugDrawPerformanceOverlay = false;
+
+/** @type {Object} */
+var $__enginePerformanceOptions = {};
+$__enginePerformanceOptions.PAUSE = { name: "pause", colour: 0xffffff };
+$__enginePerformanceOptions.STEP = { name: "step", colour: 0x1cc71c };
+$__enginePerformanceOptions.POST_STEP = { name: "post-step", colour: 0x8ce681 };
+$__enginePerformanceOptions.PRE_DRAW = { name: "pre-draw", colour: 0x8e90e8 };
+$__enginePerformanceOptions.DRAW = { name: "draw", colour: 0x2b30cc };
+$__enginePerformanceOptions.ENGINE_FUNCTIONS = { name: "engine-functions", colour: 0xf06e00 };
+$__enginePerformanceOptions.TIMESCALE = { name: "timescale", colour: 0xffe100 };
+$__enginePerformanceOptions.RENDER = { name: "render", colour: 0xf691ff };
 
 /** @type {Object} */
 var $__engineSaveData = {}; // this data is automatically read and written by RPG maker when you load a save.
 
+/** @type {Object} */
 var $__engineGlobalSaveData = {}; // data that are saved globally. Loaded at the end of the file because it relies on overrides.
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // set PIXI to render as nearest neighbour
@@ -76,10 +92,12 @@ class Engine extends Scene_Base {
 		this.__filters = [];
 		this.__gameCanvas = new PIXI.Container();
 		this.__gameCanvas.filters = []; // PIXI
+		this.__debugLayer = new PIXI.Graphics();
 		this.__enabledCameras = [true]; // Multi cameras don't work like this, but can still be done with render textures!
 		this.__cameras = [new Camera(0, 0, Graphics.boxWidth, Graphics.boxHeight, 0)];
 		this.__GUIgraphics = new PIXI.Graphics();
 		this.__shouldChangeRooms = false;
+		this.__isChangingRooms = false;
 		this.__nextRoom = "";
 		this.__currentRoom = undefined;
 		this.__globalTimer = 0;
@@ -94,9 +112,34 @@ class Engine extends Scene_Base {
 
 		// place everything into a container so that the GUIScreen is not effected by game effects.
 		this.addChild(this.__gameCanvas);
+		this.addChild(this.__debugLayer);
 		this.__gameCanvas.addChild(this.__cameras[0]);
 		this.__gameCanvas.addChild(this.__GUIgraphics);
+		this.__setupDebugLayer();
 		IM.__initializeVariables();
+	}
+
+	__setupDebugLayer() {
+		this.__debugLayer.visible = false;
+		const fps = 60;
+		const segments = 4;
+		const t = new PIXI.Text("FPS: 0", { fill: 0xffffff, fontSize: 12 });
+		const t2 = new PIXI.Text("AVG: 0", { fill: 0xffffff, fontSize: 12 });
+		const t3 = new PIXI.Text("MAX: 0", { fill: 0xffffff, fontSize: 12 });
+		t.y = 10;
+		t.x = 3;
+		t2.y = 20;
+		t2.x = 2;
+		t3.y = 30;
+		this.__debugLayer.addChild(t, t2, t3);
+		for (var i = 0; i < segments - 1; i++) {
+			var xx = (this.getWindowSizeX() / segments) * (i + 1);
+			const t = new PIXI.Text(Number(fps / Math.pow(2, i)).toFixed(0), { fill: 0xffffff, fontSize: 12 });
+			t.anchor.x = 0.5;
+			t.x = xx;
+			t.y = 10;
+			this.__debugLayer.addChild(t);
+		}
 	}
 
 	startOverworld() {
@@ -243,7 +286,9 @@ class Engine extends Scene_Base {
 
 		// ENGINE
 		if (this.__shouldChangeRooms && !this.isBusy()) {
-			this.__setRoom(this.__nextRoom);
+			if (!this.__setRoom(this.__nextRoom)) {
+				return;
+			}
 		}
 
 		this.__timescaleFraction += this.__timescale;
@@ -334,20 +379,19 @@ class Engine extends Scene_Base {
 		return retSnd;
 	}
 
-	__audioSetupSound(snd, audio) {
-		var volume = audio.volume;
-		audio.__rootVolume = volume;
-		audio.__type = snd.__type;
-		audio.volume = audio.__rootVolume * this.audioGetTypeVolume(snd.__type);
-		this.audioSetVolume(audio, volume); // volume for a sound, but because you can't change volume in engine i don't have to improve this.
-		audio.__tick = function (self) {}; // nothing for now
-		this.__sounds.push(audio);
-		audio.__pauseTime = -1;
-		audio.__sourceSound = snd;
-		audio.__destroyed = false;
-		audio.addListener("end", function () {
+	__audioSetupSound(snd, sound) {
+		var volume = sound.volume;
+		sound.__rootVolume = volume;
+		sound.__type = snd.__type;
+		this.audioSetVolume(sound, volume); // volume for a sound, but because you can't change volume in engine i don't have to improve this.
+		sound.__tick = function (self) {}; // nothing for now
+		this.__sounds.push(sound);
+		sound.__pauseTime = -1;
+		sound.__sourceSound = snd;
+		sound.__destroyed = false;
+		sound.addListener("end", function () {
 			// for cleanup purposes
-			audio.__destroyed = true;
+			sound.__destroyed = true;
 		});
 	}
 
@@ -367,7 +411,9 @@ class Engine extends Scene_Base {
 		if (!sound) {
 			var str =
 				"Unable to find sound for name: " + String(alias) + ". Did you remember to include the sound in the manifest?";
-			if ($__engineData.__debugRequireSounds) throw new Error(str);
+			if ($__engineData.__debugRequireSounds) {
+				throw new Error(str);
+			}
 			console.error(str);
 			return undefined;
 		}
@@ -395,18 +441,11 @@ class Engine extends Scene_Base {
 		snd.__rootVolume = volume;
 		var newVol = volume * this.audioGetTypeVolume(snd.__type);
 
-		this.__audioSetVolumeDirect(snd, newVol);
-	}
-
-	__audioSetVolumeDirect(snd, realVolume) {
-		// This might seem redundant but removing it causes PIXIJS to have a stoke in some sitations.
-		if (realVolume === 0) {
-			snd.muted = true;
-			snd.volume = 0;
-		} else {
-			snd.muted = false;
-			snd.volume = realVolume;
+		if (newVol < 0) {
+			newVol = 0;
 		}
+
+		snd.volume = newVol;
 	}
 
 	/**
@@ -453,7 +492,9 @@ class Engine extends Scene_Base {
 		var sounds = [];
 		if (snd.__sourceSound) {
 			// IMediaInstance
-			if (snd.__destroyed) return [];
+			if (snd.__destroyed) {
+				return [];
+			}
 			return [snd];
 		}
 		var target = snd.__engineAlias || snd; // String alias
@@ -657,6 +698,7 @@ class Engine extends Scene_Base {
 	 */
 	audioSetMasterVolume(volume) {
 		AudioManager.masterVolume = volume;
+		ConfigManager.save();
 		this.__updateVolumeOfActiveSounds();
 	}
 
@@ -683,6 +725,7 @@ class Engine extends Scene_Base {
 			case "SE":
 				AudioManager.seVolume = volume * 100;
 		}
+		ConfigManager.save();
 		this.__updateVolumeOfActiveSounds();
 	}
 
@@ -762,18 +805,34 @@ class Engine extends Scene_Base {
 	}
 
 	__setRoom(roomName) {
-		IM.__endRoom();
-		for (var i = this.__filters.length - 1; i >= 0; i--) {
-			if (this.__filters[i].remove) {
-				this.removeFilter(this.__filters[i].filter);
+		if (!this.__isChangingRooms) {
+			IM.__endRoom();
+			for (var i = this.__filters.length - 1; i >= 0; i--) {
+				if (this.__filters[i].remove) {
+					this.removeFilter(this.__filters[i].filter);
+				}
 			}
+			this.getCamera().reset();
+			this.getCamera().__roomChange();
+			this.setTimescale(1);
 		}
-		this.getCamera().reset();
-		this.getCamera().__roomChange();
-		RoomManager.__loadRoom(roomName); // also sets current room
-		IM.__startRoom();
-		this.__shouldChangeRooms = false;
-		this.setTimescale(1);
+
+		if (this.isReady()) {
+			this.__isChangingRooms = false;
+			$__engineData.__readyOverride = false;
+			Graphics.endLoading();
+			RoomManager.__loadRoom(roomName); // also sets current room
+			IM.__startRoom();
+			this.__shouldChangeRooms = false;
+			return true;
+		} else if (!this.__isChangingRooms) {
+			Graphics.startLoading();
+			this.__isChangingRooms = true;
+		} else {
+			// not ready and changing rooms
+			Graphics.updateLoading();
+		}
+		return false;
 	}
 
 	/** @returns {Camera} The camera */
@@ -840,14 +899,23 @@ class Engine extends Scene_Base {
 		return this.__pauseMode === 2;
 	}
 
-	// taken from menu code
+	__getPauseMode() {
+		return this.__pauseMode;
+	}
+
 	/**
-	 * Saves the game into the RPG maker save. If the save fails, a notification will be displayed.
+	 * Saves the game into the specificed RPG maker save file ID.
+	 *
+	 * It is **highly recommended** to use `$engine.findSaveFile` to
+	 * get the index as it will append engine specific code to the save, making it easier to operate on later.
+	 *
+	 * @param {Number} index The file id to save to
+	 * @returns {Boolean} Whether or not the save was successful
 	 */
-	saveGame(fileId) {
+	saveGame(index) {
 		$gameSystem.onBeforeSave(); // just saves audio
-		if (DataManager.saveGame(fileId)) {
-			StorageManager.cleanBackup(fileId);
+		if (DataManager.saveGame(index)) {
+			StorageManager.cleanBackup(index);
 			return true;
 		} else {
 			console.error("Failed to save!");
@@ -857,10 +925,137 @@ class Engine extends Scene_Base {
 	}
 
 	/**
+	 * Find a specified save file and return it's ID
+	 *
+	 * @param {String | Number} identifier An identifier for the save file to find
+	 * @param {Boolean | true} create Whether or not the engine may create this save file if it cannot find it
+	 * @returns {Number | null} The index of the save file, or null if it does not exist and create is false
+	 */
+	findSaveFile(identifier, create = true) {
+		var globalInfo = DataManager.loadGlobalInfo();
+		for (var i = 1; i < globalInfo.length; i++) {
+			const info = globalInfo[i];
+			if (!info) {
+				continue;
+			}
+
+			if (
+				StorageManager.isLocalMode() ||
+				(info.globalId === DataManager._globalId &&
+					info.title === $dataSystem.gameTitle &&
+					info.fallenId === String(identifier))
+			) {
+				return i;
+			}
+		}
+
+		if (!create) {
+			return null;
+		}
+
+		for (var i = 1; ; i++) {
+			const info = globalInfo[i];
+			if (!info) {
+				globalInfo[i] = DataManager.makeSavefileInfo(String(identifier));
+				DataManager.saveGlobalInfo(globalInfo);
+				return i;
+			}
+		}
+	}
+
+	/**
+	 *
+	 * Finds and returns an array of all saves files the engine knows of.
+	 *
+	 * Each save files has the following properties: ``index, identifier, playtime, timestamp``
+	 *
+	 * @returns {Array} A list of all save files associated with this game
+	 */
+	findAllSaves() {
+		var saves = [];
+		var globalInfo = DataManager.loadGlobalInfo();
+		for (var i = 1; i < globalInfo.length; i++) {
+			const info = globalInfo[i];
+			if (!info) {
+				continue;
+			}
+			if (
+				StorageManager.isLocalMode() ||
+				(info.globalId === DataManager._globalId && info.title === $dataSystem.gameTitle && "fallenId" in info)
+			) {
+				saves.push({ index: i, identifier: info.fallenId, playtime: info.playtime, timestamp: info.timestamp });
+			}
+		}
+		return saves;
+	}
+
+	/**
+	 * Load the specified save file into memory. This function only loads the data and does not do anything with the data.
+	 *
+	 * Use `$engine.findSaveFile` to find an appropriate index
+	 *
+	 * @param {Number} index The file id to load
+	 * @returns {Boolean} Whether or not the load was successful
+	 */
+	loadSave(index) {
+		if (DataManager.loadGame(index)) {
+			if ($gameSystem.versionId() !== $dataSystem.versionId) {
+				$gamePlayer.reserveTransfer($gameMap.mapId(), $gamePlayer.x, $gamePlayer.y);
+				$gamePlayer.requestMapReload();
+			}
+			$gameSystem.onAfterLoad();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Deletes the specified save file if it exists.
+	 *
+	 * @param {Number} index The file id to delete
+	 * @returns {Boolean} Whether or not the save could be deleted
+	 */
+	deleteSave(index) {
+		if (DataManager.isThisGameFile(index)) {
+			var info = DataManager.loadGlobalInfo();
+			delete info[index];
+			DataManager.saveGlobalInfo(info);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Gets the engine save data associated with the current save file.
+	 *
+	 * The object returned will always store the current save data, even if you load a new save.
+	 *
+	 * @returns The save data associated with this file.
+	 */
+	getSaveData() {
+		return $__engineSaveData;
+	}
+
+	/**
+	 * Gets the engine's global save data. If direct is false, the object returned is a proxy which
+	 * will immediately save the data on edit
+	 *
+	 * @param {Boolean | false} direct Return the raw global save object?
 	 * @returns The engine's global save data
 	 */
-	getEngineGlobalData() {
-		return $__engineGlobalSaveData;
+	getEngineGlobalData(direct = false) {
+		if (direct) {
+			return $__engineGlobalSaveData;
+		}
+		return new Proxy($__engineGlobalSaveData, {
+			set(obj, prop, value) {
+				if (obj[prop] !== value) {
+					obj[prop] = value;
+					$engine.saveEngineGlobalData();
+				}
+				return true;
+			},
+		});
 	}
 
 	/**
@@ -877,24 +1072,6 @@ class Engine extends Scene_Base {
 		Object.keys($__engineGlobalSaveData).forEach((x) => delete $__engineGlobalSaveData[x]);
 		this.saveEngineGlobalData();
 	}
-
-	/**
-	 * Deletes the specified save file if it exists.
-	 */
-	deleteSave(fileId) {
-		if (DataManager.isThisGameFile(fileId)) {
-			var info = DataManager.loadGlobalInfo();
-			info[i] = null;
-			DataManager.saveGlobalInfo(info);
-			return true;
-		}
-		return false;
-	}
-
-	__getPauseMode() {
-		return this.__pauseMode;
-	}
-
 	__endAndReturn() {
 		$__engineData.__haltAndReturn = false;
 
@@ -936,12 +1113,18 @@ class Engine extends Scene_Base {
 			this.freeRenderable(camera);
 		}
 		if (this.getCamera().__autoDestroyBackground) {
-			for (const child of this.getCamera().__cameraBackground.children) this.freeRenderable(child);
+			for (const child of this.getCamera().__cameraBackground.children) {
+				this.freeRenderable(child);
+			}
 		}
 		this.__GUIgraphics.removeChildren(); // prevent bug if you rendered to the GUI
 		this.getCamera().getCameraGraphics().removeChildren(); // prevent bug if you rendered to the Camera
 		this.freeRenderable(this.__GUIgraphics);
 		this.freeRenderable(this.__gameCanvas);
+		for (const child of this.__debugLayer.children) {
+			this.freeRenderable(child);
+		}
+		this.freeRenderable(this.__debugLayer);
 		this.__audioCleanup();
 		this.physicsDestroy();
 		if (this._fadeSprite) {
@@ -982,6 +1165,14 @@ class Engine extends Scene_Base {
 		return super.isReady() && ($__engineData.__fullyReady || $__engineData.__readyOverride);
 	}
 
+	/**
+	 * Causes the engine to skip it's ready check for the next room change, preventing
+	 * the engine from waiting for async assets to load before changing rooms.
+	 */
+	skipReady() {
+		$__engineData.__readyOverride = true;
+	}
+
 	__resumeRPGAudio() {
 		if (this.prevBgm.name !== "") {
 			AudioManager.replayBgm(this.prevBgm);
@@ -1005,39 +1196,46 @@ class Engine extends Scene_Base {
 
 			var lastFrame = this.__timescaleFraction - 1 < 0;
 
-			if (lastFrame) {
-				IN.__update();
-			}
-
-			IM.__timescaleImplicit();
+			IN.__update();
 
 			this.__updateGraphics();
 			this.__doPhysicsTick();
 			IM.__doSimTick(lastFrame);
 
-			if (this.__pauseMode !== 1) this.__gameTimer++;
+			if (this.__pauseMode !== 1) {
+				this.__gameTimer++;
+			}
 		}
 
 		if (this.isTimeScaled()) {
-			IM.__timescaleImmuneStep();
+			this.__logPerformance($__enginePerformanceOptions.TIMESCALE, IM.__timescaleImmuneStep, IM);
 		}
 
 		if (!simulatedOnce) {
 			// some actions are called exactly once per frame no matter what.
-			IM.__interpolate();
-			IM.__draw();
+			this.__logPerformance($__enginePerformanceOptions.ENGINE_FUNCTIONS, IM.__interpolate, IM);
+			this.__logPerformance($__enginePerformanceOptions.DRAW, IM.__draw, IM);
 			this.__updateGraphics();
 		}
 
-		this.__prepareRenderToCameras();
+		this.__logPerformance($__enginePerformanceOptions.ENGINE_FUNCTIONS, this.__prepareRenderToCameras, this);
 		this.__audioTick();
 
+		if ($__engineData.__debugDrawPerformanceOverlay) {
+			this.__drawDebugOverlay();
+			this.__resetPerformanceData(); // because we draw the data, we have to carry the render time over to next frame
+		}
+
 		var time = window.performance.now() - start;
-		if ($__engineData.__debugLogFrameTime) console.log("Time taken for this frame: " + time + " ms");
+		if ($__engineData.__debugLogFrameTime) {
+			console.log("Time taken for this frame: " + time + " ms");
+		}
 	}
 
 	__doPhysicsTick() {
-		if (this.__physicsEngine === undefined || this.__pauseMode !== 0) return;
+		if (this.__physicsEngine === undefined || this.__pauseMode !== 0) {
+			return;
+		}
 		Matter.Engine.update(this.__physicsEngine);
 	}
 
@@ -1238,14 +1436,6 @@ class Engine extends Scene_Base {
 			textures.push(this.getTexture(name + "_" + String(i)));
 		}
 		return textures;
-	}
-
-	/**
-	 * Gets the engine save data associated with the current save file.
-	 * @returns The save data associated with this file.
-	 */
-	getSaveData() {
-		return $__engineSaveData;
 	}
 
 	/**
@@ -1521,7 +1711,7 @@ class Engine extends Scene_Base {
 			if ($__engineData.__debugDrawAllHitboxes) {
 				const bb = this.getCamera().getBoundingBox();
 				for (const inst of IM.__objects) {
-					if (inst.hitbox && EngineUtils.boxesIntersect(inst.hitbox.getBoundingBox(), bb)) {
+					if (inst.__hitbox && EngineUtils.boxesIntersect(inst.__hitbox.getBoundingBox(), bb)) {
 						EngineDebugUtils.drawHitbox(cameraGraphics, inst);
 					}
 				}
@@ -1530,7 +1720,7 @@ class Engine extends Scene_Base {
 			if ($__engineData.__debugDrawAllBoundingBoxes) {
 				const bb = this.getCamera().getBoundingBox();
 				for (const inst of IM.__objects) {
-					if (inst.hitbox && EngineUtils.boxesIntersect(inst.hitbox.getBoundingBox(), bb)) {
+					if (inst.__hitbox && EngineUtils.boxesIntersect(inst.__hitbox.getBoundingBox(), bb)) {
 						EngineDebugUtils.drawBoundingBox(cameraGraphics, inst);
 					}
 				}
@@ -1538,6 +1728,49 @@ class Engine extends Scene_Base {
 		}
 		this.__removeChildrenAfterRequest(this.__GUIgraphics);
 		this.__removeChildrenAfterRequest(this.getCamera().getCameraGraphics());
+	}
+
+	__drawDebugOverlay() {
+		const g = this.__debugLayer;
+		g.clear();
+		const data = $__engineData.__performanceData;
+		const targetFps = 60;
+		const h = 10;
+		var x = 0;
+		const xMax = this.getWindowSizeX();
+		const msPerFrame = 1000 / targetFps;
+		const msToPixels = xMax / 4 / msPerFrame;
+		var total = 0;
+		for (const option of Object.values($__enginePerformanceOptions)) {
+			const time = data[option.name];
+			if (time === undefined) {
+				continue;
+			}
+			total += time;
+			const w = time * msToPixels;
+			const col = option.colour;
+			g.beginFill(col);
+			g.drawRect(x, 0, w, h);
+			x += w;
+		}
+		data.frameTimes.push(total);
+		if (data.frameTimes.length > 30) {
+			data.frameTimes.shift();
+		}
+		const t = g.children[0]; // FPS text
+		const fps = Number((msPerFrame / total) * targetFps).toFixed(0);
+		t.text = "FPS: " + fps;
+		const t2 = g.children[1]; // AVG text
+		const t3 = g.children[2]; // MIN text
+		var avg = 0;
+		var min = 0;
+		for (const t of data.frameTimes) {
+			avg += t;
+			min = Math.max(t, min); // higher is worse
+		}
+		const fps2 = Number((msPerFrame / (avg / data.frameTimes.length)) * targetFps).toFixed(0);
+		t2.text = "AVG: " + fps2;
+		t3.text = "MAX: " + Number(min).toFixed(1) + " ms";
 	}
 
 	__removeChildrenAfterRequest(object) {
@@ -1576,6 +1809,46 @@ class Engine extends Scene_Base {
 		for (const renderable of instance.__pixiDestructables) {
 			this.freeRenderable(renderable);
 		}
+	}
+
+	__resetPerformanceData() {
+		$__engineData.__performanceData = { frameTimes: $__engineData.__performanceData.frameTimes };
+	}
+
+	__logPerformance(data, func, thisArg) {
+		if (!$__engineData.__debugDrawPerformanceOverlay) {
+			func.apply(thisArg);
+			return;
+		}
+		var t = window.performance.now();
+		func.apply(thisArg);
+		var newPerf = ($__engineData.__performanceData[data.name] || 0) + window.performance.now() - t;
+		$__engineData.__performanceData[data.name] = newPerf;
+	}
+
+	/**
+	 * Enables or disables the debug overlay.
+	 *
+	 * White - Pause
+	 *
+	 * Green - Step
+	 *
+	 * Light Green - Post Step
+	 *
+	 * Light Blue - Pre Draw
+	 *
+	 * Blue - Draw
+	 *
+	 * Yellow - Timescale
+	 *
+	 * Orange - Engine
+	 *
+	 * Pink - Render
+	 * @param {Boolean} bool Whether or not to show the debug overlay
+	 */
+	showDebugOverlay(bool) {
+		this.__debugLayer.visible = bool;
+		$__engineData.__debugDrawPerformanceOverlay = bool;
 	}
 }
 
@@ -2244,11 +2517,20 @@ class GUIScreen {
 
 	static __loadingTextTick() {
 		if ($__engineData.__loadedDeferredAssets === -1) {
+			if ($__engineData.__assetCount === 0) {
+				GUIScreen.__loadingText.text = "Starting...";
+			} else {
+				GUIScreen.__loadingText.text =
+					Number(($__engineData.__loadedAssetCount / $__engineData.__assetCount) * 100).toFixed(2) + "%";
+			}
+
 			return;
 		}
 
 		if ($__engineData.__loadedDeferredAssets === $__engineData.__deferredAssets) {
-			if (GUIScreen.__loadingTextTimer >= 36) return;
+			if (GUIScreen.__loadingTextTimer >= 36) {
+				return;
+			}
 			GUIScreen.__loadingTextTimer++;
 			GUIScreen.__loadingText.alpha = 0.2 - GUIScreen.__loadingTextTimer / 180;
 		}
@@ -2417,6 +2699,7 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 			valid: false, // don't let the engine falsely think it's ready
 			onNextLoaded: function () {
 				this.count++;
+				$__engineData.__loadedAssetCount++;
 				this.testComplete();
 			},
 			testComplete: function () {
@@ -2523,6 +2806,7 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 				obj.total++;
 				obj.scripts++;
 				obj.assetCount++;
+				$__engineData.__assetCount++;
 				EngineUtils.attachScript(x, obj.onNextLoaded.bind(obj));
 			}
 			obj.elements++;
@@ -2541,11 +2825,13 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 				obj.rooms++;
 				obj.total++;
 				obj.assetCount++;
+				$__engineData.__assetCount++;
 				const isDefault = arr.length > 2 && arr[2] === "default";
 				if (isDefault) {
 					$__engineData.__loadRoom = name;
 				}
 				const callback_full_load = function (room) {
+					RoomManager.__addRoom(name, room);
 					RoomManager.__addRoom(name, room);
 					__defineAssetSource(room, roomPath);
 					if (isDefault) {
@@ -2574,10 +2860,12 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 				const instanceCount = arr.length - 1;
 				obj.total++;
 				obj.scripts++;
+				$__engineData.__assetCount++;
 				for (let i = 0; i < instanceCount; i++) {
 					if (!arr[i].startsWith("spr=")) {
 						obj.instances++;
 						obj.total++;
+						$__engineData.__assetCount++;
 					}
 				}
 				obj.onNextLoaded(); // count the script
@@ -2628,13 +2916,14 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 				if ((arr.length > 3 && arr[0] === "require") || $__engineData.__debugRequireAllSounds) {
 					required.push(soundObj);
 				} else {
-					obj.deferredSounds.push();
+					obj.deferredSounds.push(soundObj);
 					obj.deferredAssets++;
 				}
 			}
 
 			for (const soundObj of required) {
 				obj.total++;
+				$__engineData.__assetCount++;
 				__loadSound(obj, soundObj, () => {
 					obj.onNextLoaded();
 				});
@@ -2652,7 +2941,7 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 			preload: true,
 			autoPlay: false,
 			loaded: callback,
-			volume: $engine.audioGetTypeVolume(soundObj.type),
+			volume: 1,
 		};
 		const sound = PIXI.sound.Sound.from(options);
 		sound.__type = soundObj.type;
@@ -2736,6 +3025,7 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 		if (spritesheet) {
 			obj.textures++;
 			obj.total++;
+			$__engineData.__assetCount++;
 			const tex = PIXI.Texture.from(texObj.texPath);
 			__defineAssetSource(tex, texObj.texPath);
 			tex.on("update", () => {
@@ -2758,10 +3048,12 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 			__defineAssetSource(frames, texObj.texPath);
 			obj.textures++;
 			obj.total++;
+			$__engineData.__assetCount++;
 			update();
 		} else {
 			obj.textures++;
 			obj.total++;
+			$__engineData.__assetCount++;
 			const tex = PIXI.Texture.from(texObj.texPath);
 			__defineAssetSource(tex, texObj.texPath);
 			tex.on("update", () => {
@@ -2920,6 +3212,13 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 	};
 
 	Scene_Boot.prototype.start = function () {
+		// load the engine global save data
+		let json = StorageManager.load(-2);
+		if (json) {
+			$__engineGlobalSaveData = JSON.parse(json);
+		} else {
+			$__engineGlobalSaveData = {};
+		}
 		// Go to engine on boot
 		Scene_Base.prototype.start.call(this);
 		SoundManager.preloadImportantSounds();
@@ -3068,7 +3367,7 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 
 	StorageManager.webStorageKey = function (savefileId) {
 		if (savefileId === -2) {
-			return $ENGINE_NAME + "Global";
+			return $ENGINE_NAME + $dataSystem.gameTitle + "Global";
 		} else if (savefileId === -1) {
 			return "RPG Config";
 		} else if (savefileId === 0) {
@@ -3082,6 +3381,37 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 	DataManager.saveGlobalInfo = function (info) {
 		StorageManager.save(0, JSON.stringify(info));
 		$engine.saveEngineGlobalData();
+	};
+
+	DataManager.makeSavefileInfo = function (identifier = undefined) {
+		var info = {};
+		info.globalId = this._globalId;
+		info.title = $dataSystem.gameTitle;
+		info.characters = $gameParty.charactersForSavefile();
+		info.faces = $gameParty.facesForSavefile();
+		info.playtime = $gameSystem.playtimeText();
+		info.timestamp = Date.now();
+		if (identifier !== undefined) {
+			info.fallenId = identifier;
+		}
+		return info;
+	};
+
+	DataManager.saveGameWithoutRescue = function (savefileId) {
+		var json = JsonEx.stringify(this.makeSaveContents());
+		if (json.length >= 200000) {
+			console.warn("Save data too big!");
+		}
+		StorageManager.save(savefileId, json);
+		this._lastAccessedId = savefileId;
+		var globalInfo = this.loadGlobalInfo() || [];
+		var id = undefined;
+		if (globalInfo[savefileId]) {
+			id = globalInfo[savefileId].fallenId;
+		}
+		globalInfo[savefileId] = this.makeSavefileInfo(id);
+		this.saveGlobalInfo(globalInfo);
+		return true;
 	};
 
 	// record the last event id for multi events.
@@ -3099,55 +3429,177 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 	};
 
 	// append to the save system.
-	{
-		let makeSaveContents1 = DataManager.makeSaveContents;
-		DataManager.makeSaveContents = function () {
-			var result = makeSaveContents1.call(this);
-			result.engineSave = $__engineSaveData;
-			return result;
-		};
-
-		let extractSaveContents1 = DataManager.extractSaveContents;
-		DataManager.extractSaveContents = function (contents) {
-			extractSaveContents1.call(this, contents);
-			$__engineSaveData = contents.engineSave;
-		};
-
-		let setupNewGame1 = DataManager.setupNewGame;
-		DataManager.setupNewGame = function () {
-			setupNewGame1.call(this);
-			$__engineSaveData = {};
-		};
-	}
-
-	// add low performance mode option
-	Window_Options.prototype.addGeneralOptions = function () {
-		this.addCommand(TextManager.alwaysDash, "alwaysDash");
-		this.addCommand(TextManager.commandRemember, "commandRemember");
-		this.addCommand("Low Performance Mode", "commandQuality");
-		this.addCommand("Disable Filters", "commandDisbleFilters");
+	let replaceObject = function (baseObject, newValue) {
+		for (const key in baseObject) {
+			delete baseObject[key];
+		}
+		for (const key in newValue) {
+			if (newValue.hasOwnProperty(key)) {
+				baseObject[key] = newValue[key];
+			}
+		}
 	};
 
-	Window_Options.prototype.statusText = function (index) {
-		var symbol = this.commandSymbol(index);
-		var value = this.getConfigValue(symbol);
-		if (symbol === "commandQuality") {
-			var data = $engine.getEngineGlobalData();
-			var low = data.__lowPerformanceMode;
-			return this.booleanStatusText(low);
-		}
+	let makeSaveContents1 = DataManager.makeSaveContents;
+	DataManager.makeSaveContents = function () {
+		var result = makeSaveContents1.call(this);
+		result.engineSave = $__engineSaveData;
+		return result;
+	};
 
-		if (symbol === "commandDisbleFilters") {
-			var data = $engine.getEngineGlobalData();
-			var disable = data.__disableOverworldFilters;
-			return this.booleanStatusText(disable);
-		}
+	let extractSaveContents1 = DataManager.extractSaveContents;
+	DataManager.extractSaveContents = function (contents) {
+		extractSaveContents1.call(this, contents);
+		replaceObject($__engineSaveData, contents.engineSave);
+	};
 
-		if (this.isVolumeSymbol(symbol)) {
-			return this.volumeStatusText(value);
+	let setupNewGame1 = DataManager.setupNewGame;
+	DataManager.setupNewGame = function () {
+		setupNewGame1.call(this);
+		replaceObject($__engineSaveData, {});
+	};
+
+	StorageManager.backup = function (savefileId) {
+		if (this.exists(savefileId)) {
+			if (this.isLocalMode()) {
+				var data = this.loadFromLocalFile(savefileId);
+				var compressed = LZString.compressToBase64(data);
+				var fs = require("fs");
+				var dirPath = this.localFileDirectoryPath();
+				var filePath = this.localFilePath(savefileId) + ".bak";
+				if (!fs.existsSync(dirPath)) {
+					fs.mkdirSync(dirPath);
+				}
+				fs.writeFileSync(filePath, compressed);
+			} else {
+				var key = this.webStorageKey(savefileId);
+				localStorage.setItem(key + "bak", localStorage.getItem(key));
+			}
+		}
+	};
+
+	// increase performance by replacing 'for in' with Object.keys()
+	JsonEx._encode = function (value, circular, depth) {
+		depth = depth || 0;
+		if (++depth >= this.maxDepth) {
+			throw new Error("Object too deep");
+		}
+		var type = Object.prototype.toString.call(value);
+		if (type === "[object Object]" || type === "[object Array]") {
+			value["@c"] = JsonEx._generateId();
+
+			var constructorName = this._getConstructorName(value);
+			if (constructorName !== "Object" && constructorName !== "Array") {
+				value["@"] = constructorName;
+			}
+			const keys = Object.keys(value);
+			const len = keys.length;
+			for (var i = 0; i < len; i++) {
+				var key = keys[i];
+				if (value.hasOwnProperty(key) && !key.match(/^@./)) {
+					if (value[key] && typeof value[key] === "object") {
+						if (value[key]["@c"]) {
+							circular.push([key, value, value[key]]);
+							value[key] = { "@r": value[key]["@c"] };
+						} else {
+							value[key] = this._encode(value[key], circular, depth + 1);
+
+							if (value[key] instanceof Array) {
+								//wrap array
+								circular.push([key, value, value[key]]);
+
+								value[key] = {
+									"@c": value[key]["@c"],
+									"@a": value[key],
+								};
+							}
+						}
+					} else {
+						value[key] = this._encode(value[key], circular, depth + 1);
+					}
+				}
+			}
+		}
+		depth--;
+		return value;
+	};
+
+	SceneManager.updateMainOriginal = SceneManager.updateMain;
+	SceneManager.updateMainStable = function () {
+		this.updateInputData();
+		this.changeScene();
+		this.updateScene();
+		this.renderScene();
+		this.requestUpdate();
+	};
+
+	SceneManager.updateMain = function () {
+		if (SceneManager.useStableUpdate) {
+			SceneManager.updateMainStable.call(this);
 		} else {
-			return this.booleanStatusText(value);
+			SceneManager.updateMainOriginal.call(this);
 		}
+	};
+
+	SceneManager.useStableUpdate = false;
+
+	let processStack = function (stack) {
+		const elements = stack.split("\n").map((x) => x.replace(/\(.*\//, "("));
+		const start = elements.shift().replace(/.*: /, "");
+		return (
+			'<font style="font-weight: bold; color:#f06e00">' +
+			start +
+			"</font><br><br>" +
+			elements.map((x) => "<font>" + x + "</font>").join("<br>")
+		);
+	};
+
+	Graphics._makeErrorHtml = function (name, message) {
+		var footer =
+			'<br><br><font style="color: #8a7e75">' +
+			$ENGINE_NAME +
+			" - v" +
+			$ENGINE_VERSION +
+			"<br>RMMV - " +
+			$dataSystem.gameTitle +
+			" v" +
+			$dataSystem.versionId +
+			"</font>";
+		return (
+			'<span style="font-size:1.25em; background-color: #201b19a5;' +
+			'padding: 2em; border: 5px solid #f06e00; user-select: text">' +
+			'<font style="font-size:2em" color="#f06e00"><b>' +
+			name +
+			"</b></font><br>" +
+			'<font color="#8a7e75">' +
+			message +
+			"</font><br><br>" +
+			'<font color="#f06e00"><b>' +
+			"Press F5 to reload the game" +
+			"</b></font>" +
+			footer +
+			"</span>"
+		);
+	};
+
+	let oldUpdate = Graphics._updateErrorPrinter;
+
+	Graphics._updateErrorPrinter = function () {
+		oldUpdate.call(this);
+		this._errorPrinter.style.display = "flex";
+		this._errorPrinter.style.alignItems = "center";
+		this._errorPrinter.style.justifyContent = "center";
+	};
+
+	SceneManager.catchException = function (e) {
+		if (e instanceof Error) {
+			Graphics.printError(e.name, processStack(e.stack));
+			console.error(e.stack);
+		} else {
+			Graphics.printError("UnknownError", e);
+		}
+		AudioManager.stopAll();
+		this.stop();
 	};
 
 	// since we upgraded our PIXIJS, the way that renderers are created was changed slightly.
@@ -3181,6 +3633,11 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 		}
 	};
 
+	let render = Graphics.render;
+	Graphics.render = function (stage) {
+		$engine.__logPerformance($__enginePerformanceOptions.RENDER, render.bind(this, stage));
+	};
+
 	// webGL context loss can sometimes happen (specifically in drawing minigame).
 	let _createCanvas = Graphics._createCanvas;
 	Graphics._createCanvas = function () {
@@ -3188,10 +3645,8 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 		this._canvas.addEventListener(
 			"webglcontextlost",
 			function (event) {
-				$__engineGlobalSaveData.__emergencyAutoSave = true;
-				$engine.saveEngineGlobalData();
 				throw new Error(
-					"WebGL rendering context lost. Your progress has been saved and the game will prompt you to load the autosave on next launch. <br><br>" +
+					"WebGL rendering context lost.<br><br>" +
 						"Please refresh the page to restart the game." +
 						"<br><br>If you are consistently experiencing this and you are running a dual GPU system, " +
 						"the error is likely due to your system swapping GPU to the discrete card."
@@ -3352,14 +3807,3 @@ UwU.addSceneChangeListener(GUIScreen.__sceneStart);
 		return $dataCommonEvents[this._commonEventId[this._commonEventId.length - 1]];
 	};
 })();
-
-// load the engine global save data
-{
-	let json = StorageManager.load(-2);
-	if (json) {
-		$__engineGlobalSaveData = JSON.parse(json);
-	} else {
-		$__engineGlobalSaveData = {};
-		$__engineGlobalSaveData.__emergencyAutoSave = false;
-	}
-}
