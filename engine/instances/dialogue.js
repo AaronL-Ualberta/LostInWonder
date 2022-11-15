@@ -174,6 +174,8 @@ class DialogueLine {
 	}
 }
 
+/*
+
 // ----------   INTRO CUTSCENE DIALOGUE LINES   ----------
 
 	this.introlines = [
@@ -449,6 +451,7 @@ class DialogueLine {
 		new DialogueLine("Friendly, midsize reptiles that can survive on land for a time, but prefer long periods underwater")
 	];
 
+*/
 
 class LARAYA_PORTRAITS {}
 LARAYA_PORTRAITS.HAPPY = "laraya_happy";

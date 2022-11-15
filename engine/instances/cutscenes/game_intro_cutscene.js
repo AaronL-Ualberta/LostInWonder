@@ -23,7 +23,7 @@ class GameIntroCutscene extends Cutscene {
 				MARALAN_PORTRAITS.NEUTRAL,
 				"Maralan"
 			),
-			new DialogueLine("But I didn't even do anything wr-", LARAYA_PORTRAITS.SCARED),
+			new DialogueLine("But I didn't do anything wrong, I was jus-", LARAYA_PORTRAITS.SCARED),
 			new DialogueLine("Silence. Maralan, remember the rest.", XIMARA_PORTRAITS.NEUTRAL, "Ximara"),
 			new DialogueLine(
 				"Of course. Furthermore, in accordance with the consequences for breaking our most sacred laws, your wand must be snapped.",
