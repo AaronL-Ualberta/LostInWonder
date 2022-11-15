@@ -6,6 +6,7 @@ InstanceMover engine/instances/shared/instance_mover.js
 PlayerInstance engine/instances/player_instance.js
 SolidObject engine/instances/solid_object.js
 InvisibleWall spr=invisible_wall engine/instances/invisible_wall.js
+NoWallClingWall engine/instances/no_wall_cling_wall.js
 SemiSolid engine/instances/SemiSolid.js
 Fireball engine/instances/fireball.js
 RockBlock engine/instances/rock_block.js

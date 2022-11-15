@@ -75,7 +75,7 @@ class Enemy extends EngineInstance {
 			// this.turning = true;
 			this.gotoTurning();
 		}
-		if (!IM.instanceCollision(this, this.x + 20 * this.direction, this.y + 5, SolidObject)) {
+		if (!IM.instanceCollision(this, this.x + 20 * this.direction, this.y + 5, SolidObject, SemiSolid)) {
 			// this.direction *= -1;
 			// this.turning = true;
 			this.gotoTurning();

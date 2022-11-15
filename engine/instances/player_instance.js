@@ -138,13 +138,13 @@ class PlayerInstance extends EngineInstance {
 			$engine.setRoom(RoomManager.currentRoom().name);
 		}
 		// DEVMODE
-		// if (IN.keyCheckPressed("Slash")) {
-		// 	if (this.state === PLAYERSTATES.DEVMODE) {
-		// 		this.switchState(PLAYERSTATES.AIRBORNE);
-		// 	} else {
-		// 		this.switchState(PLAYERSTATES.DEVMODE);
-		// 	}
-		// }
+		if (IN.keyCheckPressed("Slash")) {
+			if (this.state === PLAYERSTATES.DEVMODE) {
+				this.switchState(PLAYERSTATES.AIRBORNE);
+			} else {
+				this.switchState(PLAYERSTATES.DEVMODE);
+			}
+		}
 
 		this.fire_cooldown_timer--;
 		this.wind_cooldown_timer--;
@@ -372,7 +372,9 @@ class PlayerInstance extends EngineInstance {
 			}
 
 			// Check wall cling
-			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
+			//if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
+			var coll = IM.instancePlace(this, this.x + inp, this.y, SolidObject);
+			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y) && !(coll instanceof NoWallClingWall)) {
 				if (this.current_spell === 1) {
 					this.switchState(PLAYERSTATES.WALLCLING);
 					this.facing = inp;
