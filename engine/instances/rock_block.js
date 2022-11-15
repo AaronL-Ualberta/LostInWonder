@@ -20,7 +20,7 @@ class RockBlock extends SemiSolid {
 		this.sprite = $engine.createRenderable(this, new PIXI.extras.AnimatedSprite(this.animation), true);
 		this.timer = 0;
 		//this.animation.scale.set(2, 2);
-		this.setHitbox(new Hitbox(this, new RectangleHitbox(-24, -24, 24, 24)));
+		this.setHitbox(new Hitbox(this, new RectangleHitbox(-23, -24, 23, 24)));
 
 		if (this.collisionCheck(this.x, this.y)) {
 			this.blockDestroy();

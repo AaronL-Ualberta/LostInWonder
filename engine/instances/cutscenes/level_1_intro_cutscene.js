@@ -1,50 +1,27 @@
 class Level1IntroCutscene extends Cutscene {
 	onCutsceneCreate() {
-		// ----------   INTRO CUTSCENE DIALOGUE LINES   ----------
+		// ----------   CAVE/LEVEL 1 DIALOGUE LINES   ----------
+
 		this.dialogue_lines = [
-			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //should be intro shot 1 here
-			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to intro shot 2
-			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to intro shot 3
-			new DialogueLine("And what have we here? Guards!", XIMARA_PORTRAITS.NEUTRAL, "Ximara"), //happens in intro shot 3
+			new DialogueLine("Would you look at that! There was a point coming down here after all!", LARAYA_PORTRAITS.HAPPY),
+			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 2
+			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 3
+			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 4
+			new DialogueLine("Oh no! Maybe this cave is going to be less helpful than I thought…", LARAYA_PORTRAITS.SCARED), //happens in cave shot 5, then cutscene ends
+			new DialogueLine("Well, if I leave them alone, they'll leave me alone. Right?", LARAYA_PORTRAITS.SCARED),
 			new DialogueLine(
-				"This sorceress has been experimenting on rare species! Look at all of this! Scales and feathers and fur!",
-				XIMARA_PORTRAITS.NEUTRAL,
-				"Ximara"
+				"I think I remember now. They're lazy and don't like to move much, but they'll definitely move if something comes and disturbs them.",
+				LARAYA_PORTRAITS.SCARED
 			),
-			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 4) here
-			new DialogueLine(
-				"Laraya, Asu sorceress of Calchara, for crimes against this Tribunal you are hereby banished from the city of Ishana.",
-				MARALAN_PORTRAITS.NEUTRAL,
-				"Maralan"
-			),
-			new DialogueLine(
-				"From now until evermore, you shall be unwelcome in Ishana and all its surrounding lands.",
-				MARALAN_PORTRAITS.NEUTRAL,
-				"Maralan"
-			),
-			new DialogueLine("But I didn't even do anything wr-", LARAYA_PORTRAITS.SCARED),
-			new DialogueLine("Silence. Maralan, remember the rest.", XIMARA_PORTRAITS.NEUTRAL, "Ximara"),
-			new DialogueLine(
-				"Of course. Furthermore, in accordance with our most sacred laws, your wand must be snapped.",
-				MARALAN_PORTRAITS.NEUTRAL,
-				"Maralan"
-			),
-			new DialogueLine("Your banishment begins today. Give me your wand.", MARALAN_PORTRAITS.NEUTRAL, "Maralan"),
-			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 5) here
-			new DialogueLine("But I need my stuff! Everything I own is here!", LARAYA_PORTRAITS.SURPRISED),
-			new DialogueLine("Your wand, Laraya.", MARALAN_PORTRAITS.NEUTRAL, "Maralan"),
-			new DialogueLine("You're making a mistake. I didn't - oof!", LARAYA_PORTRAITS.SURPRISED),
-			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 6) here
+			new DialogueLine("Which, in this case, would be me…", LARAYA_PORTRAITS.SCARED),
 		];
 
-		this.audioSound = "JungleAmbience";
+		this.audioSound = "Level1CutScene";
 		this.cutsceneFrames = [
-			"gameintrocutsceneframe1",
-			"gameintrocutsceneframe2",
-			"gameintrocutsceneframe3",
-			"gameintrocutsceneframe4",
-			"gameintrocutsceneframe5",
-			"gameintrocutsceneframe6",
+			"level1cutsceneframe1",
+			"level1cutsceneframe2",
+			"level1cutsceneframe3",
+			"level1cutsceneframe4",
 		];
 		this.nextRoom = "Level1";
 	}

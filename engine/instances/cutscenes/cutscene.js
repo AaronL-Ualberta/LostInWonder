@@ -37,6 +37,8 @@ class Cutscene extends EngineInstance {
 			this.renderableFrames[i].width = $engine.getCamera().getWidth();
 			this.renderableFrames[i].height = $engine.getCamera().getHeight();
 		}
+
+		$engine.audioPlaySound(this.audioSound, 0.08, true);
 	}
 
 	onCreate(x, y) {
@@ -57,6 +59,11 @@ class Cutscene extends EngineInstance {
 
 	step() {
 		this.timer++;
+
+		// Skip cutscene
+		if (IN.keyCheckPressed("Slash")) {
+			$engine.setRoom(this.nextRoom);
+		}
 
 		// Cutscene frame fading
 		if (this.frameFadeTimer > 0) {

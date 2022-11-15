@@ -14,6 +14,14 @@ class Dialogue extends EngineInstance {
 		this.portrait_textures[LARAYA_PORTRAITS.SCARED] = this.portrait_scared;
 		this.portrait_textures[LARAYA_PORTRAITS.SURPRISED] = this.portrait_surprised;
 
+		// Non-laraya's
+		this.portrait_textures[XIMARA_PORTRAITS.NEUTRAL] = $engine.getTexture("dial_ximara");
+		this.portrait_textures[MARALAN_PORTRAITS.NEUTRAL] = $engine.getTexture("dial_maralan");
+		this.portrait_textures[FLICKOW_PORTRAITS.NEUTRAL] = $engine.getTexture("dial_flickow");
+		this.portrait_textures[AXODILE_PORTRAITS.HAPPY] = $engine.getTexture("dial_axodile_happy");
+		this.portrait_textures[AXODILE_PORTRAITS.HURT] = $engine.getTexture("dial_axodile_hurt");
+		this.portrait_textures[ELDER_PORTRAITS.NEUTRAL] = $engine.getTexture("dial_elder");
+
 		this.dialogue = $engine.createManagedRenderable(this, new PIXI.Container());
 		this.dialogue_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("dial_box")));
 		this.dialogue_portrait = $engine.createManagedRenderable(this, new PIXI.Sprite(this.portrait_angry));
@@ -107,9 +115,11 @@ class Dialogue extends EngineInstance {
 				this.dialogue_text.text = this.lines[this.line_on].text.substr(0, this.timer / this.time_per_char);
 				if (IN.keyCheckPressed("KeyZ")) {
 					this.timer = -1;
+					$engine.audioStopSound("DialogueSoundEffect");
 				}
 				if (this.timer / this.time_per_char > this.lines[this.line_on].text.length) {
 					this.timer = -1;
+					$engine.audioStopSound("DialogueSoundEffect");
 				}
 			} else {
 				this.dialogue_text.text = this.lines[this.line_on].text;
@@ -130,6 +140,7 @@ class Dialogue extends EngineInstance {
 							// this.line_on++;
 						} else {
 							this.dialogue.visible = true;
+							$engine.audioPlaySound("DialogueSoundEffect", 0.07, true);
 						}
 						this.dialogue_portrait.texture = this.portrait_textures[this.lines[this.line_on].image];
 						this.dialogue_char_name.text = this.lines[this.line_on].name;
@@ -171,10 +182,20 @@ LARAYA_PORTRAITS.SCARED = "laraya_scared";
 LARAYA_PORTRAITS.HURT = "laraya_hurt";
 
 class XIMARA_PORTRAITS {}
-XIMARA_PORTRAITS.NEUTRAL = "laraya_happy";
+XIMARA_PORTRAITS.NEUTRAL = "ximara";
 
 class MARALAN_PORTRAITS {}
-MARALAN_PORTRAITS.NEUTRAL = "laraya_happy";
+MARALAN_PORTRAITS.NEUTRAL = "maralan";
+
+class FLICKOW_PORTRAITS {}
+FLICKOW_PORTRAITS.NEUTRAL = "flickow";
+
+class AXODILE_PORTRAITS {}
+AXODILE_PORTRAITS.HAPPY = "axodile_happy";
+AXODILE_PORTRAITS.HURT = "axodile_hurt";
+
+class ELDER_PORTRAITS {}
+ELDER_PORTRAITS.NEUTRAL = "elder";
 
 class DIALOGUE_COMMANDS {}
 DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE = "COMMAND_NEXT_CUTSCENE_IMAGE";
