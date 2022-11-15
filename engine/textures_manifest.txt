@@ -10,6 +10,13 @@ require player_wallcling engine/textures/player/wallcling.png 0.1 0
 require bgfar engine/textures/bg/bg_far.png 0 0
 require bgswamp engine/textures/bg/bg_swamp.png 0 0
 require bgleaves engine/textures/bg/bg_leaves.png 0 0
+require bgtutorial engine/textures/bg/bg_tutorial.png 0 0
+require bglevel1 engine/textures/bg/bg_level_1.png 0 0
+require fglevel1 engine/textures/bg/fg_level_1.png 0 0
+require bglevel2 engine/textures/bg/bg_level_2.png 0 0
+require fglevel2 engine/textures/bg/fg_level_2.png 0 0
+require bglevel3 engine/textures/bg/bg_level_3.png 0 0
+
 require spellwheel0 engine/textures/spell_wheel0.png 0.5 0.5
 require spellwheel1 engine/textures/spell_wheel1.png 0.5 0.5
 require spellwheel2 engine/textures/spell_wheel2.png 0.5 0.5
