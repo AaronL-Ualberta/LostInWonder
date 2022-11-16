@@ -57,7 +57,7 @@ class ArtifactText extends EngineInstance {
 		this.x_loc = 500;
 		this.y_loc = 700;
 		this.fade = false;
-		this.fade_time = 0.003;
+		this.fade_time = 0.001;
 		this.fade_value = 1;
 		this.dialogue_text = $engine.createManagedRenderable(
 			this,

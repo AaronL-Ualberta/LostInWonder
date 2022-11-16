@@ -78,20 +78,26 @@ class TutorialHandler extends LevelHandler {
 	onRoomStart() {
 		this.player = PlayerInstance.first;
 		this.player.spells_learned = 0;
-		// ----------   JUNGLE/TUTORIAL/LEVEL 1 DIALOGUE LINES   ----------
+		// ----------   JUNGLE DIALOGUE LINES   ----------
 		this.junglelines = [
-			new DialogueLine("Ouch! That hurt.", LARAYA_PORTRAITS.HURT), //tutorial info appears on screen (different black dialogue box?), keys to move left, right, jump, and talk to NPC's
-			new DialogueLine("Use A and D to move left and right, SPACE to jump, and Z to continue dialogue and cutscenes."),
-			new DialogueLine(
-				"Some platforms, such as tree leaves or thin branches, can be passed through by holding S.",
+			new DialogueLine("Ouch! That hurt.", 
+				LARAYA_PORTRAITS.HURT,
+			),
+			new DialogueLine("Use A and D to move left and right, SPACE to jump, and Z to continue dialogue and cutscenes.", "", "",
 			),
 			new DialogueLine(
-				"Alright then. Now all I need to do is find the pieces of my wand so I can portal back home! Once I know how to prove my innocence, I suppose…",
-				LARAYA_PORTRAITS.HAPPY
+				"Some platforms, such as tree leaves or branches, can be dropped through by holding S.", "", "",
 			),
 			new DialogueLine(
-				"That workshop isn't mine, the Tribunal knows that! Why would they do this?",
-				LARAYA_PORTRAITS.ANGRY
+				"Use the elements associated with the wand pieces you recover to explore the world, find evidence against Ximara, and make it back home!", "", "",
+			),
+			new DialogueLine(
+				"Alright then. So all I need to do is find the pieces of my wand and I can portal back home! Once I know how to prove my innocence, I suppose…",
+				LARAYA_PORTRAITS.HAPPY,
+			),
+			new DialogueLine(
+				"That horrid workshop isn't mine, the Tribunal knows that! Why would they do this?",
+				LARAYA_PORTRAITS.ANGRY,
 			),
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.junglelines);
@@ -108,16 +114,16 @@ class TutorialHandler extends LevelHandler {
 		}
 
 		// Dialogue trigger for collecting the artifact
-		if (!this.get_artifact_trigger && 31 * 48 <= this.player.x && this.player.x <= 32 * 48) {
+		if (!this.get_artifact_trigger && 30 * 48 <= this.player.x && this.player.x <= 32 * 48) {
 			this.get_artifact_trigger = true;
 			this.artifactline = [
 				new DialogueLine(
-					"Oh! Magically preserved footsteps! Evidence that an Asu sorcerer was here before me!",
+					"Oh! They look like magically preserved footsteps! Evidence that an Asu sorcerer was here before me!",
 					LARAYA_PORTRAITS.SURPRISED
 				),
 				new DialogueLine("If I can find more, maybe I can prove that it was Ximara behind everything!", LARAYA_PORTRAITS.HAPPY),
 				new DialogueLine("I'll need a lot of evidence to have my banishment lifted, though I'm sure if I only get some the Tribunal will start investigating.", LARAYA_PORTRAITS.HAPPY),
-				new DialogueLine("But if I go back with close to nothing, they'll just throw me out again", LARAYA_PORTRAITS.SCARED),
+				new DialogueLine("But if I go back with close to nothing, they'll just throw me out again!", LARAYA_PORTRAITS.SCARED),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, this.artifactline, true);
 		}
@@ -210,13 +216,7 @@ class TutorialHandler extends LevelHandler {
 
 		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
 			let collection_line = [
-				new DialogueLine(
-					"One step closer to getting home! Once my wand is complete, I can make a portal and go back!",
-					LARAYA_PORTRAITS.HAPPY
-				), //tutorial obstacle, then she goes in the cave
-				new DialogueLine(
-					"This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life."
-				),
+				new DialogueLine("This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life."),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, collection_line);
 			this.wand_piece.destroy();

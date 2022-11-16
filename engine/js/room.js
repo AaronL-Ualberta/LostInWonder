@@ -1,5 +1,5 @@
 /**
- * Containter for a room in the engine.
+ * Container for a room in the engine.
  */
 class Room {
 	constructor(name) {

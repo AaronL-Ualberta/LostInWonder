@@ -14,7 +14,7 @@ class GameIntroCutscene extends Cutscene {
 			new DialogueLine("No! This is your workshop and you know it!", LARAYA_PORTRAITS.ANGRY),
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to next shot (intro shot 4) here
 			new DialogueLine(
-				"Laraya, Asu sorceress of Calchara, for the crime of harming critically endangered species you are hereby banished from the city of Ishana.",
+				"Laraya, Asu sorceress of Calchara, you have been found guilty for the crime of harming critically endangered species and are hereby banished from the city of Ishana.",
 				MARALAN_PORTRAITS.NEUTRAL,
 				"Maralan"
 			),
