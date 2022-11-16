@@ -29,12 +29,12 @@ class Level3EndCutscene extends Cutscene {
 			),
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //village shot 5
 			new DialogueLine(
-				"In that case, you may be needing this. One of our scouts found it and saw you helping the axodile earlier.",
+				"In that case, you may be needing this. One of our scouts found it and said you were helping an axodile earlier.",
 				ELDER_PORTRAITS.NEUTRAL,
 				"Elder"
 			),
 			new DialogueLine(
-				"It is why I trust you with this. Do not let her actions go unanswered.",
+				"That is why I trust you with this. Do not let her actions go unanswered.",
 				ELDER_PORTRAITS.NEUTRAL,
 				"Elder"
 			),
