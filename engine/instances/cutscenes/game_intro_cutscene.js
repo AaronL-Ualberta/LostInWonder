@@ -4,6 +4,7 @@ class GameIntroCutscene extends Cutscene {
 		this.dialogue_lines = [
 			new DialogueLine("Hm hm hmm~ 🎵", LARAYA_PORTRAITS.HAPPY), //should be intro shot 1 here
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to intro shot 2
+			new DialogueLine("What's Ximara doing in this part of the Spire? Her rooms are up way higher!"),
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to intro shot 3
 			new DialogueLine("And what have we here? Guards!", XIMARA_PORTRAITS.NEUTRAL, "Ximara"), //happens in intro shot 3
 			new DialogueLine(
