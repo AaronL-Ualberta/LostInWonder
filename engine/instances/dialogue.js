@@ -393,7 +393,7 @@ class DialogueLine {
 
 // WAND PIECE GATHERED - WATER
 	this.waterelement = [
-		new DialogueLine("This element is flexible. It allows the user to breathe underwater, freeze water, and summon a wave that sweeps them forwards at fast speeds.")
+		new DialogueLine("This element is flexible. It allows the user to freeze water on touch, and summon a wave that sweeps them forwards at fast speeds.")
 	];
 
 // WAND PIECE GATHERED - AIR
