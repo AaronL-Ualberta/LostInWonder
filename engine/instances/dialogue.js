@@ -381,13 +381,13 @@ class DialogueLine {
 
 // WAND PIECE GATHERED - FIRE
 	this.fireelement = [
-		new DialogueLine("This element is fierce. The user can throw fireballs to either kill enemies or burn plant life.")
+		new DialogueLine("This element is fierce. The user can throw fireballs to kill enemies, burn plant life, and melt ice.")
 	];
 
 
 // WAND PIECE GATHERED - FIRE
 	this.earthelement = [
-		new DialogueLine("This element is brutal. It allows the user to throw boulders for both squishing and scaling, and walls become soft so the user can grip and jump off of them.")
+		new DialogueLine("This element is brutal. It allows the user to throw boulders for both squishing and scaling, and walls become soft so the user can grip and jump off of them - for a time.")
 	];
 
 
