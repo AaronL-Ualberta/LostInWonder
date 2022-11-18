@@ -120,7 +120,6 @@ class PlayerInstance extends EngineInstance {
 		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
 		if (wand_piece !== undefined) {
 			this.spells_learned++;
-			console.log(this.spells_learned);
 
 			// Change the sprite
 			if (this.spells_learned === 4) {

@@ -22,6 +22,7 @@ require spellwheel1 engine/textures/spell_wheel1.png 0.5 0.5
 require spellwheel2 engine/textures/spell_wheel2.png 0.5 0.5
 require spellwheel3 engine/textures/spell_wheel3.png 0.5 0.5
 require spellwheel engine/textures/spell_wheel.png 0.5 0.5
+require spellwheel_direction engine/textures/spell_wheel_direction.png 0.5 0.5
 require fireball engine/textures/fireball.png 0.5 0.5
 require spikes engine/textures/spikes.png 0.5 0.5
 require ice_block engine/textures/iceblock.png 0 0
