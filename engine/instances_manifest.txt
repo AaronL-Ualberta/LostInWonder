@@ -26,7 +26,6 @@ Artifact engine/instances/artifact.js
 WandPiece engine/instances/wand_piece.js
 WindSpell engine/instances/wind_spell.js
 Counter engine/instances/artifact_counter.js
-HealthBar engine/instances/healthbar.js
 EnemyBomb engine/instances/enemy_bomb.js
 FlyEnemy engine/instances/fly_enemy.js
 EndCondition engine/instances/end_condition.js

@@ -18,7 +18,6 @@ class PlayerInstance extends EngineInstance {
 		this.allowSnapRight = false;
 		this.allowSnapUp = false;
 		this.snap_enabled = false;
-		this.underwater_time = 0;
 
 		// Player vars
 		this.inside_water = false;
@@ -460,13 +459,7 @@ class PlayerInstance extends EngineInstance {
 		this.moveCollide();
 	}
 	stepUnderwater() {
-		//this.player_health -= 5;
 		this.inside_water = true;
-		this.underwater_time += 1;
-		if (this.underwater_time % 60 === 0) {
-			this.player_health -= 5;
-		}
-		// Make shorthop lower
 
 		if (this.vsp < 0) {
 			if (!IN.keyCheck("KeyW")) {
