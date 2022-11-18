@@ -371,7 +371,6 @@ class PlayerInstance extends EngineInstance {
 			}
 
 			// Check wall cling
-			//if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
 			var coll = IM.instancePlace(this, this.x + inp, this.y, SolidObject);
 			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y) && !(coll instanceof NoWallClingWall)) {
 				if (this.current_spell === 1) {
@@ -412,7 +411,7 @@ class PlayerInstance extends EngineInstance {
 	stepInactive() {}
 	stepWallCling() {
 		if (IN.keyCheckPressed("KeyW")) {
-			this.vsp = -this.jump_height / (1.1 + this.wall_jumped_times * 0.15);
+			this.vsp -= this.jump_height / (1 + this.wall_jumped_times * 0.05);
 			this.hsp = 6 * -this.facing;
 			this.wall_jumped_times++;
 			this.switchState(PLAYERSTATES.AIRBORNE);
@@ -497,7 +496,7 @@ class PlayerInstance extends EngineInstance {
 		if (this.state_timer > 8) {
 			// "Jump" infinitely
 			if (IN.keyCheckPressed("KeyW")) {
-				this.vsp += -this.jump_height / 6;
+				this.vsp -= this.jump_height / 6;
 				const part_from_center = 18;
 				const part_from_ground = 5;
 				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
