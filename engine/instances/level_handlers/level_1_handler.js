@@ -16,14 +16,14 @@ class Level1Handler extends LevelHandler {
 		// this.camera.setScaleY(0.5);
 		this.camera.setDimensions(this.camera_dimensions[0], this.camera_dimensions[1]);
 		//this.camera.setY(2 * 48);
-		$engine.setBackground(new PIXI.extras.TilingSprite($engine.getTexture("bgswamp")));
+		$engine.setBackground(new PIXI.extras.TilingSprite($engine.getTexture("bglevel1")));
 		this.background = $engine.getBackground();
 		this.background.tileScale.set(2, 3);
 		this.background.width = this.camera_dimensions[0];
 		this.background.height = this.camera_dimensions[1];
 
 		this.foreground = new EmptyInstance();
-		this.foreground.setSprite(new PIXI.extras.TilingSprite($engine.getTexture("bgleaves")));
+		this.foreground.setSprite(new PIXI.extras.TilingSprite($engine.getTexture("fglevel1")));
 		this.foreground.depth = -1000;
 		this.fgSprite = this.foreground.getSprite();
 		this.fgSprite.tileScale.set(2, 2);
@@ -47,6 +47,11 @@ class Level1Handler extends LevelHandler {
 		this.spellWheel_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheel_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
 		this.spellWheel.addChild(this.spellWheel_sprite);
+		this.spellWheelDirection_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel_direction")));
+		this.spellWheelDirection_sprite.scale.set(2, 2);
+		this.spellWheelDirection_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
+		this.spellWheelDirection_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
+		this.spellWheel.addChild(this.spellWheelDirection_sprite);
 		this.spellWheel_rotating = false;
 		this.spellWheel_origAngle = 0;
 		this.spellWheel_targetAngle = 0;

@@ -16,7 +16,6 @@ block instances
 	TechDemoHandler 0 0 0 0 1 1
 	PlayerInstance 264 2088 0 0 1 1
 	Global 168 2088 0 0 1 1
-	HealthBar -264 1896 0 0 1 1
 	WaterBlock 48 2304 0 0 1 1
 	WaterBlock 48 2256 0 0 1 1
 	WaterBlock 48 2208 0 0 1 1
