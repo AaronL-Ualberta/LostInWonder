@@ -13,21 +13,14 @@ block room_data
 endblock
 
 block instances
-	TechDemoHandler 0 0 0 0 1 1
+	TutorialHandler 0 0 0 0 1 1
 	PlayerInstance 168 120 0 0 1 1
 	Global -72 -72 0 0 1 1
 	SemiSolid 288 216 0 0 12 1
-	SemiSolid 552 408 0 0 3 1
-	InvisibleWall 24 0 0 0 1 4
-	InvisibleWall 624 0 0 0 1 26
-	SemiSolid 552 1128 0 0 3 1
-	InvisibleWall 240 240 0 0 2 1
-	InvisibleWall 0 384 0 0 2 1
-	InvisibleWall 96 336 0 0 1 1
-	InvisibleWall 144 288 0 0 1 1
+	SemiSolid 192 409 0 0 2 1.0500000000000096
+	InvisibleWall 0 0 0 0 1 36
+	SemiSolid 480 1080 0 0 6 1
 	InvisibleWall 0 0 0 0 1 8
-	InvisibleWall 432 480 0 0 1 1
-	InvisibleWall 432 1200 0 0 1 1
 	VineBlock 2304 1392 0 0 1 1
 	VineBlock 2304 1440 0 0 1 1
 	VineBlock 2304 1488 0 0 1 1
@@ -47,7 +40,7 @@ block instances
 	VineBlock 2256 1488 0 0 1 1
 	VineBlock 2256 1584 0 0 1 1
 	VineBlock 2256 1632 0 0 1 1
-	Artifact 1560 1704 0 0 1 1
+	Artifact 1560 1656 0 0 1 1
 	GrassCreate 384 1752 0 0 16 1
 	GrassCreate 2040 1752 0 0 35 1
 	GrassCreate 888 1752 0 0 3 1
@@ -56,10 +49,26 @@ block instances
 	Proceed 2760 1752 0 0 1 1
 	Counter 888 120 0 0 1 1
 	LeafCreate -72 504 0 0 1 1
+	SemiSolid 384 409 0 0 2 1.0500000000000096
+	SemiSolid 432 552 0 0 2 0.9999999999999997
+	SemiSolid 144 552 0 0 2 0.9999999999999997
+	SemiSolid 192 696 0 0 2 0.9999999999999997
+	SemiSolid 384 696 0 0 2 0.9999999999999997
+	SemiSolid 48 792 0 0 2 0.9999999999999997
+	SemiSolid 528 792 0 0 2 0.9999999999999997
+	SemiSolid 120 1080 0 0 5 0.9999999999999997
+	SemiSolid 384 1224 0 0 2 0.9999999999999997
+	SemiSolid 192 1224 0 0 2 0.9999999999999997
+	SemiSolid 144 1368 0 0 2 0.9999999999999997
+	SemiSolid 432 1368 0 0 2 0.9999999999999997
+	SemiSolid 192 1512 0 0 2 0.9999999999999997
+	SemiSolid 384 1512 0 0 2 0.9999999999999997
+	SemiSolid 48 1608 0 0 2 0.9999999999999997
+	SemiSolid 528 1608 0 0 2 0.9999999999999997
 endblock
 
 block extern Music
-bg
+BackgroundMusic_Tutorial
 0.03
 endblock
 
