@@ -103,6 +103,9 @@ class PlayerInstance extends EngineInstance {
 
 		this.wall_jumped_times = 0;
 
+		this.saveX = this.x;
+		this.saveY = this.y;
+
 		// Marcus cool code!!!!!!!!!!!!!!!!!!!!!!!!!
 		// this.filter = new PIXI.filters.BlurFilter();
 		// this.spr.filters = [this.filter];
@@ -133,7 +136,10 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		if (this.player_health <= 0) {
-			$engine.setRoom(RoomManager.currentRoom().name);
+			this.x = this.saveX;
+			this.y = this.saveY;
+			this.player_health = 100;
+			// $engine.setRoom(RoomManager.currentRoom().name);
 		}
 		// DEVMODE
 		if (IN.keyCheckPressed("Slash")) {
@@ -738,10 +744,8 @@ class PlayerInstance extends EngineInstance {
 			this.spells_learned = 1;
 		} else if (RoomManager.currentRoom().name == "Level2") {
 			this.spells_learned = 2;
-		} else if (RoomManager.currentRoom().name == "Level3") {
-			this.spells_learned = 3;
 		} else if (RoomManager.currentRoom().name == "Level3_CUT") {
-			this.spells_learned = 4;
+			this.spells_learned = 3;
 		}
 	}
 }

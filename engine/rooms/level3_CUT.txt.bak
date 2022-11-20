@@ -392,7 +392,6 @@ block instances
 	WaterBlock 4704 2304 0 0 1 1
 	Enemy 1680 2016 0 0 1 1
 	Enemy 2040 2016 0 0 1 1
-	Enemy 2376 2016 0 0 1 1
 	Enemy 2592 1776 0 0 1 1
 	Enemy 3264 1872 0 0 1 1
 	Enemy 2496 1440 0 0 1 1
@@ -429,3 +428,7 @@ block instances
 	ArtifactText 72 408 0 0 1 1
 endblock
 
+block extern Music
+BackgroundMusic_Level3CUT
+0.03
+endblock
