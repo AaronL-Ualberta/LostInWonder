@@ -5,7 +5,7 @@ class WandPiece extends EngineInstance {
 		this.y = y;
 		this.sprite = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture(sprite)), true);
 	}
-	
+
 	onEngineCreate() {
 		this.setHitbox(new Hitbox(this, new RectangleHitbox(-12, -12, 12, 12)));
 	}
@@ -14,7 +14,7 @@ class WandPiece extends EngineInstance {
 		if (IM.instanceCollision(this, this.x, this.y, PlayerInstance)) {
 			this.destroy();
 			// Wand Piece Collection Sound Effect
-			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
+			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.05, false);
 		}
 	}
 }

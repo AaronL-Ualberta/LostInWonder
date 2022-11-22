@@ -24,3 +24,4 @@ require BackgroundMusic_Tutorial engine/audio/BackgroundMusic_Tutorial.mp3 BGM
 require BackgroundMusic_Level2 engine/audio/BackgroundMusic_Level2.mp3 BGM
 require BackgroundMusic_Level3CUT engine/audio/BackgroundMusic_Level3CUT.mp3 BGM
 require BackgroundMusic_Level3 engine/audio/BackgroundMusic_Level3.mp3 BGM
+require BackgroundMusic_Credits engine/audio/BackgroundMusic_Credits.mp3 BGM

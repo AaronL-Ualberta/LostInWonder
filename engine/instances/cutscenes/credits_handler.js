@@ -18,7 +18,7 @@ class CreditsHandler extends Cutscene {
 			new DialogueLine("Have a great day, okay?", LARAYA_PORTRAITS.HAPPY),
 		];
 
-		this.audioSound = "BackgroundMusic_CutScene";
+		this.audioSound = "BackgroundMusic_Credits";
 		this.cutsceneFrames = [
 			"creditsframe1",
 			"creditsframe2",
