@@ -2,7 +2,7 @@ class PlayerInstance extends EngineInstance {
 	onEngineCreate() {
 		// Gameplay vars
 		this.ground_accel = 0.5;
-		this.jump_height = 13;
+		this.jump_height = 15;
 		this.gravity = 0.8;
 		this.default_gravity = this.gravity;
 		this.water_gravity = 0.12;
@@ -119,6 +119,9 @@ class PlayerInstance extends EngineInstance {
 	}
 
 	step() {
+		// Get controls
+		this.jumped = IN.keyCheckPressed("KeyW") || IN.keyCheckPressed("Space");
+
 		// Check for collision with the wand piece
 		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
 		if (wand_piece !== undefined) {
@@ -313,7 +316,7 @@ class PlayerInstance extends EngineInstance {
 			this.hsp -= Math.sign(this.hsp) * this.decel_const;
 			if (Math.abs(this.hsp) < 0.05) this.hsp = 0;
 		}
-		if (IN.keyCheckPressed("KeyW")) {
+		if (this.jumped) {
 			// Jump
 			this.vsp -= this.jump_height;
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
@@ -344,7 +347,7 @@ class PlayerInstance extends EngineInstance {
 
 		// Make shorthop lower
 		if (this.vsp < 0) {
-			if (!IN.keyCheck("KeyW")) {
+			if (!(IN.keyCheck("KeyW") || IN.keyCheck("Space"))) {
 				this.vsp *= 0.9;
 			}
 		}
@@ -399,7 +402,7 @@ class PlayerInstance extends EngineInstance {
 
 		// Check Double Jump
 		if (this.current_spell === SPELLNAMES.AIR) {
-			if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
+			if (this.jumped && this.has_doubleJump) {
 				this.vsp = -this.jump_height;
 				const part_from_center = 18;
 				const part_from_ground = 5;
@@ -415,7 +418,7 @@ class PlayerInstance extends EngineInstance {
 	}
 	stepInactive() {}
 	stepWallCling() {
-		if (IN.keyCheckPressed("KeyW")) {
+		if (this.jumped) {
 			this.vsp -= this.jump_height / (1 + this.wall_jumped_times * 0.05);
 			this.hsp = 6 * -this.facing;
 			this.wall_jumped_times++;
@@ -466,7 +469,7 @@ class PlayerInstance extends EngineInstance {
 		this.inside_water = true;
 
 		if (this.vsp < 0) {
-			if (!IN.keyCheck("KeyW")) {
+			if (!this.jumped) {
 				this.vsp *= 0.98;
 			}
 		}
@@ -500,7 +503,7 @@ class PlayerInstance extends EngineInstance {
 
 		if (this.state_timer > 8) {
 			// "Jump" infinitely
-			if (IN.keyCheckPressed("KeyW")) {
+			if (this.jumped) {
 				this.vsp -= this.jump_height / 6;
 				const part_from_center = 18;
 				const part_from_ground = 5;
