@@ -89,7 +89,7 @@ class TutorialHandler extends LevelHandler {
 			),
 			new DialogueLine("Press Z to continue dialogue and cutscenes, and / to skip cutscenes altogether.", "", "",
 			),
-			new DialogueLine("Press Q and E to use the elements associated with the wand pieces you recover to explore the world, find evidence against Ximara, and make it back home!", "", "",
+			new DialogueLine("Q and E will switch your equipped wand piece while LEFT CLICK will use the active ability associated with them. Use the wand pieces you recover to explore the world, find evidence against Ximara, and make it back home!", "", "",
 			),
 			new DialogueLine("Alright then. So all I need to do is find the pieces of my wand and I can portal back home! Once I know how to prove my innocence, I suppose…",
 				LARAYA_PORTRAITS.HAPPY,
