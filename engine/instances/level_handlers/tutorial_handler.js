@@ -83,20 +83,18 @@ class TutorialHandler extends LevelHandler {
 			new DialogueLine("Ouch! That hurt.", 
 				LARAYA_PORTRAITS.HURT,
 			),
-			new DialogueLine("Use A and D to move left and right, SPACE or W to jump, and Z to continue dialogue and cutscenes.", "", "",
+			new DialogueLine("Use A and D to move left and right and SPACE or W to jump.", "", "",
 			),
-			new DialogueLine(
-				"Some platforms, such as tree leaves or branches, can be dropped through by holding S.", "", "",
+			new DialogueLine("Some platforms, such as tree leaves or branches, can be dropped through by holding S.", "", "",
 			),
-			new DialogueLine(
-				"Press Q and E to use the elements associated with the wand pieces you recover to explore the world, find evidence against Ximara, and make it back home!", "", "",
+			new DialogueLine("Press Z to continue dialogue and cutscenes, and / to skip cutscenes altogether.", "", "",
 			),
-			new DialogueLine(
-				"Alright then. So all I need to do is find the pieces of my wand and I can portal back home! Once I know how to prove my innocence, I suppose…",
+			new DialogueLine("Press Q and E to use the elements associated with the wand pieces you recover to explore the world, find evidence against Ximara, and make it back home!", "", "",
+			),
+			new DialogueLine("Alright then. So all I need to do is find the pieces of my wand and I can portal back home! Once I know how to prove my innocence, I suppose…",
 				LARAYA_PORTRAITS.HAPPY,
 			),
-			new DialogueLine(
-				"That horrid workshop isn't mine, the Tribunal knows that! Why would they do this?",
+			new DialogueLine("That horrid workshop isn't mine, the Tribunal knows that! Why would they do this?",
 				LARAYA_PORTRAITS.ANGRY,
 			),
 		];
