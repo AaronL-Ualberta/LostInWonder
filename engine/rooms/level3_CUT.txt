@@ -453,6 +453,9 @@ block instances
 	Checkpoint 4488 888 0 0 1 1
 	Checkpoint 2376 1944 0 0 1 1
 	Checkpoint 2424 1560 0 0 1 1
+	WandPiece 648 2088 0 0 1 1
+	ArtifactText -24 2088 0 0 1 1
+	Counter -24 2040 0 0 1 1
 endblock
 
 block extern Music
