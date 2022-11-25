@@ -83,29 +83,33 @@ class Level3Handler extends LevelHandler {
 	onRoomStart() {
 		this.player = PlayerInstance.first;
 		this.player.spells_learned = 2;
-		// // ----------   JUNGLE/TUTORIAL/LEVEL 1 DIALOGUE LINES   ----------
-		// this.junglelines = [
-		// 	new DialogueLine("Aaaaaaaaaaaaaahhh!", LARAYA_PORTRAITS.SCARED), //happens in jungle shot 1, then cutscene ends
-		// 	new DialogueLine("Ouch! That hurt.", LARAYA_PORTRAITS.HURT), //tutorial info appears on screen (different black dialogue box?), keys to move left, right, jump, and talk to NPC's
-		// 	new DialogueLine(
-		// 		"Alright then. Now all I need to do is find the pieces of my wand and portal back home! Once I know how to prove my innocence, I suppose…",
-		// 		LARAYA_PORTRAITS.HAPPY
-		// 	),
-		// 	new DialogueLine(
-		// 		"I didn't even break that law, the Tribunal knows that! Why would they do this?",
-		// 		LARAYA_PORTRAITS.ANGRY
-		// 	),
-		// 	new DialogueLine(
-		// 		"I've lived at the Spire my whole life, the Tribunal knows I didn't do it!",
-		// 		LARAYA_PORTRAITS.ANGRY
-		// 	),
-		// 	new DialogueLine("Use WASD to move around the map.", LARAYA_PORTRAITS.HAPPY),
-		// 	new DialogueLine(
-		// 		"Some platforms, such as tree leaves, can be passed through by holding S.",
-		// 		LARAYA_PORTRAITS.HAPPY
-		// 	),
-		// ];
-		// this.dialogue_instance = new Dialogue(0, 0, this.junglelines);
+		// ----------   SWAMP DIALOGUE LINES   ----------
+		 this.swamplines = [
+			new DialogueLine(
+				"I've read about your kind, buddy, and I think I know how to help! You can regenerate naturally, but you need to be in water for that.",
+				LARAYA_PORTRAITS.HAPPY
+			),
+			new DialogueLine(
+				"So all I have to do is get you into that pool over there, and you'll be right as rain… theoretically.",
+				LARAYA_PORTRAITS.HAPPY
+			),
+			new DialogueLine(
+				"The books I've read say it's just a myth, but I hope for your sake it's not.",
+				LARAYA_PORTRAITS.HAPPY
+			),
+			//Need to stop dialogue here and resume once the sprite is in the water
+			new DialogueLine("Raaaar!", AXODILE_PORTRAITS.HAPPY, "Axodile"),
+			new DialogueLine(
+				"What's all this? Scale fragments… Drag marks… Cleanly cut rope bindings… And an Asu tool someone left behind!",
+				LARAYA_PORTRAITS.SURPRISED
+			),
+			new DialogueLine(
+				"Argh! Someone did this on purpose, and tried to make it look like an accident if anyone came by! But who… Ximara!",
+				LARAYA_PORTRAITS.ANGRY
+			),
+			new DialogueLine("Grrrr… I saw these scales in her despicable workshop.", LARAYA_PORTRAITS.ANGRY),
+		 ];
+		 this.dialogue_instance = new Dialogue(0, 0, this.swamplines);
 	}
 
 	step() {
@@ -200,11 +204,7 @@ class Level3Handler extends LevelHandler {
 		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
 			let collection_line = [
 				new DialogueLine(
-					"One step closer to getting home! Once my wand is complete, I can make a portal and go back!",
-					LARAYA_PORTRAITS.HAPPY
-				), //tutorial obstacle, then she goes in the cave
-				new DialogueLine(
-					"This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life."
+					"This element is temperamental. It can blow objects upwards and lessen the effects of gravity with strong gusts, and allow the user to jump again in midair as if on a cloud."
 				),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, collection_line);
