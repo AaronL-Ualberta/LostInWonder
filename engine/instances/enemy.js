@@ -86,9 +86,9 @@ class Enemy extends EngineInstance {
 		if (IM.instanceCollision(this, this.x, this.y, PlayerInstance) && !this.damage_done) {
 			var player = IM.instancePlace(this, this.x, this.y, PlayerInstance);
 			player.player_health -= this.damage;
-			if (player.player_health === 0) {
-				$engine.setRoom(RoomManager.currentRoom().name);
-			}
+			// if (player.player_health === 0) {
+			// 	$engine.setRoom(RoomManager.currentRoom().name);
+			// }
 			this.damage_done = true;
 			this.no_damage_period = 90;
 		}
@@ -105,7 +105,7 @@ class Enemy extends EngineInstance {
 			this.dhsp = 8 * Math.sign(this.x - fireball.x);
 			fireball.destroy();
 			// Gater Death Sound Effect
-			$engine.audioPlaySound("DinosaurDeathSoundEffect", 0.07, false);
+			$engine.audioPlaySound("DinosaurDeathSoundEffect", 0.04, false);
 			this.dying = true;
 			EngineUtils.setAnimation(this.animation, this.gaterhurt);
 			// this.destroy();

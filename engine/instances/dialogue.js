@@ -46,10 +46,15 @@ class Dialogue extends EngineInstance {
 				wordWrapWidth: 500,
 			})
 		);
+		this.dialogue_z_continue = $engine.createManagedRenderable(
+			this,
+			new PIXI.Text("Press 'Z' to continue", { ...$engine.getDefaultTextStyle() })
+		);
 		this.dialogue.addChild(this.dialogue_sprite);
 		this.dialogue.addChild(this.dialogue_portrait);
 		this.dialogue.addChild(this.dialogue_char_name);
 		this.dialogue.addChild(this.dialogue_text);
+		this.dialogue.addChild(this.dialogue_z_continue);
 
 		// The BOX
 		const w = 18;
@@ -71,9 +76,17 @@ class Dialogue extends EngineInstance {
 		this.dialogue_text.x = this.dialogue_sprite.x + 330;
 		this.dialogue_text.y = this.dialogue_sprite.y + 65;
 
+		// Press Z to Continue
+		this.dialogue_z_continue.x = this.dialogue_sprite.x + 530;
+		this.dialogue_z_continue.y = this.dialogue_sprite.y + 200;
+		this.dial_z_adj_filter = new PIXI.filters.AdjustmentFilter();
+		this.dial_z_adj_filter.alpha = 0;
+		this.dialogue_z_continue.filters = [this.dial_z_adj_filter];
+
 		// Params
 		this.time_per_char = 2;
 		this.timer = 0;
+		this.filter_timer = 0;
 
 		// Conversation
 		this.lines = lines;
@@ -107,6 +120,7 @@ class Dialogue extends EngineInstance {
 	}
 
 	step() {
+		this.filter_timer++;
 		if (this.first_frame) {
 			this.first_frame = false;
 		} else {
@@ -129,6 +143,8 @@ class Dialogue extends EngineInstance {
 						// Dialogue ends
 						this.dialogueEnd();
 					} else {
+						this.filter_timer = 0;
+						this.dial_z_adj_filter.alpha = 0;
 						this.timer = 0;
 						this.line_on++;
 						if (this.lines[this.line_on].text === DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE) {
@@ -148,6 +164,11 @@ class Dialogue extends EngineInstance {
 					}
 				}
 			}
+		}
+		const wait_time = 120;
+		const loop_time = 20;
+		if (this.filter_timer > wait_time) {
+			this.dial_z_adj_filter.alpha = Math.sin((this.filter_timer - wait_time) / loop_time);
 		}
 	}
 

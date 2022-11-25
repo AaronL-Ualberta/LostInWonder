@@ -22,14 +22,6 @@ class TutorialHandler extends LevelHandler {
 		this.background.width = this.camera_dimensions[0];
 		this.background.height = this.camera_dimensions[1];
 
-		this.foreground = new EmptyInstance();
-		this.foreground.setSprite(new PIXI.extras.TilingSprite($engine.getTexture("fglevel2")));
-		this.foreground.depth = -1000;
-		this.fgSprite = this.foreground.getSprite();
-		this.fgSprite.tileScale.set(2, 2);
-		this.fgSprite.width = this.room_width * 48;
-		this.fgSprite.height = 360;
-
 		// this.rayFilter = new PIXI.filters.GodrayFilter();
 		// this.rayFilter.gain = 0.4;
 		// this.rayFilter.lucanarity = 2;
@@ -39,7 +31,6 @@ class TutorialHandler extends LevelHandler {
 
 		const leafFilter = new PIXI.filters.AdvancedBloomFilter();
 		leafFilter.bloomScale = 1.5;
-		this.fgSprite.filters = [leafFilter];
 
 		this.spellWheel = $engine.createManagedRenderable(this, new PIXI.Container());
 		this.spellWheel_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel0")));
@@ -47,6 +38,11 @@ class TutorialHandler extends LevelHandler {
 		this.spellWheel_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheel_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
 		this.spellWheel.addChild(this.spellWheel_sprite);
+		this.spellWheelDirection_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel_direction")));
+		this.spellWheelDirection_sprite.scale.set(2, 2);
+		this.spellWheelDirection_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
+		this.spellWheelDirection_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
+		this.spellWheel.addChild(this.spellWheelDirection_sprite);
 		this.spellWheel_rotating = false;
 		this.spellWheel_origAngle = 0;
 		this.spellWheel_targetAngle = 0;
@@ -147,10 +143,6 @@ class TutorialHandler extends LevelHandler {
 
 			// This is responsible for moving the background
 			this.background.tilePosition.x = -this.camera.getX() / 5;
-
-			this.fgSprite.skew.x = Math.sin($engine.getGameTimer() / 60) / 20;
-			this.fgSprite.tilePosition.x = -this.camera.getX() / 1.75;
-			this.fgSprite.tilePosition.y = -this.camera.getY() / 1.75;
 
 			// this.rayFilter.time = this.camera.getX() / 300 + $engine.getGameTimer() / 200 + this.rayFilter_offset;
 			// this.rayFilter.time = $engine.getGameTimer() / 200;

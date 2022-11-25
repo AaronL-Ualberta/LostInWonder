@@ -2,7 +2,7 @@ class PlayerInstance extends EngineInstance {
 	onEngineCreate() {
 		// Gameplay vars
 		this.ground_accel = 0.5;
-		this.jump_height = 13;
+		this.jump_height = 15;
 		this.gravity = 0.8;
 		this.default_gravity = this.gravity;
 		this.water_gravity = 0.12;
@@ -18,7 +18,6 @@ class PlayerInstance extends EngineInstance {
 		this.allowSnapRight = false;
 		this.allowSnapUp = false;
 		this.snap_enabled = false;
-		this.underwater_time = 0;
 
 		// Player vars
 		this.inside_water = false;
@@ -104,6 +103,9 @@ class PlayerInstance extends EngineInstance {
 
 		this.wall_jumped_times = 0;
 
+		this.saveX = this.x;
+		this.saveY = this.y;
+
 		// Marcus cool code!!!!!!!!!!!!!!!!!!!!!!!!!
 		// this.filter = new PIXI.filters.BlurFilter();
 		// this.spr.filters = [this.filter];
@@ -117,11 +119,13 @@ class PlayerInstance extends EngineInstance {
 	}
 
 	step() {
+		// Get controls
+		this.jumped = IN.keyCheckPressed("KeyW") || IN.keyCheckPressed("Space");
+
 		// Check for collision with the wand piece
 		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
 		if (wand_piece !== undefined) {
 			this.spells_learned++;
-			console.log(this.spells_learned);
 
 			// Change the sprite
 			if (this.spells_learned === 4) {
@@ -135,7 +139,10 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		if (this.player_health <= 0) {
-			$engine.setRoom(RoomManager.currentRoom().name);
+			this.x = this.saveX;
+			this.y = this.saveY;
+			this.player_health = 100;
+			// $engine.setRoom(RoomManager.currentRoom().name);
 		}
 		// DEVMODE
 		if (IN.keyCheckPressed("Slash")) {
@@ -309,7 +316,7 @@ class PlayerInstance extends EngineInstance {
 			this.hsp -= Math.sign(this.hsp) * this.decel_const;
 			if (Math.abs(this.hsp) < 0.05) this.hsp = 0;
 		}
-		if (IN.keyCheckPressed("KeyW")) {
+		if (this.jumped) {
 			// Jump
 			this.vsp -= this.jump_height;
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
@@ -340,7 +347,7 @@ class PlayerInstance extends EngineInstance {
 
 		// Make shorthop lower
 		if (this.vsp < 0) {
-			if (!IN.keyCheck("KeyW")) {
+			if (!(IN.keyCheck("KeyW") || IN.keyCheck("Space"))) {
 				this.vsp *= 0.9;
 			}
 		}
@@ -372,7 +379,6 @@ class PlayerInstance extends EngineInstance {
 			}
 
 			// Check wall cling
-			//if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y)) {
 			var coll = IM.instancePlace(this, this.x + inp, this.y, SolidObject);
 			if (this.vsp > 0 && this.collisionCheck(this.x + inp, this.y) && !(coll instanceof NoWallClingWall)) {
 				if (this.current_spell === 1) {
@@ -396,7 +402,7 @@ class PlayerInstance extends EngineInstance {
 
 		// Check Double Jump
 		if (this.current_spell === SPELLNAMES.AIR) {
-			if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
+			if (this.jumped && this.has_doubleJump) {
 				this.vsp = -this.jump_height;
 				const part_from_center = 18;
 				const part_from_ground = 5;
@@ -412,8 +418,8 @@ class PlayerInstance extends EngineInstance {
 	}
 	stepInactive() {}
 	stepWallCling() {
-		if (IN.keyCheckPressed("KeyW")) {
-			this.vsp = -this.jump_height / (1.1 + this.wall_jumped_times * 0.15);
+		if (this.jumped) {
+			this.vsp -= this.jump_height / (1 + this.wall_jumped_times * 0.05);
 			this.hsp = 6 * -this.facing;
 			this.wall_jumped_times++;
 			this.switchState(PLAYERSTATES.AIRBORNE);
@@ -460,16 +466,10 @@ class PlayerInstance extends EngineInstance {
 		this.moveCollide();
 	}
 	stepUnderwater() {
-		//this.player_health -= 5;
 		this.inside_water = true;
-		this.underwater_time += 1;
-		if (this.underwater_time % 60 === 0) {
-			this.player_health -= 5;
-		}
-		// Make shorthop lower
 
 		if (this.vsp < 0) {
-			if (!IN.keyCheck("KeyW")) {
+			if (!this.jumped) {
 				this.vsp *= 0.98;
 			}
 		}
@@ -503,8 +503,8 @@ class PlayerInstance extends EngineInstance {
 
 		if (this.state_timer > 8) {
 			// "Jump" infinitely
-			if (IN.keyCheckPressed("KeyW")) {
-				this.vsp += -this.jump_height / 6;
+			if (this.jumped) {
+				this.vsp -= this.jump_height / 6;
 				const part_from_center = 18;
 				const part_from_ground = 5;
 				new DustParticle(this.x - part_from_center, this.y - part_from_ground);
@@ -747,10 +747,8 @@ class PlayerInstance extends EngineInstance {
 			this.spells_learned = 1;
 		} else if (RoomManager.currentRoom().name == "Level2") {
 			this.spells_learned = 2;
-		} else if (RoomManager.currentRoom().name == "Level3") {
-			this.spells_learned = 3;
 		} else if (RoomManager.currentRoom().name == "Level3_CUT") {
-			this.spells_learned = 4;
+			this.spells_learned = 3;
 		}
 	}
 }
