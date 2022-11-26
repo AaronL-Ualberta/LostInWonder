@@ -100,6 +100,7 @@ class PlayerInstance extends EngineInstance {
 		this.wind_cooldown_timer = 0;
 
 		this.rock_spell_count = 0;
+		this.rock_spell_array = [];
 
 		this.wall_jumped_times = 0;
 
@@ -173,12 +174,17 @@ class PlayerInstance extends EngineInstance {
 			} else if (this.current_spell === SPELLNAMES.EARTH && this.spells_learned >= 2) {
 				// EARTH
 				const offset = 40;
+
+				// Remove oldest rock if there are too many
+				while (this.rock_spell_array.length >= 2) {
+					this.rock_spell_array.shift().blockDestroy()
+				}
 				if (this.rock_spell_count < 2) {
 					const angle = V2D.calcDir(
 						IN.getMouseX() - (this.x + this.face_direction * offset),
 						IN.getMouseY() - (this.y - offset)
 					);
-					new RockBlock(this.x + this.face_direction * offset, this.y - offset - 20, angle);
+					this.rock_spell_array.push(new RockBlock(this.x + this.face_direction * offset, this.y - offset - 20, angle));
 				} else {
 					new DustParticle(this.x + this.face_direction * offset, this.y - offset, 0.7);
 				}
@@ -747,7 +753,7 @@ class PlayerInstance extends EngineInstance {
 			this.spells_learned = 1;
 		} else if (RoomManager.currentRoom().name == "Level2") {
 			this.spells_learned = 2;
-		} else if (RoomManager.currentRoom().name == "Level3_CUT") {
+		} else if (RoomManager.currentRoom().name == "Level3") {
 			this.spells_learned = 3;
 		}
 	}
