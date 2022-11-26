@@ -747,7 +747,7 @@ class PlayerInstance extends EngineInstance {
 			this.spells_learned = 1;
 		} else if (RoomManager.currentRoom().name == "Level2") {
 			this.spells_learned = 2;
-		} else if (RoomManager.currentRoom().name == "Level3_CUT") {
+		} else if (RoomManager.currentRoom().name == "Level3") {
 			this.spells_learned = 3;
 		}
 	}
