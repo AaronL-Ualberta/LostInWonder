@@ -6,7 +6,10 @@ class Checkpoint extends EngineInstance {
 
 		// Update image later?
 		// this.sprite = $engine.createRenderable(this, new PIXI.Sprite($engine.getTexture("IMAGE NAME")), true);
-		this.xScale = -2;
+		this.butterfly_animation = $engine.getAnimation("butterfly_animation");
+		this.animation = $engine.createRenderable(this, new PIXI.extras.AnimatedSprite(this.butterfly_animation), true);
+		this.animation.animationSpeed = 0.1;
+		this.xScale = 2;
 		this.yScale = 2;
 
 		// this.talking = false;
@@ -24,6 +27,7 @@ class Checkpoint extends EngineInstance {
 	}
 
 	step() {
+		this.animation.update(1);
 		var player = IM.instancePlace(this, this.x, this.y, PlayerInstance);
 		if (player !== undefined) {
 			player.saveX = player.x;
