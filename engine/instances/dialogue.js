@@ -425,21 +425,9 @@ class DialogueLine {
 
 //ALL ENEMIES ENCOUNTED IN THE GAME, DIALOGUE SHOULD APPEAR THE FIRST TIME THEY ARE ON SCREEN
 
-// ENEMY ENCOUNTERED - SNAKA
-	this.snaka = [
-		new DialogueLine("Scaled serpents that are lazy, but vicious when disturbed.")
-	];
-
-
 // ENEMY ENCOUNTERED - RED COMPRIMIA
 	this.redcomprimia = [
 		new DialogueLine("Small beings with sharp teeth and talons that have evolved to live underground.")
-	];
-
-
-// ENEMY ENCOUNTERED - LEOTA
-	this.leota = [
-		new DialogueLine("Large felines that like high places, hiding in plain sight, and pouncing on unsuspecting prey.")
 	];
 
 
@@ -449,15 +437,9 @@ class DialogueLine {
 	];
 
 
-// ENEMY ENCOUNTERED - MOSQUEETLE
-	this.mosqueetle = [
-		new DialogueLine("Large insects with a hard exoskeleton that seek out warm-blooded creatures for blood")
-	];
-
-
 // ENEMY ENCOUNTERED - PURPLE COMPRIMIA
 	this.purplecomprimia = [
-		new DialogueLine("Small beings with sharp teeth and talons that have evolved to live in wetland ecosystems")
+		new DialogueLine("Small beings with sharp teeth and talons that have evolved to live in wetland ecosystems.")
 	];
 
 
