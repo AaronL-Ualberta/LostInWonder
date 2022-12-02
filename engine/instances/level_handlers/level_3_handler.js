@@ -193,7 +193,7 @@ class Level3Handler extends LevelHandler {
 			}
 
 			// Check if player beats the level
-			if (this.player.x >= (this.room_width - 3) * 48) {
+			if (this.player.x >= (this.room_width - 3) * 48 && this.player.y <= 7 * 48) {
 				//$engine.setRoom(RoomManager.currentRoom().name);
 				this.winLevel();
 			}
