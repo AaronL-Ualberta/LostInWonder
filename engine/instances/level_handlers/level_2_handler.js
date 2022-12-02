@@ -194,14 +194,16 @@ class Level2Handler extends LevelHandler {
 			this.winLevelStep();
 		}
 
-		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
+		if (this.wand_piece_collected) {
 			let collection_line = [
 				new DialogueLine(
-					"This element is flexible. It can freeze water or summon a wave that sweeps the user forwards at fast speeds."
+					"This element is flexible. It can freeze water or summon a wave that sweeps the user forwards at fast speeds.",
+					LARAYA_PORTRAITS.SURPRISED
 				),
 			];
-			this.dialogue_instance = new Dialogue(0, 0, collection_line);
-			this.wand_piece.destroy();
+			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
+
+			this.wand_piece_collected = false
 		}
 	}
 

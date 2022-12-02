@@ -137,6 +137,8 @@ class PlayerInstance extends EngineInstance {
 
 			// Wand Piece Collection Sound Effect
 			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
+
+			this.levelHandler.wand_piece_collected = true;
 		}
 
 		if (this.player_health <= 0) {

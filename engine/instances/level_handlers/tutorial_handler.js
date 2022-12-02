@@ -59,7 +59,7 @@ class TutorialHandler extends LevelHandler {
 
 		this.see_artifact_trigger = false;
 		this.get_artifact_trigger = false;
-
+		
 		this.wand_piece = new WandPiece(1752, 1704, "fire_wand");
 
 		this.nextRoom = "Level1Intro";
@@ -213,12 +213,13 @@ class TutorialHandler extends LevelHandler {
 			// // console.log("why");
 		}
 
-		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
+		if (this.wand_piece_collected) {
 			let collection_line = [
-				new DialogueLine("This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life."),
+				new DialogueLine("This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life.", LARAYA_PORTRAITS.SURPRISED),
 			];
-			this.dialogue_instance = new Dialogue(0, 0, collection_line);
-			this.wand_piece.destroy();
+			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
+
+			this.wand_piece_collected = false;
 		}
 	}
 
