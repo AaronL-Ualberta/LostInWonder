@@ -12,6 +12,7 @@ require VineBurnSoundEffect engine/audio/VineBurnSoundEffect.ogg SE
 require DinosaurDeathSoundEffect engine/audio/DinosaurDeathSoundEffect.mp3 SE
 require SuspenseSoundEffect engine/audio/SuspenseTitle.wav SE
 require DialogueSoundEffect engine/audio/DialogueSoundEffect.mp3 SE
+require CoolOffSoundEffect engine/audio/CoolOffSoundEffect.mp3 SE
 
 require JungleAmbience engine/audio/JungleAmbience.mp3 BGM
 require BackgroundMusic_Level1 engine/audio/BackgroundMusic_Level1.ogg BGM
