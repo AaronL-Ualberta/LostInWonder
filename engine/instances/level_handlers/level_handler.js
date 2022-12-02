@@ -3,6 +3,8 @@ class LevelHandler extends EngineInstance {
 		this.timer2 = 0;
 		this.beatLevel = false;
 
+		this.wand_piece_collected = false;
+
 		// this.nextRoom = "OVERRIDE THIS";
 	}
 
