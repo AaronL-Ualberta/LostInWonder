@@ -570,6 +570,7 @@ block instances
 	GrassCreate 216 984 0 0 1 1
 	GrassCreate 1848 648 0 0 1 1
 	GrassCreate 3768 792 0 0 1 1
+	LeafCreate -24 1992 0 0 1 1
 endblock
 
 block extern Music
