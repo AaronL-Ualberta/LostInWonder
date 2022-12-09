@@ -193,7 +193,7 @@ class Level3Handler extends LevelHandler {
 			}
 
 			// Check if player beats the level
-			if (this.player.x >= (this.room_width - 3) * 48) {
+			if (this.player.x >= (this.room_width - 3) * 48 && this.player.y <= 7 * 48) {
 				//$engine.setRoom(RoomManager.currentRoom().name);
 				this.winLevel();
 			}
@@ -201,14 +201,16 @@ class Level3Handler extends LevelHandler {
 			this.winLevelStep();
 		}
 
-		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
+		if (this.wand_piece_collected) {
 			let collection_line = [
 				new DialogueLine(
-					"This element is temperamental. It can blow objects upwards and lessen the effects of gravity with strong gusts, and allow the user to jump again in midair as if on a cloud."
+					"This element is temperamental. It can blow objects upwards and lessen the effects of gravity with strong gusts, and allow the user to jump again in midair as if on a cloud.",
+					LARAYA_PORTRAITS.SURPRISED
 				),
 			];
-			this.dialogue_instance = new Dialogue(0, 0, collection_line);
-			this.wand_piece.destroy();
+			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
+		
+			this.wand_piece_collected = false
 		}
 	}
 

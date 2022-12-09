@@ -85,8 +85,8 @@ class Level1Handler extends LevelHandler {
 		this.player.spells_learned = 1;
 		// ----------   CAVE DIALOGUE LINES   ----------
 		this.cavelines = [
-			//Snaka lore appears
-			new DialogueLine("So they're lazy and don't like to move much, but they'll definitely move if something comes and disturbs them. Which, in this case, would be me…", LARAYA_PORTRAITS.SCARED), //lore should appear first
+			//red comprimia lore appears
+			new DialogueLine("Those things don't look very friendly...", LARAYA_PORTRAITS.SCARED), //lore should appear first
 			new DialogueLine("But if I leave them alone, they'll leave me alone. Right?", LARAYA_PORTRAITS.SCARED),
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.cavelines);
@@ -200,14 +200,16 @@ class Level1Handler extends LevelHandler {
 			// // console.log("why");
 		}
 
-		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
+		if (this.wand_piece_collected) {
 			let collection_line = [
 				new DialogueLine(
-					"This element is brutal. It allows the user to throw boulders for both squishing and scaling, and walls become soft so the user can grip and jump off of them - for a time."
+					"This element is brutal. It allows the user to throw boulders for both squishing and scaling, and walls become soft so the user can grip and jump off of them - for a time.",
+					LARAYA_PORTRAITS.SURPRISED
 				),
 			];
-			this.dialogue_instance = new Dialogue(0, 0, collection_line);
-			this.wand_piece.destroy();
+			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
+			
+			this.wand_piece_collected = false;
 		}
 	}
 
