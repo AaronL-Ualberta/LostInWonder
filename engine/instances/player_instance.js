@@ -142,19 +142,24 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		if (this.player_health <= 0) {
+			// this.getCamera().reset();
+			// this.getCamera().__roomChange();
+			// this.setTimescale(1);
+			// $engine.set
 			this.x = this.saveX;
 			this.y = this.saveY;
 			this.player_health = 100;
+			// $engine.pauseGameSpecial(this);
 			// $engine.setRoom(RoomManager.currentRoom().name);
 		}
 		// DEVMODE
-		if (IN.keyCheckPressed("Slash")) {
-			if (this.state === PLAYERSTATES.DEVMODE) {
-				this.switchState(PLAYERSTATES.AIRBORNE);
-			} else {
-				this.switchState(PLAYERSTATES.DEVMODE);
-			}
-		}
+		// if (IN.keyCheckPressed("Slash")) {
+		// 	if (this.state === PLAYERSTATES.DEVMODE) {
+		// 		this.switchState(PLAYERSTATES.AIRBORNE);
+		// 	} else {
+		// 		this.switchState(PLAYERSTATES.DEVMODE);
+		// 	}
+		// }
 
 		this.fire_cooldown_timer--;
 		this.wind_cooldown_timer--;
@@ -756,7 +761,7 @@ class PlayerInstance extends EngineInstance {
 		} else if (RoomManager.currentRoom().name == "Level2") {
 			this.spells_learned = 2;
 		} else if (RoomManager.currentRoom().name == "Level3") {
-			this.spells_learned = 4;
+			this.spells_learned = 3;
 		}
 	}
 }
