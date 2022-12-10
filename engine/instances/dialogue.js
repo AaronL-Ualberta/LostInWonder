@@ -28,6 +28,16 @@ class Dialogue extends EngineInstance {
       $engine.getTexture("dial_axodile_hurt");
     this.portrait_textures[ELDER_PORTRAITS.NEUTRAL] =
       $engine.getTexture("dial_elder");
+    this.portrait_textures[TUTORIAL_PORTRAITS.MOUSE] =
+      $engine.getTexture("dial_mouse");
+    this.portrait_textures[TUTORIAL_PORTRAITS.SPACE] =
+      $engine.getTexture("dial_space");
+    this.portrait_textures[TUTORIAL_PORTRAITS.Z] =
+      $engine.getTexture("dial_z");
+    this.portrait_textures[TUTORIAL_PORTRAITS.QE] =
+      $engine.getTexture("dial_qe");
+    this.portrait_textures[TUTORIAL_PORTRAITS.WASD] =
+      $engine.getTexture("dial_wasd");
 
     this.dialogue = $engine.createManagedRenderable(this, new PIXI.Container());
     this.dialogue_sprite = $engine.createManagedRenderable(
@@ -507,6 +517,13 @@ AXODILE_PORTRAITS.HURT = "axodile_hurt";
 
 class ELDER_PORTRAITS {}
 ELDER_PORTRAITS.NEUTRAL = "elder";
+
+class TUTORIAL_PORTRAITS {}
+TUTORIAL_PORTRAITS.MOUSE = "mouse";
+TUTORIAL_PORTRAITS.SPACE = "space";
+TUTORIAL_PORTRAITS.Z = "z";
+TUTORIAL_PORTRAITS.QE = "qe";
+TUTORIAL_PORTRAITS.WASD = "wasd";
 
 class DIALOGUE_COMMANDS {}
 DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE = "COMMAND_NEXT_CUTSCENE_IMAGE";
