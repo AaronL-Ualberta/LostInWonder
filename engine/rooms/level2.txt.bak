@@ -18,7 +18,7 @@ block instances
 	Counter 888 120 0 0 1 1
 	Global -72 -72 0 0 1 1
 	Level2Handler 0 0 0 0 1 1
-	PlayerInstance 600 312 0 0 1 1
+	PlayerInstance 264 216 0 0 1 1
 	Artifact 168 696 0 0 1 1
 	Artifact 2232 1032 0 0 1 1
 	Artifact 936 1224 0 0 1 1
@@ -89,7 +89,24 @@ block instances
 	GrassCreate 4512 1992 0 0 4 1
 	GrassCreate 3864 2040 0 0 11 1
 	GrassCreate 4584 2328 0 0 9 1
-	Checkpoint 72 312 0 0 1 1
+	Checkpoint 600 312 0 0 1 1
+	Checkpoint 1848 312 0 0 1 1
+	Checkpoint 1992 552 0 0 1 1
+	Checkpoint 1608 840 0 0 1 1
+	Checkpoint 456 1752 0 0 1 1
+	Checkpoint 1032 2184 0 0 1 1
+	Checkpoint 2760 2280 0 0 1 1
+	Checkpoint 3336 1752 0 0 1 1
+	Checkpoint 2616 1272 0 0 1 1
+	Checkpoint 3288 888 0 0 1 1
+	Checkpoint 3960 792 0 0 1 1
+	Checkpoint 4440 888 0 0 1 1
+	Checkpoint 4392 1560 0 0 1 1
+	Checkpoint 3720 1704 0 0 1 1
+	Checkpoint 3816 1704 0 0 1 1
+	Checkpoint 4440 1992 0 0 1 1
+	InvisibleWall 24 -72 0 0 1 3
+	InvisibleWall 120 -120 0 1.5707963267948966 1 3
 endblock
 
 block extern Music

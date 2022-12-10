@@ -198,14 +198,16 @@ class Level1Handler extends LevelHandler {
 			// // console.log("why");
 		}
 
-		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
+		if (this.wand_piece_collected) {
 			let collection_line = [
 				new DialogueLine(
-					"This element is brutal. It allows the user to throw boulders for both squishing and scaling, and walls become soft so the user can grip and jump off of them - for a time."
+					"This element is brutal. It allows the user to throw boulders for both squishing and scaling, and walls become soft so the user can grip and jump off of them - for a time.",
+					LARAYA_PORTRAITS.SURPRISED
 				),
 			];
-			this.dialogue_instance = new Dialogue(0, 0, collection_line);
-			this.wand_piece.destroy();
+			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
+			
+			this.wand_piece_collected = false;
 		}
 	}
 
