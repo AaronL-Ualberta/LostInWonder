@@ -85,9 +85,7 @@ class Level1Handler extends LevelHandler {
 		this.player.spells_learned = 1;
 		// ----------   CAVE DIALOGUE LINES   ----------
 		this.cavelines = [
-			//red comprimia lore appears
-			new DialogueLine("Those things don't look very friendly...", LARAYA_PORTRAITS.SCARED), //lore should appear first
-			new DialogueLine("But if I leave them alone, they'll leave me alone. Right?", LARAYA_PORTRAITS.SCARED),
+			new DialogueLine("These enemies don't look very friendly... But if I leave them alone, they'll leave me alone. Right?", LARAYA_PORTRAITS.SCARED),
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.cavelines);
 	}

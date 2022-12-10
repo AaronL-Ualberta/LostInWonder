@@ -54,9 +54,13 @@ dial_ximara engine/textures/dialogue/ximara.png 0 0
 dial_maralan engine/textures/dialogue/maralan.png 0 0
 dial_elder engine/textures/dialogue/elder.png 0 0
 dial_flickow engine/textures/dialogue/flickow.png 0 0
-dial_elder engine/textures/dialogue/elder.png 0 0
 dial_axodile_happy engine/textures/dialogue/axodile_happy.png 0 0
 dial_axodile_hurt engine/textures/dialogue/axodile_hurt.png 0 0
+dial_mouse engine/textures/dialogue/mouse.png 0 0
+dial_space engine/textures/dialogue/space.png 0 0
+dial_z engine/textures/dialogue/z.png 0 0
+dial_qe engine/textures/dialogue/qe.png 0 0
+dial_wasd engine/textures/dialogue/wasd.png 0 0
 
 require spritesheet dimensions 150 50 3 1 dustparticle engine/textures/particles/dust_particle.png 0.5 0.5
 require spritesheet dimensions 186 36 6 1 animate player_runanimation 6 0 1 2 3 4 5 playerrun engine/textures/animations/running.png 0.55 0

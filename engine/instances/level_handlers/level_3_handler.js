@@ -86,28 +86,18 @@ class Level3Handler extends LevelHandler {
 		// ----------   SWAMP DIALOGUE LINES   ----------
 		 this.swamplines = [
 			new DialogueLine(
-				"I've read about your kind, buddy, and I think I know how to help! You can regenerate naturally, but you need to be in water for that.",
+				"Axodiles are so rare, but I love reading about them! I got him back in the water, where he should theoretically be able to regenerate! According to the myth, at least...",
 				LARAYA_PORTRAITS.HAPPY
 			),
 			new DialogueLine(
-				"So all I have to do is get you into that pool over there, and you'll be right as rain… theoretically.",
-				LARAYA_PORTRAITS.HAPPY
-			),
-			new DialogueLine(
-				"The books I've read say it's just a myth, but I hope for your sake it's not.",
-				LARAYA_PORTRAITS.HAPPY
-			),
-			//Need to stop dialogue here and resume once the sprite is in the water
-			new DialogueLine("Raaaar!", AXODILE_PORTRAITS.HAPPY, "Axodile"),
-			new DialogueLine(
-				"What's all this? Scale fragments… Drag marks… Cleanly cut rope bindings… And an Asu tool someone left behind!",
+				"What's all this that was under him? Scale fragments… Drag marks… Cleanly cut rope bindings… And an Asu tool someone left behind!",
 				LARAYA_PORTRAITS.SURPRISED
 			),
 			new DialogueLine(
 				"Argh! Someone did this on purpose, and tried to make it look like an accident if anyone came by! But who… Ximara!",
 				LARAYA_PORTRAITS.ANGRY
 			),
-			new DialogueLine("Grrrr… I saw these scales in her despicable workshop.", LARAYA_PORTRAITS.ANGRY),
+			new DialogueLine("Grrrr… I saw these scales in her despicable workshop.", LARAYA_PORTRAITS.ANGRY), //air wand piece should be nearby
 		 ];
 		 this.dialogue_instance = new Dialogue(0, 0, this.swamplines);
 	}

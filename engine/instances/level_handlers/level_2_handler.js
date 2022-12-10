@@ -85,22 +85,10 @@ class Level2Handler extends LevelHandler {
 		this.player.spells_learned = 2;
 		// // ----------   TREES DIALOGUE LINES   ----------
 		 this.treeslines = [
-			//Lore appears when cutscene ends, the following should only trigger when the player is close to nest/flickow sprite
 			new DialogueLine(
-				"I can't believe I'm seeing a flickow for real! What do you say, buddy, can I have it? I promise not to touch anything else!",
-				LARAYA_PORTRAITS.HAPPY
-			),
-			new DialogueLine("Chirp!", FLICKOW_PORTRAITS.NEUTRAL, "Flickow"),
+				"This must be that flickow's nest! Is my wand piece here?", LARAYA_PORTRAITS.HAPPY),
 			new DialogueLine(
-				"How about I give you this stick instead? It's a lot better, wouldn't you say?",
-				LARAYA_PORTRAITS.HAPPY
-			),
-			new DialogueLine("Chirp! Chirp!", FLICKOW_PORTRAITS.NEUTRAL, "Flickow"),
-			new DialogueLine(
-				"You've got yourself a deal, little guy! I get my wand piece, and you get these two sticks!",
-				LARAYA_PORTRAITS.HAPPY
-			),
-			new DialogueLine("Chirp! Chirp! Tweet!", FLICKOW_PORTRAITS.NEUTRAL, "Flickow"), //interact with water wand piece, lore (from LORE section) appears on screen
+				"Oh! It is! Thank you, wherever you are! I'll leave a few nice sticks as a trade!", LARAYA_PORTRAITS.HAPPY), //water wand piece dialogue appears
 		 ];
 		 this.dialogue_instance = new Dialogue(0, 0, this.treeslines);
 	}
