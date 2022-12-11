@@ -395,7 +395,7 @@ block instances
 	Enemy 2592 1776 0 0 1 1
 	Enemy 3264 1872 0 0 1 1
 	Enemy 2496 1440 0 0 1 1
-	Enemy 864 2112 0 0 1 1
+	Enemy 792 1920 0 0 1 1
 	Enemy 168 1248 0 0 1 1
 	Enemy 696 864 0 0 1 1
 	Enemy 1176 864 0 0 1 1

@@ -47,7 +47,10 @@ class Level3Handler extends LevelHandler {
 		this.spellWheel_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheel_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
 		this.spellWheel.addChild(this.spellWheel_sprite);
-		this.spellWheelDirection_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel_direction")));
+		this.spellWheelDirection_sprite = $engine.createManagedRenderable(
+			this,
+			new PIXI.Sprite($engine.getTexture("spellwheel_direction"))
+		);
 		this.spellWheelDirection_sprite.scale.set(2, 2);
 		this.spellWheelDirection_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheelDirection_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
@@ -65,7 +68,7 @@ class Level3Handler extends LevelHandler {
 		this.see_artifact_trigger = false;
 		this.get_artifact_trigger = false;
 
-		this.wand_piece = new WandPiece(624, 3024, "air_wand");
+		this.wand_piece = new WandPiece(552, 2016, "air_wand");
 
 		this.nextRoom = "Level3End";
 
@@ -84,7 +87,7 @@ class Level3Handler extends LevelHandler {
 		this.player = PlayerInstance.first;
 		this.player.spells_learned = 2;
 		// ----------   SWAMP DIALOGUE LINES   ----------
-		 this.swamplines = [
+		this.swamplines = [
 			new DialogueLine(
 				"Axodiles are so rare, but I love reading about them! I got him back in the water, where he should theoretically be able to regenerate! According to the myth, at least...",
 				LARAYA_PORTRAITS.HAPPY
@@ -98,8 +101,8 @@ class Level3Handler extends LevelHandler {
 				LARAYA_PORTRAITS.ANGRY
 			),
 			new DialogueLine("Grrrr… I saw these scales in her despicable workshop.", LARAYA_PORTRAITS.ANGRY), //air wand piece should be nearby
-		 ];
-		 this.dialogue_instance = new Dialogue(0, 0, this.swamplines);
+		];
+		this.dialogue_instance = new Dialogue(0, 0, this.swamplines);
 	}
 
 	step() {
@@ -199,8 +202,8 @@ class Level3Handler extends LevelHandler {
 				),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
-		
-			this.wand_piece_collected = false
+
+			this.wand_piece_collected = false;
 		}
 	}
 
