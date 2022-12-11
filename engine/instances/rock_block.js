@@ -53,6 +53,12 @@ class RockBlock extends SemiSolid {
 				for (var i = 0; i < num; i++) {
 					new DustParticle(this.x - 44 + i * (100 / num), this.y + 48, 1);
 				}
+
+				// Squish enemies
+				const enemList = IM.instanceCollisionList(this, this.x, this.y, Enemy);
+				for (var i = 0; i < enemList.length; i++) {
+					enemList[i].die();
+				}
 			}
 		}
 	}

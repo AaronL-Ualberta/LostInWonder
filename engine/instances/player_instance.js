@@ -62,6 +62,11 @@ class PlayerInstance extends EngineInstance {
 				step: this.stepUnderwater.bind(this),
 				exit: this.exitUnderwater.bind(this),
 			},
+			[PLAYERSTATES.DEATH]: {
+				enter: this.enterDeath.bind(this),
+				step: this.stepDeath.bind(this),
+				exit: this.exitDeath.bind(this),
+			},
 		};
 		this.vsp = 0;
 		this.hsp = 0;
@@ -79,6 +84,8 @@ class PlayerInstance extends EngineInstance {
 		this.animation_jumping_up = [$engine.getTexture("jumping_up")];
 		this.animation_jumping_down = [$engine.getTexture("jumping_down")];
 		this.animation_wallcling = [$engine.getTexture("player_wallcling")];
+		this.animation_death = [$engine.getTexture("player_death")];
+		this.animation_nothing = [$engine.getTexture("nothing")];
 
 		this.mainHitbox = new Hitbox(this, new RectangleHitbox(-20, 34 * -2, 20, 0));
 		this.iceHitbox = new Hitbox(this, new RectangleHitbox(-25, 36 * -2, 25, 4));
@@ -141,13 +148,15 @@ class PlayerInstance extends EngineInstance {
 			this.levelHandler.wand_piece_collected = true;
 		}
 
-		if (this.player_health <= 0) {
+		if (this.player_health <= 0 && this.state !== PLAYERSTATES.DEATH) {
 			// this.getCamera().reset();
 			// this.getCamera().__roomChange();
 			// this.setTimescale(1);
 			// $engine.set
-			this.x = this.saveX;
-			this.y = this.saveY;
+			this.switchState(PLAYERSTATES.DEATH);
+
+			// this.x = this.saveX;
+			// this.y = this.saveY;
 			this.player_health = 100;
 			// $engine.pauseGameSpecial(this);
 			// $engine.setRoom(RoomManager.currentRoom().name);
@@ -535,6 +544,36 @@ class PlayerInstance extends EngineInstance {
 
 		this.moveCollide();
 	}
+	stepDeath() {
+		// Vibrate
+		var moveAmount = 3;
+		if (this.state_timer % 4 === 0) {
+			moveAmount *= -1;
+		}
+		if (this.state_timer % 2 === 0) {
+			this.x += moveAmount;
+		}
+
+		// Die in a second or so
+		if (this.state_timer === 45) {
+			EngineUtils.setAnimation(this.animation, this.animation_nothing);
+			var from_center = 20;
+			const size = 2;
+			new DustParticle(this.x - from_center, this.y - 32 - from_center, size);
+			new DustParticle(this.x - from_center, this.y - 32 + from_center, size);
+			new DustParticle(this.x + from_center, this.y - 32 - from_center, size);
+			new DustParticle(this.x + from_center, this.y - 32 + from_center, size);
+			$engine.unpauseGameSpecial(this);
+		}
+
+		// "Respawn"
+		if (this.state_timer === 120) {
+			this.x = this.saveX;
+			this.y = this.saveY;
+			this.player_health = 100;
+			this.switchState(PLAYERSTATES.AIRBORNE);
+		}
+	}
 
 	// Transition functions
 	enterGrounded() {
@@ -562,6 +601,12 @@ class PlayerInstance extends EngineInstance {
 		this.has_doubleJump = true;
 		this.wall_jumped_times = 0;
 	}
+	enterDeath() {
+		EngineUtils.setAnimation(this.animation, this.animation_death);
+		this.vsp = 0;
+		this.hsp = 0;
+		$engine.pauseGameSpecial(this);
+	}
 
 	exitGrounded() {}
 	exitAirborne() {
@@ -574,6 +619,7 @@ class PlayerInstance extends EngineInstance {
 		this.inside_water = false;
 		// this.gravity = this.default_gravity;
 	}
+	exitDeath() {}
 
 	moveCollide() {
 		// Move X
@@ -774,6 +820,7 @@ PLAYERSTATES.INACTIVE = 2;
 PLAYERSTATES.WALLCLING = 3;
 PLAYERSTATES.WATERDASH = 4;
 PLAYERSTATES.UNDERWATER = 5;
+PLAYERSTATES.DEATH = 6;
 
 class SPELLNAMES {}
 SPELLNAMES.FIRE = 0;

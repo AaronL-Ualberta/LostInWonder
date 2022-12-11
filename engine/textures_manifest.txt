@@ -6,6 +6,8 @@ require jumping_up engine/textures/jumping_up.png 0.5 0
 require jumping_down engine/textures/jumping_down.png 0.5 0
 require evil_laraya engine/textures/evil_laraya.png 0.5 1
 require player_wallcling engine/textures/player/wallcling.png 0.1 0
+require player_death engine/textures/player/death.png 0.5 0
+require nothing engine/textures/player/nothing.png 0.5 0
 
 require bgfar engine/textures/bg/bg_far.png 0 0
 require bgswamp engine/textures/bg/bg_swamp.png 0 0
