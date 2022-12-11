@@ -89,8 +89,8 @@ class GameEndCutscene extends Cutscene {
 			),
 			new DialogueLine(
 				"To ensure fairness for all parties, you shall both be imprisoned until our investigation uncovers a definite culprit. Ximara, do you have anything to say",
-				XIMARA_PORTRAITS.NEUTRAL,
-				"Ximara"
+				MARALAN_PORTRAITS.NEUTRAL,
+				"Maralan"
 			),
 			new DialogueLine(
 				"I think this is a pitiful last-ditch attempt at Laraya's salvation, but I will play along.",
@@ -154,17 +154,16 @@ class GameEndCutscene extends Cutscene {
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to ending shot 3 and segue into appropriate ending
 		];
 
-		var data = $engine.getEngineGlobalData();
-
-		// if (data.myVar > 30) {
-		if (true) {
-			this.dialogue_lines = this.dialogue_lines.concat(this.hundredpercentlines);
-		} else if (data.myVar > 20) {
-			this.dialogue_lines = this.dialogue_lines.concat(this.goodendinglines);
-		} else if (data.myVar > 10) {
-			this.dialogue_lines = this.dialogue_lines.concat(this.okayendinglines);
+		var data = $engine.getEngineGlobalData().myVar;
+		// total number of artifacts is 33-35
+		if (data >= 33) {
+			this.dialogue_lines = this.dialogue_lines.concat(this.hundredpercentlines); // 100
+		} else if (data > 23) {
+			this.dialogue_lines = this.dialogue_lines.concat(this.goodendinglines); // 70
+		} else if (data > 13) {
+			this.dialogue_lines = this.dialogue_lines.concat(this.okayendinglines); // 40
 		} else {
-			this.dialogue_lines = this.dialogue_lines.concat(this.badendinglines);
+			this.dialogue_lines = this.dialogue_lines.concat(this.badendinglines); // 0
 		}
 
 		this.audioSound = "GameEndCutScene";

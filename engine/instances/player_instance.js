@@ -161,14 +161,14 @@ class PlayerInstance extends EngineInstance {
 			// $engine.pauseGameSpecial(this);
 			// $engine.setRoom(RoomManager.currentRoom().name);
 		}
-		// DEVMODE
-		// if (IN.keyCheckPressed("Slash")) {
-		// 	if (this.state === PLAYERSTATES.DEVMODE) {
-		// 		this.switchState(PLAYERSTATES.AIRBORNE);
-		// 	} else {
-		// 		this.switchState(PLAYERSTATES.DEVMODE);
-		// 	}
-		// }
+		//DEVMODE
+		if (IN.keyCheckPressed("Slash")) {
+			if (this.state === PLAYERSTATES.DEVMODE) {
+				this.switchState(PLAYERSTATES.AIRBORNE);
+			} else {
+				this.switchState(PLAYERSTATES.DEVMODE);
+			}
+		}
 
 		this.fire_cooldown_timer--;
 		this.wind_cooldown_timer--;
