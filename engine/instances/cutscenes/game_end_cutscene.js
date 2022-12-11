@@ -39,7 +39,7 @@ class GameEndCutscene extends Cutscene {
 				"Maralan"
 			),
 			new DialogueLine(
-				"Guards, take her away. I believe I know someone who is much more deserving of her place on the Tribunal",
+				"Guards, take her away. I believe I know someone who is much more deserving of her place on the Tribunal.",
 				MARALAN_PORTRAITS.NEUTRAL,
 				"Maralan"
 			), //fade to black, credits roll, game ends

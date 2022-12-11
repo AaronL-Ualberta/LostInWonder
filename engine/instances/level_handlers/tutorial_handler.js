@@ -22,6 +22,14 @@ class TutorialHandler extends LevelHandler {
 		this.background.width = this.camera_dimensions[0];
 		this.background.height = this.camera_dimensions[1];
 
+		this.foreground = new EmptyInstance();
+		this.foreground.setSprite(new PIXI.extras.TilingSprite($engine.getTexture("fglevel2")));
+		this.foreground.depth = -1000;
+		this.fgSprite = this.foreground.getSprite();
+		this.fgSprite.tileScale.set(2, 2);
+		this.fgSprite.width = this.room_width * 48;
+		this.fgSprite.height = 360;
+
 		// this.rayFilter = new PIXI.filters.GodrayFilter();
 		// this.rayFilter.gain = 0.4;
 		// this.rayFilter.lucanarity = 2;
@@ -31,6 +39,7 @@ class TutorialHandler extends LevelHandler {
 
 		const leafFilter = new PIXI.filters.AdvancedBloomFilter();
 		leafFilter.bloomScale = 1.5;
+		this.fgSprite.filters = [leafFilter];
 
 		this.spellWheel = $engine.createManagedRenderable(this, new PIXI.Container());
 		this.spellWheel_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel0")));
@@ -38,11 +47,6 @@ class TutorialHandler extends LevelHandler {
 		this.spellWheel_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheel_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
 		this.spellWheel.addChild(this.spellWheel_sprite);
-		this.spellWheelDirection_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel_direction")));
-		this.spellWheelDirection_sprite.scale.set(2, 2);
-		this.spellWheelDirection_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
-		this.spellWheelDirection_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
-		this.spellWheel.addChild(this.spellWheelDirection_sprite);
 		this.spellWheel_rotating = false;
 		this.spellWheel_origAngle = 0;
 		this.spellWheel_targetAngle = 0;
@@ -55,7 +59,7 @@ class TutorialHandler extends LevelHandler {
 
 		this.see_artifact_trigger = false;
 		this.get_artifact_trigger = false;
-
+		
 		this.wand_piece = new WandPiece(1752, 1704, "fire_wand");
 
 		this.nextRoom = "Level1Intro";
@@ -74,26 +78,24 @@ class TutorialHandler extends LevelHandler {
 	onRoomStart() {
 		this.player = PlayerInstance.first;
 		this.player.spells_learned = 0;
-		// ----------   JUNGLE/TUTORIAL/LEVEL 1 DIALOGUE LINES   ----------
+		// ----------   JUNGLE DIALOGUE LINES   ----------
 		this.junglelines = [
-			new DialogueLine("Aaaaaaaaaaaaaahhh!", LARAYA_PORTRAITS.SCARED), //happens in jungle shot 1, then cutscene ends
-			new DialogueLine("Ouch! That hurt.", LARAYA_PORTRAITS.HURT), //tutorial info appears on screen (different black dialogue box?), keys to move left, right, jump, and talk to NPC's
-			new DialogueLine(
-				"Alright then. Now all I need to do is find the pieces of my wand and portal back home! Once I know how to prove my innocence, I suppose…",
-				LARAYA_PORTRAITS.HAPPY
+			new DialogueLine("Ouch! That hurt.", 
+				LARAYA_PORTRAITS.HURT,
 			),
-			new DialogueLine(
-				"I didn't even break that law, the Tribunal knows that! Why would they do this?",
-				LARAYA_PORTRAITS.ANGRY
+			new DialogueLine("Use A and D to move left and right and SPACE or W to jump.", TUTORIAL_PORTRAITS.WASD, "",
 			),
-			new DialogueLine(
-				"I've lived at the Spire my whole life, the Tribunal knows I didn't do it!",
-				LARAYA_PORTRAITS.ANGRY
+			new DialogueLine("Some platforms, such as tree leaves or branches, can be dropped through by holding S.", TUTORIAL_PORTRAITS.WASD, "",
 			),
-			new DialogueLine("Use WASD to move around the map.", LARAYA_PORTRAITS.HAPPY),
-			new DialogueLine(
-				"Some platforms, such as tree leaves, can be passed through by holding S.",
-				LARAYA_PORTRAITS.HAPPY
+			new DialogueLine("Press Z to continue dialogue and cutscenes, and / to skip cutscenes altogether.", TUTORIAL_PORTRAITS.Z, "",
+			),
+			new DialogueLine("Q and E will switch your equipped wand piece while LEFT CLICK will use the active ability associated with them. Use the wand pieces you recover to explore the world, find evidence against Ximara, and make it back home!", TUTORIAL_PORTRAITS.QE, "",
+			),
+			new DialogueLine("Alright then. So all I need to do is find the pieces of my wand and I can portal back home! Once I know how to prove my innocence, I suppose…",
+				LARAYA_PORTRAITS.HAPPY,
+			),
+			new DialogueLine("That horrid workshop isn't mine, the Tribunal knows that! Why would they do this?",
+				LARAYA_PORTRAITS.ANGRY,
 			),
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.junglelines);
@@ -110,13 +112,17 @@ class TutorialHandler extends LevelHandler {
 		}
 
 		// Dialogue trigger for collecting the artifact
-		if (!this.get_artifact_trigger && 31 * 48 <= this.player.x && this.player.x <= 32 * 48) {
+		if (!this.get_artifact_trigger && 30 * 48 <= this.player.x && this.player.x <= 32 * 48) {
 			this.get_artifact_trigger = true;
 			this.artifactline = [
-				new DialogueLine(
-					"This is a piece of evidence! I need to collect as many of these as possible to prove my innocence!",
-					LARAYA_PORTRAITS.SURPRISED
-				),
+				new DialogueLine("Oh! They look like magically preserved footsteps! Evidence that an Asu sorcerer was here before me!",
+					LARAYA_PORTRAITS.SURPRISED),
+				new DialogueLine("If I can find more, maybe I can prove that it was Ximara behind everything!", 
+					LARAYA_PORTRAITS.HAPPY),
+				new DialogueLine("I'll need a lot of evidence to have my banishment lifted, though I'm sure if I only get some the Tribunal will start investigating.", 
+					LARAYA_PORTRAITS.HAPPY),
+				new DialogueLine("But if I go back with close to nothing, they'll just throw me out again!", 
+					LARAYA_PORTRAITS.SCARED),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, this.artifactline, true);
 		}
@@ -142,6 +148,10 @@ class TutorialHandler extends LevelHandler {
 
 			// This is responsible for moving the background
 			this.background.tilePosition.x = -this.camera.getX() / 5;
+
+			this.fgSprite.skew.x = Math.sin($engine.getGameTimer() / 60) / 20;
+			this.fgSprite.tilePosition.x = -this.camera.getX() / 1.75;
+			this.fgSprite.tilePosition.y = -this.camera.getY() / 1.75;
 
 			// this.rayFilter.time = this.camera.getX() / 300 + $engine.getGameTimer() / 200 + this.rayFilter_offset;
 			// this.rayFilter.time = $engine.getGameTimer() / 200;
@@ -203,18 +213,13 @@ class TutorialHandler extends LevelHandler {
 			// // console.log("why");
 		}
 
-		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
+		if (this.wand_piece_collected) {
 			let collection_line = [
-				new DialogueLine(
-					"One step closer to getting home! Once my wand is complete, I can make a portal and go back!",
-					LARAYA_PORTRAITS.HAPPY
-				), //tutorial obstacle, then she goes in the cave
-				new DialogueLine(
-					"This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life."
-				),
+				new DialogueLine("This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life.", LARAYA_PORTRAITS.SURPRISED),
 			];
-			this.dialogue_instance = new Dialogue(0, 0, collection_line);
-			this.wand_piece.destroy();
+			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
+
+			this.wand_piece_collected = false;
 		}
 	}
 

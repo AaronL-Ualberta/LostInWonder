@@ -2,7 +2,7 @@ class PlayerInstance extends EngineInstance {
 	onEngineCreate() {
 		// Gameplay vars
 		this.ground_accel = 0.5;
-		this.jump_height = 13;
+		this.jump_height = 15;
 		this.gravity = 0.8;
 		this.default_gravity = this.gravity;
 		this.water_gravity = 0.12;
@@ -62,6 +62,11 @@ class PlayerInstance extends EngineInstance {
 				step: this.stepUnderwater.bind(this),
 				exit: this.exitUnderwater.bind(this),
 			},
+			[PLAYERSTATES.DEATH]: {
+				enter: this.enterDeath.bind(this),
+				step: this.stepDeath.bind(this),
+				exit: this.exitDeath.bind(this),
+			},
 		};
 		this.vsp = 0;
 		this.hsp = 0;
@@ -79,6 +84,8 @@ class PlayerInstance extends EngineInstance {
 		this.animation_jumping_up = [$engine.getTexture("jumping_up")];
 		this.animation_jumping_down = [$engine.getTexture("jumping_down")];
 		this.animation_wallcling = [$engine.getTexture("player_wallcling")];
+		this.animation_death = [$engine.getTexture("player_death")];
+		this.animation_nothing = [$engine.getTexture("nothing")];
 
 		this.mainHitbox = new Hitbox(this, new RectangleHitbox(-20, 34 * -2, 20, 0));
 		this.iceHitbox = new Hitbox(this, new RectangleHitbox(-25, 36 * -2, 25, 4));
@@ -100,8 +107,12 @@ class PlayerInstance extends EngineInstance {
 		this.wind_cooldown_timer = 0;
 
 		this.rock_spell_count = 0;
+		this.rock_spell_array = [];
 
 		this.wall_jumped_times = 0;
+
+		this.saveX = this.x;
+		this.saveY = this.y;
 
 		// Marcus cool code!!!!!!!!!!!!!!!!!!!!!!!!!
 		// this.filter = new PIXI.filters.BlurFilter();
@@ -116,6 +127,9 @@ class PlayerInstance extends EngineInstance {
 	}
 
 	step() {
+		// Get controls
+		this.jumped = IN.keyCheckPressed("KeyW") || IN.keyCheckPressed("Space");
+
 		// Check for collision with the wand piece
 		var wand_piece = IM.instancePlace(this, this.x, this.y, WandPiece);
 		if (wand_piece !== undefined) {
@@ -130,19 +144,31 @@ class PlayerInstance extends EngineInstance {
 
 			// Wand Piece Collection Sound Effect
 			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
+
+			this.levelHandler.wand_piece_collected = true;
 		}
 
-		if (this.player_health <= 0) {
-			$engine.setRoom(RoomManager.currentRoom().name);
+		if (this.player_health <= 0 && this.state !== PLAYERSTATES.DEATH) {
+			// this.getCamera().reset();
+			// this.getCamera().__roomChange();
+			// this.setTimescale(1);
+			// $engine.set
+			this.switchState(PLAYERSTATES.DEATH);
+
+			// this.x = this.saveX;
+			// this.y = this.saveY;
+			this.player_health = 100;
+			// $engine.pauseGameSpecial(this);
+			// $engine.setRoom(RoomManager.currentRoom().name);
 		}
 		// DEVMODE
-		if (IN.keyCheckPressed("Slash")) {
-			if (this.state === PLAYERSTATES.DEVMODE) {
-				this.switchState(PLAYERSTATES.AIRBORNE);
-			} else {
-				this.switchState(PLAYERSTATES.DEVMODE);
-			}
-		}
+		// if (IN.keyCheckPressed("Slash")) {
+		// 	if (this.state === PLAYERSTATES.DEVMODE) {
+		// 		this.switchState(PLAYERSTATES.AIRBORNE);
+		// 	} else {
+		// 		this.switchState(PLAYERSTATES.DEVMODE);
+		// 	}
+		// }
 
 		this.fire_cooldown_timer--;
 		this.wind_cooldown_timer--;
@@ -164,12 +190,17 @@ class PlayerInstance extends EngineInstance {
 			} else if (this.current_spell === SPELLNAMES.EARTH && this.spells_learned >= 2) {
 				// EARTH
 				const offset = 40;
+
+				// Remove oldest rock if there are too many
+				while (this.rock_spell_array.length >= 2) {
+					this.rock_spell_array.shift().blockDestroy();
+				}
 				if (this.rock_spell_count < 2) {
 					const angle = V2D.calcDir(
 						IN.getMouseX() - (this.x + this.face_direction * offset),
 						IN.getMouseY() - (this.y - offset)
 					);
-					new RockBlock(this.x + this.face_direction * offset, this.y - offset - 20, angle);
+					this.rock_spell_array.push(new RockBlock(this.x + this.face_direction * offset, this.y - offset - 20, angle));
 				} else {
 					new DustParticle(this.x + this.face_direction * offset, this.y - offset, 0.7);
 				}
@@ -307,7 +338,7 @@ class PlayerInstance extends EngineInstance {
 			this.hsp -= Math.sign(this.hsp) * this.decel_const;
 			if (Math.abs(this.hsp) < 0.05) this.hsp = 0;
 		}
-		if (IN.keyCheckPressed("KeyW")) {
+		if (this.jumped) {
 			// Jump
 			this.vsp -= this.jump_height;
 			new DustParticle(this.x - part_from_center, this.y - part_from_ground);
@@ -338,7 +369,7 @@ class PlayerInstance extends EngineInstance {
 
 		// Make shorthop lower
 		if (this.vsp < 0) {
-			if (!IN.keyCheck("KeyW")) {
+			if (!(IN.keyCheck("KeyW") || IN.keyCheck("Space"))) {
 				this.vsp *= 0.9;
 			}
 		}
@@ -393,7 +424,7 @@ class PlayerInstance extends EngineInstance {
 
 		// Check Double Jump
 		if (this.current_spell === SPELLNAMES.AIR) {
-			if (IN.keyCheckPressed("KeyW") && this.has_doubleJump) {
+			if (this.jumped && this.has_doubleJump) {
 				this.vsp = -this.jump_height;
 				const part_from_center = 18;
 				const part_from_ground = 5;
@@ -409,7 +440,7 @@ class PlayerInstance extends EngineInstance {
 	}
 	stepInactive() {}
 	stepWallCling() {
-		if (IN.keyCheckPressed("KeyW")) {
+		if (this.jumped) {
 			this.vsp -= this.jump_height / (1 + this.wall_jumped_times * 0.05);
 			this.hsp = 6 * -this.facing;
 			this.wall_jumped_times++;
@@ -460,7 +491,7 @@ class PlayerInstance extends EngineInstance {
 		this.inside_water = true;
 
 		if (this.vsp < 0) {
-			if (!IN.keyCheck("KeyW")) {
+			if (!this.jumped) {
 				this.vsp *= 0.98;
 			}
 		}
@@ -494,7 +525,7 @@ class PlayerInstance extends EngineInstance {
 
 		if (this.state_timer > 8) {
 			// "Jump" infinitely
-			if (IN.keyCheckPressed("KeyW")) {
+			if (this.jumped) {
 				this.vsp -= this.jump_height / 6;
 				const part_from_center = 18;
 				const part_from_ground = 5;
@@ -512,6 +543,36 @@ class PlayerInstance extends EngineInstance {
 		}
 
 		this.moveCollide();
+	}
+	stepDeath() {
+		// Vibrate
+		var moveAmount = 3;
+		if (this.state_timer % 4 === 0) {
+			moveAmount *= -1;
+		}
+		if (this.state_timer % 2 === 0) {
+			this.x += moveAmount;
+		}
+
+		// Die in a second or so
+		if (this.state_timer === 45) {
+			EngineUtils.setAnimation(this.animation, this.animation_nothing);
+			var from_center = 20;
+			const size = 2;
+			new DustParticle(this.x - from_center, this.y - 32 - from_center, size);
+			new DustParticle(this.x - from_center, this.y - 32 + from_center, size);
+			new DustParticle(this.x + from_center, this.y - 32 - from_center, size);
+			new DustParticle(this.x + from_center, this.y - 32 + from_center, size);
+			$engine.unpauseGameSpecial(this);
+		}
+
+		// "Respawn"
+		if (this.state_timer === 120) {
+			this.x = this.saveX;
+			this.y = this.saveY;
+			this.player_health = 100;
+			this.switchState(PLAYERSTATES.AIRBORNE);
+		}
 	}
 
 	// Transition functions
@@ -540,6 +601,12 @@ class PlayerInstance extends EngineInstance {
 		this.has_doubleJump = true;
 		this.wall_jumped_times = 0;
 	}
+	enterDeath() {
+		EngineUtils.setAnimation(this.animation, this.animation_death);
+		this.vsp = 0;
+		this.hsp = 0;
+		$engine.pauseGameSpecial(this);
+	}
 
 	exitGrounded() {}
 	exitAirborne() {
@@ -552,6 +619,7 @@ class PlayerInstance extends EngineInstance {
 		this.inside_water = false;
 		// this.gravity = this.default_gravity;
 	}
+	exitDeath() {}
 
 	moveCollide() {
 		// Move X
@@ -740,8 +808,6 @@ class PlayerInstance extends EngineInstance {
 			this.spells_learned = 2;
 		} else if (RoomManager.currentRoom().name == "Level3") {
 			this.spells_learned = 3;
-		} else if (RoomManager.currentRoom().name == "Level3_CUT") {
-			this.spells_learned = 4;
 		}
 	}
 }
@@ -754,6 +820,7 @@ PLAYERSTATES.INACTIVE = 2;
 PLAYERSTATES.WALLCLING = 3;
 PLAYERSTATES.WATERDASH = 4;
 PLAYERSTATES.UNDERWATER = 5;
+PLAYERSTATES.DEATH = 6;
 
 class SPELLNAMES {}
 SPELLNAMES.FIRE = 0;

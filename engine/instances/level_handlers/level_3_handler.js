@@ -47,7 +47,10 @@ class Level3Handler extends LevelHandler {
 		this.spellWheel_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheel_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
 		this.spellWheel.addChild(this.spellWheel_sprite);
-		this.spellWheelDirection_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel_direction")));
+		this.spellWheelDirection_sprite = $engine.createManagedRenderable(
+			this,
+			new PIXI.Sprite($engine.getTexture("spellwheel_direction"))
+		);
 		this.spellWheelDirection_sprite.scale.set(2, 2);
 		this.spellWheelDirection_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheelDirection_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
@@ -65,7 +68,7 @@ class Level3Handler extends LevelHandler {
 		this.see_artifact_trigger = false;
 		this.get_artifact_trigger = false;
 
-		this.wand_piece = new WandPiece(624, 3024, "air_wand");
+		this.wand_piece = new WandPiece(552, 2016, "air_wand");
 
 		this.nextRoom = "Level3End";
 
@@ -83,29 +86,23 @@ class Level3Handler extends LevelHandler {
 	onRoomStart() {
 		this.player = PlayerInstance.first;
 		this.player.spells_learned = 2;
-		// // ----------   JUNGLE/TUTORIAL/LEVEL 1 DIALOGUE LINES   ----------
-		// this.junglelines = [
-		// 	new DialogueLine("Aaaaaaaaaaaaaahhh!", LARAYA_PORTRAITS.SCARED), //happens in jungle shot 1, then cutscene ends
-		// 	new DialogueLine("Ouch! That hurt.", LARAYA_PORTRAITS.HURT), //tutorial info appears on screen (different black dialogue box?), keys to move left, right, jump, and talk to NPC's
-		// 	new DialogueLine(
-		// 		"Alright then. Now all I need to do is find the pieces of my wand and portal back home! Once I know how to prove my innocence, I suppose…",
-		// 		LARAYA_PORTRAITS.HAPPY
-		// 	),
-		// 	new DialogueLine(
-		// 		"I didn't even break that law, the Tribunal knows that! Why would they do this?",
-		// 		LARAYA_PORTRAITS.ANGRY
-		// 	),
-		// 	new DialogueLine(
-		// 		"I've lived at the Spire my whole life, the Tribunal knows I didn't do it!",
-		// 		LARAYA_PORTRAITS.ANGRY
-		// 	),
-		// 	new DialogueLine("Use WASD to move around the map.", LARAYA_PORTRAITS.HAPPY),
-		// 	new DialogueLine(
-		// 		"Some platforms, such as tree leaves, can be passed through by holding S.",
-		// 		LARAYA_PORTRAITS.HAPPY
-		// 	),
-		// ];
-		// this.dialogue_instance = new Dialogue(0, 0, this.junglelines);
+		// ----------   SWAMP DIALOGUE LINES   ----------
+		this.swamplines = [
+			new DialogueLine(
+				"Axodiles are so rare, but I love reading about them! I got him back in the water, where he should theoretically be able to regenerate! According to the myth, at least...",
+				LARAYA_PORTRAITS.HAPPY
+			),
+			new DialogueLine(
+				"What's all this that was under him? Scale fragments… Drag marks… Cleanly cut rope bindings… And an Asu tool someone left behind!",
+				LARAYA_PORTRAITS.SURPRISED
+			),
+			new DialogueLine(
+				"Argh! Someone did this on purpose, and tried to make it look like an accident if anyone came by! But who… Ximara!",
+				LARAYA_PORTRAITS.ANGRY
+			),
+			new DialogueLine("Grrrr… I saw these scales in her despicable workshop.", LARAYA_PORTRAITS.ANGRY), //air wand piece should be nearby
+		];
+		this.dialogue_instance = new Dialogue(0, 0, this.swamplines);
 	}
 
 	step() {
@@ -189,7 +186,7 @@ class Level3Handler extends LevelHandler {
 			}
 
 			// Check if player beats the level
-			if (this.player.x >= (this.room_width - 3) * 48) {
+			if (this.player.x >= (this.room_width - 3) * 48 && this.player.y <= 7 * 48) {
 				//$engine.setRoom(RoomManager.currentRoom().name);
 				this.winLevel();
 			}
@@ -197,18 +194,16 @@ class Level3Handler extends LevelHandler {
 			this.winLevelStep();
 		}
 
-		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
+		if (this.wand_piece_collected) {
 			let collection_line = [
 				new DialogueLine(
-					"One step closer to getting home! Once my wand is complete, I can make a portal and go back!",
-					LARAYA_PORTRAITS.HAPPY
-				), //tutorial obstacle, then she goes in the cave
-				new DialogueLine(
-					"This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life."
+					"This element is temperamental. It can blow objects upwards and lessen the effects of gravity with strong gusts, and allow the user to jump again in midair as if on a cloud.",
+					LARAYA_PORTRAITS.SURPRISED
 				),
 			];
-			this.dialogue_instance = new Dialogue(0, 0, collection_line);
-			this.wand_piece.destroy();
+			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
+
+			this.wand_piece_collected = false;
 		}
 	}
 

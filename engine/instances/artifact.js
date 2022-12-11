@@ -18,7 +18,7 @@ class Artifact extends EngineInstance {
 			ArtifactText.first.collected();
 			this.destroy();
 			// Artifact Collectile Sound Effect
-			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.07, false);
+			$engine.audioPlaySound("ArtifactCollectibleSoundEffect", 0.06, false);
 		}
 		if (this.bound > this.limit) {
 			this.move = -1;

@@ -83,29 +83,11 @@ class Level1Handler extends LevelHandler {
 	onRoomStart() {
 		this.player = PlayerInstance.first;
 		this.player.spells_learned = 1;
-		// // ----------   JUNGLE/TUTORIAL/LEVEL 1 DIALOGUE LINES   ----------
-		// this.junglelines = [
-		// 	new DialogueLine("Aaaaaaaaaaaaaahhh!", LARAYA_PORTRAITS.SCARED), //happens in jungle shot 1, then cutscene ends
-		// 	new DialogueLine("Ouch! That hurt.", LARAYA_PORTRAITS.HURT), //tutorial info appears on screen (different black dialogue box?), keys to move left, right, jump, and talk to NPC's
-		// 	new DialogueLine(
-		// 		"Alright then. Now all I need to do is find the pieces of my wand and portal back home! Once I know how to prove my innocence, I suppose…",
-		// 		LARAYA_PORTRAITS.HAPPY
-		// 	),
-		// 	new DialogueLine(
-		// 		"I didn't even break that law, the Tribunal knows that! Why would they do this?",
-		// 		LARAYA_PORTRAITS.ANGRY
-		// 	),
-		// 	new DialogueLine(
-		// 		"I've lived at the Spire my whole life, the Tribunal knows I didn't do it!",
-		// 		LARAYA_PORTRAITS.ANGRY
-		// 	),
-		// 	new DialogueLine("Use WASD to move around the map.", LARAYA_PORTRAITS.HAPPY),
-		// 	new DialogueLine(
-		// 		"Some platforms, such as tree leaves, can be passed through by holding S.",
-		// 		LARAYA_PORTRAITS.HAPPY
-		// 	),
-		// ];
-		// this.dialogue_instance = new Dialogue(0, 0, this.junglelines);
+		// ----------   CAVE DIALOGUE LINES   ----------
+		this.cavelines = [
+			new DialogueLine("These enemies don't look very friendly... But if I leave them alone, they'll leave me alone. Right?", LARAYA_PORTRAITS.SCARED),
+		];
+		this.dialogue_instance = new Dialogue(0, 0, this.cavelines);
 	}
 
 	step() {
@@ -216,18 +198,16 @@ class Level1Handler extends LevelHandler {
 			// // console.log("why");
 		}
 
-		if (IM.instanceCollision(this.player, this.player.x, this.player.y, this.wand_piece)) {
+		if (this.wand_piece_collected) {
 			let collection_line = [
 				new DialogueLine(
-					"One step closer to getting home! Once my wand is complete, I can make a portal and go back!",
-					LARAYA_PORTRAITS.HAPPY
-				), //tutorial obstacle, then she goes in the cave
-				new DialogueLine(
-					"This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life."
+					"This element is brutal. It allows the user to throw boulders for both squishing and scaling, and walls become soft so the user can grip and jump off of them - for a time.",
+					LARAYA_PORTRAITS.SURPRISED
 				),
 			];
-			this.dialogue_instance = new Dialogue(0, 0, collection_line);
-			this.wand_piece.destroy();
+			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
+			
+			this.wand_piece_collected = false;
 		}
 	}
 

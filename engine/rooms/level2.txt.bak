@@ -13,7 +13,11 @@ block room_data
 endblock
 
 block instances
-	TechDemoHandler 0 0 0 0 1 1
+	ArtifactText 974 401 0 0 1 1
+	Proceed 2760 1752 0 0 1 1
+	Counter 888 120 0 0 1 1
+	Global -72 -72 0 0 1 1
+	Level2Handler 0 0 0 0 1 1
 	PlayerInstance 264 216 0 0 1 1
 	Artifact 168 696 0 0 1 1
 	Artifact 2232 1032 0 0 1 1
@@ -39,10 +43,6 @@ block instances
 	Enemy 840 384 0 0 1 1
 	Enemy 4248 864 0 0 1 1
 	Enemy 3960 2064 0 0 1 1
-	Global 312 408 0 0 1 1
-	ArtifactText 504 408 0 0 1 1
-	Proceed 456 408 0 0 1 1
-	Counter 408 408 0 0 1 1
 	LeafCreate 360 408 0 0 1 1
 	GrassCreate 336 312 0 0 12 1
 	GrassCreate 888 360 0 0 11 1
@@ -89,16 +89,28 @@ block instances
 	GrassCreate 4512 1992 0 0 4 1
 	GrassCreate 3864 2040 0 0 11 1
 	GrassCreate 4584 2328 0 0 9 1
-	EnemyText 552 216 0 0 1 5
-	EnemyText 936 264 0 0 1 5
-endblock
-
-block extern Enemy
-GREEN_COMPRIMIA,LEOTA
+	Checkpoint 600 312 0 0 1 1
+	Checkpoint 1848 312 0 0 1 1
+	Checkpoint 1992 552 0 0 1 1
+	Checkpoint 1608 840 0 0 1 1
+	Checkpoint 456 1752 0 0 1 1
+	Checkpoint 1032 2184 0 0 1 1
+	Checkpoint 2760 2280 0 0 1 1
+	Checkpoint 3336 1752 0 0 1 1
+	Checkpoint 2616 1272 0 0 1 1
+	Checkpoint 3288 888 0 0 1 1
+	Checkpoint 3960 792 0 0 1 1
+	Checkpoint 4440 888 0 0 1 1
+	Checkpoint 4392 1560 0 0 1 1
+	Checkpoint 3720 1704 0 0 1 1
+	Checkpoint 3816 1704 0 0 1 1
+	Checkpoint 4440 1992 0 0 1 1
+	InvisibleWall 24 -72 0 0 1 3
+	InvisibleWall 120 -120 0 1.5707963267948966 1 3
 endblock
 
 block extern Music
-bg
+BackgroundMusic_Level2
 0.03
 endblock
 

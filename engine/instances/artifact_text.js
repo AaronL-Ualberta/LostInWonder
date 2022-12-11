@@ -57,7 +57,7 @@ class ArtifactText extends EngineInstance {
 		this.x_loc = 500;
 		this.y_loc = 700;
 		this.fade = false;
-		this.fade_time = 0.004;
+		this.fade_time = 0.001;
 		this.fade_value = 1;
 		this.dialogue_text = $engine.createManagedRenderable(
 			this,
@@ -72,12 +72,13 @@ class ArtifactText extends EngineInstance {
 		);
 		this.dialogue = $engine.createManagedRenderable(this, new PIXI.Container());
 		this.bg_box = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("msgbox")));
+		this.bg_box.scale.set(1.25, 1.25);
 	}
 
 	step() {
 		if (this.fade) {
 			this.fade_value += this.fade_time;
-			this.dialogue.alpha = EngineUtils.interpolate(this.fade_value, 1, 0, EngineUtils.INTERPOLATE_IN);
+			this.dialogue.alpha = EngineUtils.interpolate(this.fade_value, 1, 0, EngineUtils.INTERPOLATE_OUT);
 			if (this.dialogue.alpha < 0) {
 				this.fade = false;
 			}
@@ -99,8 +100,8 @@ class ArtifactText extends EngineInstance {
 			this.dialogue_text.text = "Collected!";
 		}
 
-		this.bg_box.x = -10;
-		this.bg_box.y = -5;
+		this.bg_box.x = -50;
+		this.bg_box.y = -15;
 		this.dialogue.x = this.x_loc - 160;
 
 		this.dialogue.y = this.y_loc;
