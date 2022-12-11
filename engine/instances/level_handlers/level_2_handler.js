@@ -7,6 +7,7 @@ class Level2Handler extends LevelHandler {
 			this.audioSound = $engine.audioPlaySound(music[0], music[1], true);
 		}
 
+		this.add_collectible = true;
 		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
 		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
 		this.camera_dimensions = [1008, 816];
@@ -47,7 +48,10 @@ class Level2Handler extends LevelHandler {
 		this.spellWheel_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheel_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
 		this.spellWheel.addChild(this.spellWheel_sprite);
-		this.spellWheelDirection_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel_direction")));
+		this.spellWheelDirection_sprite = $engine.createManagedRenderable(
+			this,
+			new PIXI.Sprite($engine.getTexture("spellwheel_direction"))
+		);
 		this.spellWheelDirection_sprite.scale.set(2, 2);
 		this.spellWheelDirection_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheelDirection_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
@@ -84,13 +88,15 @@ class Level2Handler extends LevelHandler {
 		this.player = PlayerInstance.first;
 		this.player.spells_learned = 2;
 		// // ----------   TREES DIALOGUE LINES   ----------
-		 this.treeslines = [
+		this.treeslines = [
+			new DialogueLine("This must be that flickow's nest! Is my wand piece here?", LARAYA_PORTRAITS.HAPPY),
 			new DialogueLine(
-				"This must be that flickow's nest! Is my wand piece here?", LARAYA_PORTRAITS.HAPPY),
-			new DialogueLine(
-				"Oh! It is! Thank you, wherever you are! I'll leave a few nice sticks as a trade!", LARAYA_PORTRAITS.HAPPY), //water wand piece dialogue appears
-		 ];
-		 this.dialogue_instance = new Dialogue(0, 0, this.treeslines);
+				"Oh! It is! Thank you, wherever you are! I'll leave a few nice sticks as a trade!",
+				LARAYA_PORTRAITS.HAPPY
+			), //water wand piece dialogue appears
+		];
+		this.dialogue_instance = new Dialogue(0, 0, this.treeslines);
+		this.global = Global.first;
 	}
 
 	step() {
@@ -179,6 +185,10 @@ class Level2Handler extends LevelHandler {
 				this.winLevel();
 			}
 		} else {
+			if (this.add_collectible) {
+				this.add_collectible = false;
+				this.global.saveCollectible();
+			}
 			this.winLevelStep();
 		}
 
@@ -191,7 +201,7 @@ class Level2Handler extends LevelHandler {
 			];
 			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
 
-			this.wand_piece_collected = false
+			this.wand_piece_collected = false;
 		}
 	}
 

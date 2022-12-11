@@ -1,5 +1,6 @@
 class TutorialHandler extends LevelHandler {
 	onEngineCreate() {
+		$engine.getEngineGlobalData().myVar = 0;
 		var extern = RoomManager.currentRoom().getAllExtern();
 		if (extern.Music) {
 			var music = extern.Music;
@@ -40,6 +41,7 @@ class TutorialHandler extends LevelHandler {
 		const leafFilter = new PIXI.filters.AdvancedBloomFilter();
 		leafFilter.bloomScale = 1.5;
 		this.fgSprite.filters = [leafFilter];
+		this.add_collectible = true;
 
 		this.spellWheel = $engine.createManagedRenderable(this, new PIXI.Container());
 		this.spellWheel_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel0")));
@@ -59,9 +61,8 @@ class TutorialHandler extends LevelHandler {
 
 		this.see_artifact_trigger = false;
 		this.get_artifact_trigger = false;
-		
-		this.wand_piece = new WandPiece(1752, 1704, "fire_wand");
 
+		this.wand_piece = new WandPiece(1752, 1704, "fire_wand");
 		this.nextRoom = "Level1Intro";
 
 		super.onEngineCreate();
@@ -80,25 +81,36 @@ class TutorialHandler extends LevelHandler {
 		this.player.spells_learned = 0;
 		// ----------   JUNGLE DIALOGUE LINES   ----------
 		this.junglelines = [
-			new DialogueLine("Ouch! That hurt.", 
-				LARAYA_PORTRAITS.HURT,
+			new DialogueLine("Ouch! That hurt.", LARAYA_PORTRAITS.HURT),
+			new DialogueLine("Use A and D to move left and right and SPACE or W to jump.", TUTORIAL_PORTRAITS.WASD, ""),
+			new DialogueLine(
+				"Some platforms, such as tree leaves or branches, can be dropped through by holding S.",
+				TUTORIAL_PORTRAITS.WASD,
+				""
 			),
-			new DialogueLine("Use A and D to move left and right and SPACE or W to jump.", TUTORIAL_PORTRAITS.WASD, "",
+			new DialogueLine(
+				"Press Z to continue dialogue and cutscenes, and / to skip cutscenes altogether.",
+				TUTORIAL_PORTRAITS.Z,
+				""
 			),
-			new DialogueLine("Some platforms, such as tree leaves or branches, can be dropped through by holding S.", TUTORIAL_PORTRAITS.WASD, "",
+			new DialogueLine(
+				"Q and E will switch your equipped wand piece while LEFT CLICK will use the active ability associated with them. Use the wand pieces you recover to explore the world, find evidence against Ximara, and make it back home!",
+				TUTORIAL_PORTRAITS.QE,
+				""
 			),
-			new DialogueLine("Press Z to continue dialogue and cutscenes, and / to skip cutscenes altogether.", TUTORIAL_PORTRAITS.Z, "",
+			new DialogueLine(
+				"Alright then. So all I need to do is find the pieces of my wand and I can portal back home! Once I know how to prove my innocence, I suppose…",
+				LARAYA_PORTRAITS.HAPPY
 			),
-			new DialogueLine("Q and E will switch your equipped wand piece while LEFT CLICK will use the active ability associated with them. Use the wand pieces you recover to explore the world, find evidence against Ximara, and make it back home!", TUTORIAL_PORTRAITS.QE, "",
-			),
-			new DialogueLine("Alright then. So all I need to do is find the pieces of my wand and I can portal back home! Once I know how to prove my innocence, I suppose…",
-				LARAYA_PORTRAITS.HAPPY,
-			),
-			new DialogueLine("That horrid workshop isn't mine, the Tribunal knows that! Why would they do this?",
-				LARAYA_PORTRAITS.ANGRY,
+			new DialogueLine(
+				"That horrid workshop isn't mine, the Tribunal knows that! Why would they do this?",
+				LARAYA_PORTRAITS.ANGRY
 			),
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.junglelines);
+		/**@type {Global} */
+
+		this.global = Global.first;
 	}
 
 	step() {
@@ -115,14 +127,22 @@ class TutorialHandler extends LevelHandler {
 		if (!this.get_artifact_trigger && 30 * 48 <= this.player.x && this.player.x <= 32 * 48) {
 			this.get_artifact_trigger = true;
 			this.artifactline = [
-				new DialogueLine("Oh! They look like magically preserved footsteps! Evidence that an Asu sorcerer was here before me!",
-					LARAYA_PORTRAITS.SURPRISED),
-				new DialogueLine("If I can find more, maybe I can prove that it was Ximara behind everything!", 
-					LARAYA_PORTRAITS.HAPPY),
-				new DialogueLine("I'll need a lot of evidence to have my banishment lifted, though I'm sure if I only get some the Tribunal will start investigating.", 
-					LARAYA_PORTRAITS.HAPPY),
-				new DialogueLine("But if I go back with close to nothing, they'll just throw me out again!", 
-					LARAYA_PORTRAITS.SCARED),
+				new DialogueLine(
+					"Oh! They look like magically preserved footsteps! Evidence that an Asu sorcerer was here before me!",
+					LARAYA_PORTRAITS.SURPRISED
+				),
+				new DialogueLine(
+					"If I can find more, maybe I can prove that it was Ximara behind everything!",
+					LARAYA_PORTRAITS.HAPPY
+				),
+				new DialogueLine(
+					"I'll need a lot of evidence to have my banishment lifted, though I'm sure if I only get some the Tribunal will start investigating.",
+					LARAYA_PORTRAITS.HAPPY
+				),
+				new DialogueLine(
+					"But if I go back with close to nothing, they'll just throw me out again!",
+					LARAYA_PORTRAITS.SCARED
+				),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, this.artifactline, true);
 		}
@@ -198,6 +218,10 @@ class TutorialHandler extends LevelHandler {
 			// 	this.adjustFilter2.alpha = this.timer2 / fadeTime;
 			// 	return;
 			// }
+			if (this.add_collectible) {
+				this.add_collectible = false;
+				this.global.saveCollectible();
+			}
 			this.winLevelStep();
 			// this.timer2++;
 
@@ -215,7 +239,10 @@ class TutorialHandler extends LevelHandler {
 
 		if (this.wand_piece_collected) {
 			let collection_line = [
-				new DialogueLine("This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life.", LARAYA_PORTRAITS.SURPRISED),
+				new DialogueLine(
+					"This element is fierce. The user can throw fireballs to kill enemies, melt ice, or burn plant life.",
+					LARAYA_PORTRAITS.SURPRISED
+				),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
 

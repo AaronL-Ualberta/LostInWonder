@@ -426,33 +426,6 @@ block instances
 	SemiSolid 552 2136 0 0 3 1
 	SemiSolid 264 888 0 0 3 1
 	ArtifactText 72 408 0 0 1 1
-	Checkpoint 456 2088 0 0 1 1
-	Checkpoint 1224 1848 0 0 1 1
-	Checkpoint 1368 2088 0 0 1 1
-	Checkpoint 1992 1608 0 0 1 1
-	Checkpoint 456 1176 0 0 1 1
-	Checkpoint 216 984 0 0 1 1
-	Checkpoint 456 696 0 0 1 1
-	Checkpoint 936 696 0 0 1 1
-	Checkpoint 1032 456 0 0 1 1
-	Checkpoint 1272 648 0 0 1 1
-	Checkpoint 1560 600 0 0 1 1
-	Checkpoint 1848 648 0 0 1 1
-	Checkpoint 1992 456 0 0 1 1
-	Checkpoint 2616 792 0 0 1 1
-	Checkpoint 2328 600 0 0 1 1
-	Checkpoint 3768 792 0 0 1 1
-	Checkpoint 4008 1752 0 0 1 1
-	Checkpoint 3192 2088 0 0 1 1
-	Checkpoint 2904 1992 0 0 1 1
-	Checkpoint 4152 2136 0 0 1 1
-	Checkpoint 4344 1992 0 0 1 1
-	Checkpoint 3192 1416 0 0 1 1
-	Checkpoint 2664 1416 0 0 1 1
-	Checkpoint 2952 360 0 0 1 1
-	Checkpoint 4488 888 0 0 1 1
-	Checkpoint 2376 1944 0 0 1 1
-	Checkpoint 2424 1560 0 0 1 1
 	WandPiece 648 2088 0 0 1 1
 	ArtifactText -24 2088 0 0 1 1
 	Counter -24 2040 0 0 1 1
@@ -571,6 +544,14 @@ block instances
 	GrassCreate 1848 648 0 0 1 1
 	GrassCreate 3768 792 0 0 1 1
 	LeafCreate -24 1992 0 0 1 1
+	Checkpoint 312 2088 0 0 1 1
+	Checkpoint 1944 1920 0 0 1 4
+	Checkpoint 3768 1752 0 0 1 1
+	Checkpoint 3432 1560 0 0 1 3
+	Checkpoint 3864 840 0 0 -3 1
+	Checkpoint 2616 744 0 0 -1 3
+	Checkpoint 360 1104 0 0 -1 -2
+	Checkpoint 1848 624 0 0 -1 -2
 endblock
 
 block extern Music

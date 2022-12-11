@@ -7,6 +7,7 @@ class Level3Handler extends LevelHandler {
 			this.audioSound = $engine.audioPlaySound(music[0], music[1], true);
 		}
 
+		this.add_collectible = true;
 		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
 		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
 		this.camera_dimensions = [1008, 816];
@@ -103,6 +104,7 @@ class Level3Handler extends LevelHandler {
 			new DialogueLine("Grrrr… I saw these scales in her despicable workshop.", LARAYA_PORTRAITS.ANGRY), //air wand piece should be nearby
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.swamplines);
+		this.global = Global.first;
 	}
 
 	step() {
@@ -191,6 +193,10 @@ class Level3Handler extends LevelHandler {
 				this.winLevel();
 			}
 		} else {
+			if (this.add_collectible) {
+				this.add_collectible = false;
+				this.global.saveCollectible();
+			}
 			this.winLevelStep();
 		}
 

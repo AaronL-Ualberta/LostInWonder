@@ -21,22 +21,14 @@ block instances
 	PlayerInstance 1032 -120 0 0 1 1
 	SemiSolid 2352 2424 0 0 2 1
 	Enemy 552 2304 0 0 1 1
-	Global 0 0 0 0 1 1
+	Global -120 0 0 0 1 1
 	Artifact 504 1992 0 0 1 1
 	Enemy 792 2256 0 0 1 1
 	Enemy 1560 2304 0 0 1 1
 	Enemy 1704 2304 0 0 1 1
 	Spikes 3144 2616 0 0 1 1
 	Spikes 3576 2712 0 0 1 1
-	Spikes 2616 2040 0 -1.5707963267948966 1 1
 	Spikes 3096 3480 0 0 1 1
-	Spikes 2616 2088 0 -1.5707963267948966 1 1
-	Spikes 2616 2136 0 -1.5707963267948966 1 1
-	Spikes 2616 2184 0 -1.5707963267948966 1 1
-	Spikes 2616 2232 0 -1.5707963267948966 1 1
-	Spikes 2616 2280 0 -1.5707963267948966 1 1
-	Spikes 2616 2328 0 -1.5707963267948966 1 1
-	Spikes 2616 2376 0 -1.5707963267948966 1 1
 	Spikes 3192 2616 0 0 1 1
 	Spikes 3240 2616 0 0 1 1
 	Spikes 3288 2616 0 0 1 1
@@ -158,53 +150,17 @@ block instances
 	SemiSolid 2736 3720 0 0 2 -1
 	Checkpoint 888 2136 0 0 1 1
 	Checkpoint 1272 2136 0 0 1 1
-	Checkpoint 1464 2184 0 0 1 1
-	Checkpoint 1800 1992 0 0 1 1
-	Checkpoint 2136 2184 0 0 1 1
-	Checkpoint 2472 2280 0 0 1 1
-	Checkpoint 2616 2472 0 0 1 1
+	Checkpoint 2352 2376 0 0 1 1
 	Checkpoint 3096 2472 0 0 1 1
-	Checkpoint 4344 2712 0 0 1 1
-	Checkpoint 4296 2856 0 0 1 1
-	Checkpoint 4440 2856 0 0 1 1
-	Checkpoint 4440 3048 0 0 1 1
-	Checkpoint 4344 3192 0 0 1 1
 	Checkpoint 4056 3384 0 0 1 1
-	Checkpoint 3528 3384 0 0 1 1
 	Checkpoint 3000 3384 0 0 1 1
-	Checkpoint 2808 3624 0 0 1 1
-	Checkpoint 2712 3672 0 0 1 1
-	Checkpoint 2712 3816 0 0 1 1
-	Checkpoint 2664 3960 0 0 1 1
-	Checkpoint 2664 4248 0 0 1 1
-	Checkpoint 2952 4248 0 0 1 1
-	Checkpoint 3576 4440 0 0 1 1
 	Checkpoint 3912 4344 0 0 1 1
-	Checkpoint 2760 4440 0 0 1 1
-	Checkpoint 4440 4152 0 0 1 1
-	Checkpoint 4104 4248 0 0 1 1
-	Checkpoint 4584 4440 0 0 1 1
-	Checkpoint 4920 4008 0 0 1 1
-	Checkpoint 5160 4344 0 0 1 1
 	Checkpoint 5640 4344 0 0 1 1
-	Checkpoint 5976 4248 0 0 1 1
-	Checkpoint 5832 4104 0 0 1 1
-	Checkpoint 6024 4056 0 0 1 1
-	Checkpoint 5976 3720 0 0 1 1
 	Checkpoint 5592 3480 0 0 1 1
-	Checkpoint 5736 3288 0 0 1 1
-	Checkpoint 5976 3144 0 0 1 1
-	Checkpoint 6072 3000 0 0 1 1
-	Checkpoint 6120 2616 0 0 1 1
-	Checkpoint 5880 2520 0 0 1 1
-	Checkpoint 6072 2040 0 0 1 1
-	Checkpoint 5736 1944 0 0 1 1
-	Checkpoint 5544 1656 0 0 1 1
-	Checkpoint 5592 1560 0 0 1 1
-	Checkpoint 5928 1512 0 0 1 1
-	Checkpoint 6216 1368 0 0 1 1
-	Checkpoint 6408 1272 0 0 1 1
+	Checkpoint 5688 2472 0 0 1 1
+	Checkpoint 5784 1512 0 0 1 1
 	Checkpoint 6696 3816 0 0 1 1
+	SemiSolid 5688 1800 0 0 3 1
 endblock
 
 block extern Music

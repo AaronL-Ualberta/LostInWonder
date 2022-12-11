@@ -1,9 +1,16 @@
 class Level1IntroCutscene extends Cutscene {
+	onRoomStart() {
+		this.global = Global.first;
+	}
+
 	onCutsceneCreate() {
 		// ----------   CAVE/LEVEL 1 DIALOGUE LINES   ----------
 
 		this.dialogue_lines = [
-			new DialogueLine("Would you look at that! There was a point coming into this cave after all!", LARAYA_PORTRAITS.HAPPY),
+			new DialogueLine(
+				"Would you look at that! There was a point coming into this cave after all!",
+				LARAYA_PORTRAITS.HAPPY
+			),
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 2
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 3
 			new DialogueLine(DIALOGUE_COMMANDS.NEXT_CUTSCENE_IMAGE), //cut to cave shot 4
@@ -17,6 +24,7 @@ class Level1IntroCutscene extends Cutscene {
 			"level1cutsceneframe3",
 			"level1cutsceneframe4",
 		];
+
 		this.nextRoom = "Level1";
 	}
 

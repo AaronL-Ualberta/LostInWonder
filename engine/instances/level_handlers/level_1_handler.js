@@ -6,7 +6,7 @@ class Level1Handler extends LevelHandler {
 			music[1] = Number(music[1]);
 			this.audioSound = $engine.audioPlaySound(music[0], music[1], true);
 		}
-
+		this.add_collectible = true;
 		this.room_width = RoomManager.currentRoom().getRPGRoomWidth() / 48;
 		this.room_height = RoomManager.currentRoom().getRPGRoomHeight() / 48;
 		this.camera_dimensions = [1008, 816];
@@ -47,7 +47,10 @@ class Level1Handler extends LevelHandler {
 		this.spellWheel_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheel_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
 		this.spellWheel.addChild(this.spellWheel_sprite);
-		this.spellWheelDirection_sprite = $engine.createManagedRenderable(this, new PIXI.Sprite($engine.getTexture("spellwheel_direction")));
+		this.spellWheelDirection_sprite = $engine.createManagedRenderable(
+			this,
+			new PIXI.Sprite($engine.getTexture("spellwheel_direction"))
+		);
 		this.spellWheelDirection_sprite.scale.set(2, 2);
 		this.spellWheelDirection_sprite.x = this.camera_dimensions[0] - this.spellWheel_sprite.width / 2 - 5;
 		this.spellWheelDirection_sprite.y = this.camera_dimensions[1] - this.spellWheel_sprite.height / 2 - 5;
@@ -85,9 +88,13 @@ class Level1Handler extends LevelHandler {
 		this.player.spells_learned = 1;
 		// ----------   CAVE DIALOGUE LINES   ----------
 		this.cavelines = [
-			new DialogueLine("These enemies don't look very friendly... But if I leave them alone, they'll leave me alone. Right?", LARAYA_PORTRAITS.SCARED),
+			new DialogueLine(
+				"These enemies don't look very friendly... But if I leave them alone, they'll leave me alone. Right?",
+				LARAYA_PORTRAITS.SCARED
+			),
 		];
 		this.dialogue_instance = new Dialogue(0, 0, this.cavelines);
+		this.global = Global.first;
 	}
 
 	step() {
@@ -183,6 +190,10 @@ class Level1Handler extends LevelHandler {
 			// 	this.adjustFilter2.alpha = this.timer2 / fadeTime;
 			// 	return;
 			// }
+			if (this.add_collectible) {
+				this.add_collectible = false;
+				this.global.saveCollectible();
+			}
 			this.winLevelStep();
 			// this.timer2++;
 
@@ -206,7 +217,7 @@ class Level1Handler extends LevelHandler {
 				),
 			];
 			this.dialogue_instance = new Dialogue(0, 0, collection_line, true);
-			
+
 			this.wand_piece_collected = false;
 		}
 	}
